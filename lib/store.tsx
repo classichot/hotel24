@@ -24,6 +24,21 @@ import {
   type Role,
 } from "./model";
 import { PMS_SOURCES, SWITCH_STEPS, type PmsSource, type SwitchStatus } from "./migrate";
+import {
+  activeConnector,
+  cloneAri,
+  cloneChannels,
+  cloneInbound,
+  cloneQueue,
+  cloneRateMaps,
+  cloneRoomMaps,
+  WEBHOOK_NEW,
+  type AriRow,
+  type InboundRes,
+  type OtaChannel,
+  type OtaId,
+  type SyncJob,
+} from "./ota";
 
 export type AuditEvent = { t: string; who: string; what: string; kind: string };
 export type Mapping = (typeof MAPPINGS_SEED)[number];
@@ -90,6 +105,27 @@ type Store = {
   switchStep: number;
   startSwitch: () => void;
   resetSwitch: () => void;
+  selectedOta: OtaId;
+  setSelectedOta: (id: OtaId) => void;
+  otaChannels: OtaChannel[];
+  roomMaps: ReturnType<typeof cloneRoomMaps>;
+  rateMaps: ReturnType<typeof cloneRateMaps>;
+  jobs: SyncJob[];
+  inbound: InboundRes[];
+  ari: Record<string, AriRow[]>;
+  invType: string;
+  setInvType: (id: string) => void;
+  reconcile: "open" | "running" | "resolved";
+  tripActual: number;
+  connectChannel: (id: OtaId) => void;
+  syncNow: (id: OtaId) => void;
+  pauseAgoda: () => void;
+  pushAri: () => void;
+  retryJob: (id: string) => void;
+  receiveWebhook: () => void;
+  applyModification: () => void;
+  applyCancellation: () => void;
+  runReconcile: () => void;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -126,6 +162,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [switchStatus, setSwitchStatus] = useState<SwitchStatus>("idle");
   const [switchStep, setSwitchStep] = useState(-1);
   const switchTimers = useRef<number[]>([]);
+  const [selectedOta, setSelectedOta] = useState<OtaId>("booking");
+  const [otaChannels, setOtaChannels] = useState<OtaChannel[]>(cloneChannels);
+  const [roomMaps, setRoomMaps] = useState(cloneRoomMaps);
+  const [rateMaps] = useState(cloneRateMaps);
+  const [jobs, setJobs] = useState<SyncJob[]>(cloneQueue);
+  const [inbound, setInbound] = useState<InboundRes[]>(cloneInbound);
+  const [ari, setAri] = useState<Record<string, AriRow[]>>(cloneAri);
+  const [invType, setInvType] = useState("garden");
+  const [reconcile, setReconcile] = useState<"open" | "running" | "resolved">("open");
+  const [tripActual, setTripActual] = useState(2);
 
   useEffect(() => {
     try {
@@ -193,7 +239,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setRecState((s) => ({ ...s, [id]: "applied" }));
     const rec = RECS_SEED.find((r) => r.id === id);
     stamp("som@baantalay", `Applied AI rec ${rec?.head ?? id} · pushed to 6 channels`, "manual");
-    flash("Applied · pushed to 6 channels via Channex");
+    flash("Applied · queued ARI to connected OTAs via sync worker");
   }, [flash, stamp]);
 
   const dismissRec = useCallback((id: string) => {
@@ -240,6 +286,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     flash("Sent · logged in guest language");
   }, [flash, stamp, thread]);
 
+  const patchOta = useCallback((id: OtaId, patch: Partial<OtaChannel>) => {
+    setOtaChannels((list) => list.map((c) => (c.id === id ? { ...c, ...patch } : c)));
+  }, []);
+
   const fixLoftMapping = useCallback(() => {
     setMappings((list) =>
       list.map((m) =>
@@ -248,17 +298,38 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           : m
       )
     );
+    setRoomMaps((list) => list.map((r) => (r.roomId === "loft" ? { ...r, expedia: "Family Loft" } : r)));
+    setJobs((list) => list.map((j) => (j.id === "q5" ? { ...j, status: "complete" as const, age: "now", payload: "Family Loft → Expedia Family Loft", payloadTh: "แฟมิลี่ลอฟท์ → Expedia Family Loft" } : j)));
+    patchOta("expedia", {
+      roomsMapped: 5,
+      inventory: true,
+      health: 100,
+      lastSync: "just now",
+      note: "Family Loft mapped. Inventory controlled on all five types.",
+      noteTh: "map แฟมิลี่ลอฟท์แล้ว ควบคุมห้องครบห้าประเภท",
+    });
     setShieldClosed((s) => ({ ...s, s1: true }));
-    stamp("som@baantalay", "Mapped Family Loft → Expedia Standard / Breakfast · Shield closed tonight", "manual");
+    stamp("HOTEL24 Mapping", activeConnector.mapRoom("loft", "expedia", "Family Loft"), "system");
+    stamp("som@baantalay", "Mapped Family Loft → Expedia · Shield closed tonight", "manual");
     flash("Family Loft mapped · Overbooking Shield closed tonight");
-  }, [flash, stamp]);
+  }, [flash, patchOta, stamp]);
 
   const forceAgoda = useCallback(() => {
     setAgodaRetry(true);
     setShieldClosed((s) => ({ ...s, s2: true }));
+    setJobs((list) => list.map((j) => (j.id === "q1" ? { ...j, status: "complete" as const, attempts: j.attempts + 1, age: "1.4s" } : j)));
+    patchOta("agoda", {
+      status: "connected",
+      health: 100,
+      lastSync: "just now",
+      pendingUpdates: 0,
+      note: "ARI ack received. Rate pushes resumed.",
+      noteTh: "ได้รับ ack แล้ว ดันราคาต่อได้",
+    });
+    stamp("HOTEL24 Sync", activeConnector.pushAvailability("garden", "20-25 Aug", 3), "system");
     stamp("HOTEL24 · Channel Manager", "Forced Agoda ARI re-push · ack 1.4s", "system");
     flash("Agoda ARI re-pushed · ack 1.4s");
-  }, [flash, stamp]);
+  }, [flash, patchOta, stamp]);
 
   const closeShield = useCallback((id: string) => {
     setShieldClosed((s) => ({ ...s, [id]: true }));
@@ -309,12 +380,229 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         stamp("HOTEL24 Switch", step.audit, "system");
         if (i === SWITCH_STEPS.length - 1) {
           setSwitchStatus("done");
+          stamp("HOTEL24 Sync", activeConnector.createProperty("baantalay"), "system");
+          stamp("HOTEL24 Sync", "Cut over: Booking.com · Agoda · Expedia write from HOTEL24", "system");
           flash(`${src.name} cut over. HOTEL24 is the system of record.`);
         }
       }, 780 * (i + 1));
       switchTimers.current.push(id);
     });
   }, [flash, stamp, switchSource, switchStatus]);
+
+  const connectChannel = useCallback((id: OtaId) => {
+    stamp("HOTEL24 Sync", activeConnector.connectChannel(id), "system");
+    if (id === "trip") {
+      patchOta("trip", {
+        status: "connected",
+        health: 94,
+        lastSync: "just now",
+        roomsMapped: 4,
+        ratesMapped: 3,
+        inventory: true,
+        rates: true,
+        restrictions: true,
+        reservations: true,
+        lastBooking: "—",
+        lastBookingAt: "awaiting first booking",
+        pendingUpdates: 3,
+        note: "Connected. Reconciliation still shows availability 2 vs HOTEL24 3.",
+        noteTh: "เชื่อมแล้ว Reconciliation ยังเห็นว่าง 2 ขณะที่ HOTEL24 เป็น 3",
+      });
+      flash("Trip.com connected. Run reconciliation — availability still off by 1.");
+      return;
+    }
+    patchOta(id, {
+      status: "connected",
+      health: 100,
+      lastSync: "just now",
+      roomsMapped: 5,
+      ratesMapped: 4,
+      inventory: true,
+      rates: true,
+      restrictions: true,
+      reservations: true,
+      note: "Connected through HOTEL24. The hotel does not log into the provider.",
+      noteTh: "เชื่อมผ่าน HOTEL24 โรงแรมไม่ต้องเข้าไปที่ผู้ให้บริการ",
+    });
+    flash(`${id} connected. Mapping drafted from the HOTEL24 master.`);
+  }, [flash, patchOta, stamp]);
+
+  const syncNow = useCallback((id: OtaId) => {
+    const ch = otaChannels.find((c) => c.id === id);
+    stamp("HOTEL24 Sync", activeConnector.getSyncStatus(id), "system");
+    if (id === "agoda" && (ch?.pendingUpdates ?? 0) > 0) {
+      forceAgoda();
+      return;
+    }
+    patchOta(id, { lastSync: "just now", health: ch?.status === "connected" ? 100 : ch?.health });
+    flash(`Sync sent for ${ch?.name ?? id}.`);
+  }, [forceAgoda, otaChannels, patchOta, stamp]);
+
+  const pauseAgoda = useCallback(() => {
+    patchOta("agoda", {
+      status: "paused",
+      note: "HOTEL24 paused extra rate changes and is retrying the stale ARI push.",
+      noteTh: "HOTEL24 หยุดดันราคาเพิ่ม และกำลัง retry ARI ที่ค้าง",
+    });
+    stamp("HOTEL24 Sync", "Agoda inventory stale 12 min — paused additional rate pushes, retrying", "system");
+    flash("Agoda paused. Retrying the queued ARI push.");
+  }, [patchOta, stamp, flash]);
+
+  const pushAri = useCallback(() => {
+    const rows = ari[invType] ?? [];
+    const first = rows[0];
+    if (first) {
+      stamp("HOTEL24 Sync", activeConnector.pushAvailability(invType, first.date, first.avail), "system");
+      stamp("HOTEL24 Sync", activeConnector.pushRates(invType, first.date, first.rate), "system");
+      stamp("HOTEL24 Sync", activeConnector.pushRestrictions(invType, first.date, first.minStay, first.cta, first.ctd, first.stop), "system");
+    }
+    setJobs((list) => [
+      {
+        id: `q-ari-${Date.now()}`,
+        kind: "ARI",
+        channel: "All connected OTAs",
+        payload: `${invType} ARI batched to connected channels`,
+        payloadTh: `ARI ${invType} ส่งชุดไปช่องทางที่เชื่อมแล้ว`,
+        status: "complete",
+        attempts: 1,
+        age: "now",
+      },
+      ...list,
+    ]);
+    setOtaChannels((list) =>
+      list.map((c) =>
+        c.status === "connected"
+          ? { ...c, lastSync: "just now", pendingUpdates: c.id === "agoda" && !agodaRetry ? c.pendingUpdates : 0 }
+          : c
+      )
+    );
+    flash("ARI queued through the sync worker — not sent from the browser.");
+  }, [agodaRetry, ari, flash, invType, stamp]);
+
+  const retryJob = useCallback((id: string) => {
+    if (id === "q1") {
+      forceAgoda();
+      return;
+    }
+    if (id === "q5") {
+      fixLoftMapping();
+      return;
+    }
+    setJobs((list) => list.map((j) => (j.id === id ? { ...j, status: "complete" as const, attempts: j.attempts + 1, age: "now" } : j)));
+    flash("Job retried.");
+  }, [fixLoftMapping, flash, forceAgoda]);
+
+  const receiveWebhook = useCallback(() => {
+    if (inbound.some((r) => r.id === WEBHOOK_NEW.id)) {
+      flash("Agoda webhook already applied.");
+      return;
+    }
+    stamp("HOTEL24 Sync", activeConnector.getReservation(WEBHOOK_NEW.otaId), "system");
+    stamp("HOTEL24 Sync", activeConnector.acknowledgeReservation(WEBHOOK_NEW.otaId), "system");
+    setInbound((list) => [WEBHOOK_NEW, ...list]);
+    setAri((grid) => ({
+      ...grid,
+      garden: (grid.garden ?? []).map((r) =>
+        r.date === "24 Aug" || r.date === "25 Aug"
+          ? { ...r, occupied: r.occupied + 1, avail: Math.max(0, r.avail - 1) }
+          : r
+      ),
+    }));
+    setJobs((list) => [
+      {
+        id: `q-res-${WEBHOOK_NEW.id}`,
+        kind: "RES",
+        channel: "Agoda",
+        payload: `NEW ${WEBHOOK_NEW.otaId} ${WEBHOOK_NEW.guest}`,
+        payloadTh: `จองใหม่ ${WEBHOOK_NEW.otaId} ${WEBHOOK_NEW.guest}`,
+        status: "complete",
+        attempts: 1,
+        age: "now",
+      },
+      {
+        id: `q-ari-${WEBHOOK_NEW.id}`,
+        kind: "ARI",
+        channel: "All connected OTAs",
+        payload: "Garden Deluxe 24–25 Aug availability −1",
+        payloadTh: "ดีลักซ์สวน 24–25 ส.ค. ว่าง −1",
+        status: "complete",
+        attempts: 1,
+        age: "now",
+      },
+      ...list,
+    ]);
+    patchOta("agoda", { lastBooking: WEBHOOK_NEW.otaId, lastBookingAt: "just now", lastSync: "just now" });
+    flash("Agoda booking received. Inventory reduced. New availability pushed to every OTA.");
+  }, [flash, inbound, patchOta, stamp]);
+
+  const applyModification = useCallback(() => {
+    setInbound((list) =>
+      list.map((r) =>
+        r.id === "H24-8833"
+          ? {
+              ...r,
+              event: "MODIFIED" as const,
+              checkOut: "23 Aug",
+              price: 17000,
+              status: "Stay extended 20–23 Aug · inventory recalculated",
+              statusTh: "ยืดเข้าพัก 20–23 ส.ค. · คำนวณห้องใหม่",
+            }
+          : r
+      )
+    );
+    setAri((grid) => ({
+      ...grid,
+      loft: (grid.loft ?? []).map((r) =>
+        r.date === "22 Aug" ? { ...r, occupied: Math.min(r.total, r.occupied + 1), avail: Math.max(0, r.avail - 1) } : r
+      ),
+    }));
+    stamp("HOTEL24 Sync", "MODIFIED BK-8833104 Weber 20–22 Aug → 20–23 Aug", "system");
+    flash("Modification applied. Calendar and ARI updated. Availability re-pushed.");
+  }, [flash, stamp]);
+
+  const applyCancellation = useCallback(() => {
+    setInbound((list) =>
+      list.map((r) =>
+        r.id === "H24-8860"
+          ? {
+              ...r,
+              event: "CANCELLED" as const,
+              status: "Cancelled · inventory restored · ARI pushed",
+              statusTh: "ยกเลิก · คืนห้อง · ดัน ARI แล้ว",
+            }
+          : r
+      )
+    );
+    setAri((grid) => ({
+      ...grid,
+      pool: (grid.pool ?? []).map((r) =>
+        r.date === "19 Aug" || r.date === "20 Aug"
+          ? { ...r, occupied: Math.max(0, r.occupied - 1), avail: r.avail + 1 }
+          : r
+      ),
+    }));
+    stamp("HOTEL24 Sync", "CANCELLED AG-441902 Lim · inventory restored", "system");
+    flash("Cancellation applied. Rooms returned. All OTAs received new availability.");
+  }, [flash, stamp]);
+
+  const runReconcile = useCallback(() => {
+    setReconcile("running");
+    stamp("HOTEL24 Sync", "Reconciliation pass: Deluxe 20 Aug expected=3 Trip.com actual=2", "system");
+    window.setTimeout(() => {
+      setTripActual(3);
+      setReconcile("resolved");
+      setJobs((list) => list.map((j) => (j.id === "q4" ? { ...j, status: "complete" as const, age: "now", payload: "Trip.com availability forced to 3", payloadTh: "บังคับ Trip.com ว่าง = 3" } : j)));
+      patchOta("trip", {
+        health: 100,
+        lastSync: "just now",
+        pendingUpdates: 0,
+        note: "Mismatch resolved. Trip.com availability matches HOTEL24.",
+        noteTh: "แก้ความไม่ตรงแล้ว Trip.com ว่างตรงกับ HOTEL24",
+      });
+      stamp("HOTEL24 Sync", activeConnector.pushAvailability("garden", "20 Aug", 3), "system");
+      flash("Mismatch on Trip.com auto-resynced. Recheck passed.");
+    }, 900);
+  }, [patchOta, stamp, flash]);
 
   const themeVars = THEMES[theme].vars as unknown as Record<string, string>;
 
@@ -330,6 +618,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       audit, walkInOpen, setWalkInOpen, newResOpen, setNewResOpen, addWalkIn,
       benefits, toggleBenefit, assigned, autoAssign, calRange, setCalRange,
       switchSource, setSwitchSource, switchStatus, switchStep, startSwitch, resetSwitch,
+      selectedOta, setSelectedOta, otaChannels, roomMaps, rateMaps, jobs, inbound, ari,
+      invType, setInvType, reconcile, tripActual, connectChannel, syncNow, pauseAgoda,
+      pushAri, retryJob, receiveWebhook, applyModification, applyCancellation, runReconcile,
     }),
     [
       ready, authed, login, logout, role, theme, setTheme, themeVars, lang, setLang,
@@ -338,6 +629,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       thread, sent, sendDraft, mappings, fixLoftMapping, agodaRetry, forceAgoda, shieldClosed, closeShield,
       audit, walkInOpen, newResOpen, addWalkIn, benefits, toggleBenefit, assigned, autoAssign, calRange,
       switchSource, setSwitchSource, switchStatus, switchStep, startSwitch, resetSwitch,
+      selectedOta, otaChannels, roomMaps, rateMaps, jobs, inbound, ari, invType, reconcile, tripActual,
+      connectChannel, syncNow, pauseAgoda, pushAri, retryJob, receiveWebhook, applyModification,
+      applyCancellation, runReconcile,
     ]
   );
 

@@ -43,12 +43,12 @@ export default function ProfitPage() {
         </div>
         <div className="stat-cell">
           <div className="stat-label"><T en="Paid to OTAs" th="จ่ายให้ OTA" /></div>
-          <div className="stat-val" style={{ color: "var(--color-accent-700)" }}>{thb(otaPaid, true)}</div>
+          <div className="stat-val" style={{ color: "var(--color-hot-700)" }}>{thb(otaPaid, true)}</div>
           <div className="stat-hint"><T en="Commission, promos, payment fees" th="ค่าคอม โปรโมชัน ค่าธรรมเนียม" /></div>
         </div>
         <div className="stat-cell">
           <div className="stat-label"><T en="Best net per room-night" th="สุทธิต่อคืนสูงสุด" /></div>
-          <div className="stat-val" style={{ color: "var(--color-accent-700)" }}>{thb(best.netAdr)}</div>
+          <div className="stat-val" style={{ color: "var(--color-hot-700)" }}>{thb(best.netAdr)}</div>
           <div className="stat-hint">{best.ch} · {(best.margin * 100).toFixed(1)}%</div>
         </div>
       </div>
@@ -76,7 +76,7 @@ export default function ProfitPage() {
               const hot = r.k === "direct";
               return (
                 <tr key={r.ch}>
-                  <td style={{ fontWeight: 800, color: hot ? "var(--color-accent-700)" : undefined }}>
+                  <td style={{ fontWeight: 800, color: hot ? "var(--color-hot-700)" : undefined }}>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                       <i style={{ width: 10, height: 10, background: CHANNELS[r.k].ink, display: "inline-block" }} />
                       {r.ch}
@@ -90,7 +90,7 @@ export default function ProfitPage() {
                   <td className="num">{thb(r.tax)}</td>
                   <td className="num">{r.cancel === 0 ? "฿0" : thb(r.cancel)}</td>
                   <td className="num">{thb(netR)}</td>
-                  <td className="num" style={{ color: hot ? "var(--color-accent-700)" : undefined }}>{thb(Math.round(netR / r.rn))}</td>
+                  <td className="num" style={{ color: hot ? "var(--color-hot-700)" : undefined }}>{thb(Math.round(netR / r.rn))}</td>
                   <td className="num">
                     <div className="bar-track" style={{ width: 72, display: "inline-block", verticalAlign: "middle", marginRight: 8 }}>
                       <div className="bar-fill" style={{ width: `${(netR / r.gross) * 100}%`, background: hot ? "var(--color-accent)" : "var(--color-neutral-800)" }} />

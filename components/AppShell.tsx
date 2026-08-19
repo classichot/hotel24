@@ -36,9 +36,17 @@ const NAV = [
     group: { en: "Revenue", th: "รายได้" },
     items: [
       { href: "/rates", en: "Rate & AI Revenue", th: "ราคาห้อง & AI" },
-      { href: "/channels", en: "Channel Manager", th: "เชื่อมต่อ OTA" },
       { href: "/profit", en: "OTA Profit", th: "กำไรจริงต่อช่องทาง" },
       { href: "/direct", en: "Direct Booking", th: "จองตรง" },
+    ],
+  },
+  {
+    group: { en: "Distribution", th: "กระจายห้อง" },
+    items: [
+      { href: "/channels", en: "Connection Center", th: "ศูนย์ช่องทาง" },
+      { href: "/mapping", en: "OTA Mapping", th: "จับคู่ OTA" },
+      { href: "/inventory", en: "Inventory & ARI", th: "ห้องคงเหลือ & ARI" },
+      { href: "/sync", en: "OTA Sync", th: "ซิงก์ OTA" },
     ],
   },
   {
@@ -70,13 +78,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const {
     logout, toast, navOpen, setNavOpen, lang, role, propertyId, setPropertyId,
-    search, setSearch, aiMode, recState, shieldClosed, switchStatus,
+    search, setSearch, aiMode, recState, shieldClosed, switchStatus, otaChannels,
   } = useStore();
   const user = role === "front" || role === "housekeeping" ? FRONT_USER : OWNER;
   const property = PROPERTIES.find((p) => p.id === propertyId) ?? PROPERTIES[0];
   const [picker, setPicker] = useState(false);
   const pending = Object.values(recState).filter((s) => s === "applied").length;
   const shieldOpen = !shieldClosed.s1;
+  const otaWarn = otaChannels.some((c) => c.pendingUpdates > 0 || (c.status === "connected" && c.health < 100) || c.status === "paused");
 
   useEffect(() => { setNavOpen(false); }, [path, setNavOpen]);
 
@@ -113,7 +122,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <span className="ink-th">{item.th}</span>
                   </span>
                   {item.href === "/rates" && pending < 3 && aiMode === "recommend" && <span className="ink-dot" />}
-                  {item.href === "/channels" && shieldOpen && <span className="ink-dot" />}
+                  {item.href === "/channels" && (shieldOpen || otaWarn) && <span className="ink-dot" />}
+                  {item.href === "/sync" && otaWarn && <span className="ink-dot" />}
                   {item.href === "/switch" && switchStatus !== "done" && <span className="ink-dot" />}
                 </Link>
               ))}
@@ -121,7 +131,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <div className="ink-foot">
-          Connectivity: Channex white-label<br />60+ channels · 1 integration
+          Connectivity: white-label · 61+ channels<br />Hotel stays in HOTEL24
         </div>
       </aside>
 
@@ -152,7 +162,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="header-actions" style={{ marginLeft: "auto" }}>
             <span className="tag tag-neutral header-hide-sm" style={{ gap: 6 }}>
               <span style={{ width: 6, height: 6, background: "var(--color-accent-700)", display: "inline-block" }} />
-              <T en="All channels synced · 2 min" th="ซิงก์ทุกช่องทาง · 2 นาที" />
+              {otaWarn
+                ? <T en="OTA sync needs attention" th="ซิงก์ OTA ต้องตรวจ" />
+                : <T en="All channels synced · 2 min" th="ซิงก์ทุกช่องทาง · 2 นาที" />}
             </span>
             <span className="tag tag-accent header-hide-sm">AI: {aiMode === "auto" ? "auto-apply" : "recommend"}</span>
             <input className="input header-hide-sm" type="search" placeholder={lang === "th" ? "ค้นหาการจอง แขก ห้อง…" : "Search reservation, guest, room…"} value={search} onChange={(e) => setSearch(e.target.value)} style={{ width: 220 }} />
@@ -182,7 +194,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {toast}
         </div>
       )}
-      {shieldOpen && path !== "/channels" && (
+      {shieldOpen && path !== "/channels" && path !== "/mapping" && (
         <Link href="/channels" className="shield-fab no-print">
           <Shield size={14} />
           <T en="Overbooking Shield · 1 high" th="ป้องกันขายเกิน · 1 สูง" />

@@ -26,7 +26,7 @@ Seeded property: **Baan Talay Boutique Resort**, Ao Nang, Krabi, 42 rooms, plus 
 ## MVP
 
 1. Reservation calendar and PMS  
-2. White-label OTA channel manager (Channex-style — not direct Booking.com / Expedia certification)  
+2. White-label OTA **channel manager** (Channex first — Connectivity, not Demand API). HOTEL24 stays the system of record.  
 3. Direct-booking engine  
 4. Rate and inventory management  
 5. Check-in/out and payment records  
@@ -46,19 +46,32 @@ Plus Thailand compliance: passport capture, TM30 workflow, PDPA controls, tax-do
 3. **AI Guest Concierge** — LINE / WhatsApp / OTA; routine questions; escalate the rest.  
 4. **Owner Mode on LINE** — morning brief and approve-in-chat.  
 5. **Direct Booking Booster** — LINE OA, Facebook, Instagram, TikTok, GBP, QR. Benefit, not a public undercut.  
-6. **Overbooking Shield** — unmapped rooms, delayed ARI, conflicts, failed imports, duplicates, audit log.
+6. **Overbooking Shield** — unmapped rooms, delayed ARI, conflicts, failed imports, duplicates, audit log.  
+7. **OTA Connectivity Service** — property master, mapping, inventory/ARI, reservation receiver (NEW/MODIFIED/CANCELLED/NO SHOW), queued sync, health, automatic reconciliation, tokenised payments. ChannexConnector implements `OTAConnector` so STAAH Su or DerbySoft can replace it later.
 
 ## Architecture
 
 ```
-HOTEL24 PMS → white-label connectivity provider → Booking.com, Agoda, Expedia, Airbnb, Trip.com
+HOTEL24 PMS (system of record)
+  Property · Rooms · Rates · Inventory · Reservations
+           │
+           ▼
+HOTEL24 OTA Sync Service  (queue, retry, reconcile, health)
+           │
+           ▼
+OTAConnector  →  ChannexConnector (live)  |  STAAH later  |  DerbySoft later
+           │
+           ▼
+Booking.com · Agoda · Expedia · Trip.com · Airbnb · 50+
 ```
 
-Do not start with direct OTA integrations. Booking.com and Expedia require partner onboarding. A white-label layer (for example Channex) lets the product focus on UX, AI and Thai-specific work.
+Do not start with direct OTA integrations. Booking.com Connectivity is paused for new providers. Demand APIs (Booking Demand, Expedia Rapid) sell travel to travellers — the wrong direction for a PMS.
+
+Console engines: `/channels` Connection Center · `/mapping` · `/inventory` ARI · `/sync` queue/health/reconcile. Combined with `/switch`, the offer is **switch in one day**: import Cloudbeds or Little Hotelier, map rooms, connect Booking/Agoda/Expedia, validate inventory, cut over.
 
 ## Design
 
-Modernist system in `design-ref/`: Archivo + IBM Plex Sans Thai, 0px radius, 2px rules, **Lacquer Red `#cf1b17`**. Grey weights on the calendar are OTAs; the accent is reserved for direct booking, AI recommendations, and anything that needs the owner now.
+Modernist system in `design-ref/`: Archivo + IBM Plex Sans Thai, 0px radius, 2px rules, **Mango orange `#ff6a3c`**. Ink type on orange. Grey weights on the calendar are OTAs; orange is direct booking, AI, and anything that needs the owner now. Green is only a quiet “healthy / synced” status, not the brand.
 
 ## Ecosystem
 

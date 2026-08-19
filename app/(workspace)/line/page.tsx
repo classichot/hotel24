@@ -54,7 +54,7 @@ export default function LinePage() {
               {BRIEF.map((b) => (
                 <div key={b.en} className="phone-row">
                   <span>{b.th}</span>
-                  <strong style={{ color: b.hot ? "var(--color-accent-700)" : undefined }}>{b.v}</strong>
+                  <strong style={{ color: b.hot ? "var(--color-hot-700)" : undefined }}>{b.v}</strong>
                 </div>
               ))}
             </div>
@@ -91,7 +91,7 @@ export default function LinePage() {
           <h5 className="sec-h" style={{ marginTop: 28 }}><T en="Push rules" th="กฎการส่ง" /></h5>
           {RULES.map((r) => (
             <div key={r.what} className="push-row">
-              <strong style={{ color: r.hot ? "var(--color-accent-700)" : undefined }}>{r.what}</strong>
+              <strong style={{ color: r.hot ? "var(--color-hot-700)" : undefined }}>{r.what}</strong>
               <span className="text-muted">{r.when}</span>
             </div>
           ))}

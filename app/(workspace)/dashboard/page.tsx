@@ -43,7 +43,7 @@ export default function DashboardPage() {
         ].map((k) => (
           <div key={k.l} className="stat-cell">
             <div className="stat-label"><T en={k.l} th={k.lt} /></div>
-            <div className="stat-val" style={{ color: k.hot ? "var(--color-accent-700)" : undefined }}>{k.v}</div>
+            <div className="stat-val" style={{ color: k.hot ? "var(--color-hot-700)" : undefined }}>{k.v}</div>
             <div className="stat-hint">{k.s}</div>
           </div>
         ))}
@@ -73,7 +73,7 @@ export default function DashboardPage() {
             const net = profitNet(r);
             return (
               <div key={r.ch} style={{ display: "grid", gridTemplateColumns: "160px 1fr auto auto", gap: 10, alignItems: "center", padding: "7px 0", borderBottom: "1px solid var(--color-divider)", fontSize: 13 }}>
-                <strong style={{ color: r.k === "direct" ? "var(--color-accent-700)" : undefined }}>{r.ch}</strong>
+                <strong style={{ color: r.k === "direct" ? "var(--color-hot-700)" : undefined }}>{r.ch}</strong>
                 <div className="bar-track"><div className="bar-fill" style={{ width: `${(r.gross / 1046000) * 100}%` }} /></div>
                 <span className="num text-muted">{thb(r.gross, true)}</span>
                 <span className="num">{thb(net, true)}</span>
@@ -83,7 +83,7 @@ export default function DashboardPage() {
         </section>
         <aside className="col-aside">
           <div>
-            <h5 className="sec-h" style={{ color: "var(--color-accent-700)" }}><T en="Exceptions" th="รายการที่ต้องดู" /></h5>
+            <h5 className="sec-h" style={{ color: "var(--color-hot-700)" }}><T en="Exceptions" th="รายการที่ต้องดู" /></h5>
             {exceptions.map((e) => (
               <div key={e} className="stack-row" style={{ fontSize: 13, padding: "10px 0", borderBottom: "1px solid var(--color-divider)" }}>{e}</div>
             ))}

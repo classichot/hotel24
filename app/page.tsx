@@ -55,12 +55,23 @@ const FEATURES = [
     copyTh: "ตรวจห้องที่ยังไม่ map, การอัปเดต OTA ที่ล่าช้า, จำนวนห้องที่ขัดกัน, การนำเข้าที่ล้มเหลว, การจองซ้ำ และการแก้ด้วยมือที่น่าสงสัย",
     proof: "Who changed it, or what system changed it, and when.",
   },
+  {
+    n: "07",
+    title: "White-label Channel Manager",
+    th: "ตัวจัดการช่องทางแบบ white-label",
+    copy: "HOTEL24 does not certify Booking.com or Expedia itself. It keeps the canonical hotel, rooms, rates and reservations, then a white-label connectivity layer (Channex first) pushes ARI and pulls bookings. Mapping, queue, retry, health and reconciliation stay inside HOTEL24.",
+    copyTh: "HOTEL24 ไม่ไป certification กับ Booking.com หรือ Expedia เอง ระบบเก็บต้นฉบับโรงแรม ห้อง ราคา และการจอง แล้วชั้น connectivity แบบ white-label ดัน ARI และดึงการจอง Mapping คิว retry สุขภาพช่องทาง และกระทบยอดอยู่ใน HOTEL24",
+    proof: "Booking.com’s Connectivity API is the hotel-to-OTA direction. Demand APIs sell travel to travellers — the wrong door for a PMS.",
+  },
 ];
 
 const MODULES = [
   { en: "One-button PMS switch", th: "ย้ายจาก Cloudbeds / Little Hotelier" },
   { en: "Central Reservation", th: "ปฏิทินการจองรวมทุกช่องทาง" },
   { en: "Channel Manager", th: "ซิงก์ห้อง ราคา เงื่อนไข กับ OTA" },
+  { en: "OTA Mapping Engine", th: "จับคู่ห้องและเรทกับแต่ละ OTA" },
+  { en: "Inventory & ARI", th: "ความว่าง ราคา ข้อจำกัด ต้นฉบับเดียว" },
+  { en: "OTA Sync Service", th: "คิว retry สุขภาพช่องทาง กระทบยอด" },
   { en: "Front Desk PMS", th: "เช็คอิน–เช็คเอาท์ จัดห้อง มัดจำ" },
   { en: "Direct Booking Engine", th: "หน้าจองของโรงแรมเอง" },
   { en: "Rate Manager", th: "ราคาตามฤดูกาลและอัตราเข้าพัก" },
@@ -88,6 +99,7 @@ export default function LandingPage() {
       <nav className="nav landing-nav">
         <span className="nav-brand">HOTEL<span>24</span></span>
         <a href="#system"><T en="System" th="ระบบ" /></a>
+        <a href="#connect"><T en="Channels" th="ช่องทาง" /></a>
         <a href="#switch"><T en="Switch" th="ย้ายระบบ" /></a>
         <a href="#profit"><T en="Real profit" th="กำไรจริง" /></a>
         <a href="#thai">TM30 &amp; PDPA</a>
@@ -137,7 +149,7 @@ export default function LandingPage() {
         </section>
 
         <section id="system" className="landing-section">
-          <div className="page-kicker"><T en="Six things that are not just another booking calendar" th="หกอย่างที่ทำให้ต่างจากระบบจองทั่วไป" /></div>
+          <div className="page-kicker"><T en="Seven things that are not just another booking calendar" th="เจ็ดอย่างที่ทำให้ต่างจากระบบจองทั่วไป" /></div>
           {FEATURES.map((f) => (
             <div key={f.n} className="feature-row">
               <div className="feature-n"><span />{f.n}</div>
@@ -180,11 +192,11 @@ export default function LandingPage() {
                   <tbody>
                     {PROFIT.map((p) => (
                       <tr key={p.ch}>
-                        <td style={{ fontWeight: 800, color: p.hot ? "var(--color-accent-700)" : undefined }}>{p.ch}</td>
+                        <td style={{ fontWeight: 800, color: p.hot ? "var(--color-hot-700)" : undefined }}>{p.ch}</td>
                         <td className="num">{p.gross}</td>
                         <td className="num text-muted">{p.cost}</td>
                         <td className="num">{p.net}</td>
-                        <td className="num" style={{ color: p.hot ? "var(--color-accent-700)" : undefined }}>{p.netAdr}</td>
+                        <td className="num" style={{ color: p.hot ? "var(--color-hot-700)" : undefined }}>{p.netAdr}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -230,7 +242,7 @@ export default function LandingPage() {
         </section>
 
         <section className="landing-section">
-          <div className="page-kicker"><T en="Twelve modules. One system." th="หนึ่งระบบแทนงานทั้งหมด · สิบสองโมดูล" /></div>
+          <div className="page-kicker"><T en="Fifteen modules. One system." th="หนึ่งระบบแทนงานทั้งหมด · สิบห้าโมดูล" /></div>
           <div className="module-grid">
             {MODULES.map((m) => (
               <div key={m.en} className="module-cell">
@@ -252,6 +264,26 @@ export default function LandingPage() {
           </p>
           <div className="landing-cta">
             <Link href="/login" className="btn btn-primary"><T en="Move my hotel to HOTEL24" th="ย้ายโรงแรมมา HOTEL24" /></Link>
+          </div>
+        </section>
+
+        <section id="connect" className="landing-section">
+          <div className="page-kicker"><T en="White-label channel manager" th="ตัวจัดการช่องทางแบบ white-label" /></div>
+          <h2><T en="HOTEL24 owns the hotel. Channex talks to the OTAs." th="HOTEL24 เป็นระบบของโรงแรม Channex คุยกับ OTA" /></h2>
+          <p className="lede-sub">
+            <T
+              en="This is not Booking.com Demand API or Expedia Rapid. Those sell travel to travellers. HOTEL24 needs Connectivity: rooms, rates, availability and reservations in the hotel’s existing OTA accounts. One integration covers Booking.com, Agoda, Expedia, Trip.com, Airbnb and 50+ more. Direct OTA certification waits until the product is large enough to justify it — Booking.com is also pausing new connectivity providers."
+              th="นี่ไม่ใช่ Demand API ของ Booking.com หรือ Expedia Rapid ที่ขายท่องเที่ยวให้ผู้เดินทาง HOTEL24 ต้องการ Connectivity: ห้อง ราคา ความว่าง และการจองในบัญชี OTA ที่โรงแรมมีอยู่แล้ว เชื่อมครั้งเดียวครอบ Booking.com, Agoda, Expedia, Trip.com, Airbnb และอีก 50+ ช่องทาง การไป certification ตรงกับ OTA รอจนกว่าธุรกิจใหญ่พอ — และ Booking.com ยังพักรับผู้ให้บริการ connectivity รายใหม่"
+            />
+          </p>
+          <p className="lede-sub">
+            <T
+              en="Inside HOTEL24: property master, mapping engine, inventory, ARI, reservation receiver, modifications and cancellations, queued sync, health monitor, automatic reconciliation, tokenised payments. Combined with the Cloudbeds / Little Hotelier switch, the offer is: move in one day, map rooms, connect Booking/Agoda/Expedia, validate inventory, cut over."
+              th="ใน HOTEL24 มีต้นฉบับที่พัก ตัว map ห้องคงเหลือ ARI ตัวรับจอง แก้ไข/ยกเลิก คิวซิงก์ ตัววัดสุขภาพ กระทบยอดอัตโนมัติ และการชำระแบบโทเคน รวมกับปุ่มย้ายจาก Cloudbeds / Little Hotelier ข้อเสนอคือ ย้ายในหนึ่งวัน map ห้อง เชื่อม Booking/Agoda/Expedia ตรวจห้อง แล้วตัดสลับ"
+            />
+          </p>
+          <div className="landing-cta">
+            <Link href="/login" className="btn btn-primary"><T en="Open Connection Center" th="เปิดศูนย์ช่องทาง" /></Link>
           </div>
         </section>
 

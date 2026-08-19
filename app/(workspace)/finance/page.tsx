@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { PAYMENTS } from "@/lib/model";
 import { PageHead } from "@/components/PageHead";
 import { thb } from "@/lib/format";
@@ -25,9 +26,15 @@ export default function FinancePage() {
         kickerTh="ใบแจ้งหนี้ · ใบเสร็จ · มัดจำ · คืนเงิน"
         titleEn="Finance"
         titleTh="การเงิน"
-        subEn="Daily reconciliation for the front desk. Full accounting, restaurant POS and procurement wait for a later phase."
-        subTh="กระทบยอดรายวันสำหรับเคาน์เตอร์ บัญชีเต็ม ร้านอาหาร และจัดซื้อไว้เฟสถัดไป"
+        subEn="Daily reconciliation for the front desk. OTA collect, hotel collect, deposits and virtual cards — tokenised. HOTEL24 never stores raw card numbers."
+        subTh="กระทบยอดรายวันสำหรับเคาน์เตอร์ OTA เก็บ โรงแรมเก็บ มัดจำ และบัตรเสมือนแบบโทเคน — HOTEL24 ไม่เก็บเลขบัตรดิบ"
       />
+
+      <div className="callout" style={{ marginTop: 16 }}>
+        <strong><T en="No raw card numbers." th="ไม่เก็บเลขบัตรดิบ" /></strong>{" "}
+        <T en="OTA collect, hotel collect, deposits, prepay and virtual cards are tokenised through the payment service. PCI stays with the gateway." th="OTA เก็บ โรงแรมเก็บ มัดจำ ชำระล่วงหน้า และบัตรเสมือนเป็นโทเคนผ่านบริการชำระเงิน PCI อยู่ที่เกตเวย์" />
+        {" "}<Link href="/sync"><T en="Payment kinds on Sync" th="ประเภทการชำระที่หน้าซิงก์" /> →</Link>
+      </div>
 
       <div className="stat-row" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
         <div className="stat-cell">
@@ -36,7 +43,7 @@ export default function FinancePage() {
         </div>
         <div className="stat-cell">
           <div className="stat-label"><T en="Cash short 18 Aug" th="เงินสดขาด 18 ส.ค." /></div>
-          <div className="stat-val" style={{ color: "var(--color-accent-700)" }}>−฿1,200</div>
+          <div className="stat-val" style={{ color: "var(--color-hot-700)" }}>−฿1,200</div>
         </div>
         <div className="stat-cell">
           <div className="stat-label"><T en="Open deposits" th="มัดจำค้าง" /></div>

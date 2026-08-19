@@ -146,7 +146,7 @@ export default function SwitchPage() {
           </div>
           {(running && switchStep >= 7) || done ? (
             <div style={{ marginTop: 18 }}>
-              <h5 className="sec-h" style={{ color: "var(--color-accent-700)" }}><T en="Shield on the import" th="Shield ตอนนำเข้า" /></h5>
+              <h5 className="sec-h" style={{ color: "var(--color-hot-700)" }}><T en="Shield on the import" th="Shield ตอนนำเข้า" /></h5>
               {SWITCH_FLAGS[switchSource].map((f) => (
                 <div key={f.text} className="callout" style={{ marginBottom: 10 }}>
                   <span className={statusCls(f.sev)}>{f.sev}</span>
@@ -167,10 +167,19 @@ export default function SwitchPage() {
               <strong><T en="Cut over complete." th="ตัดสลับเสร็จแล้ว" /></strong>
               <p style={{ margin: "8px 0 0", fontSize: 13 }}>
                 {lang === "th"
-                  ? `${src.name} เป็นคลังอ่านอย่างเดียว 30 วัน · Channex ชี้มาที่ HOTEL24 · การจองใหม่ไม่เข้า ${src.name}`
-                  : `${src.name} is a 30-day read-only archive. Channex now points at HOTEL24. New reservations do not land in ${src.name}.`}
+                  ? `${src.name} เป็นคลังอ่านอย่างเดียว 30 วัน · ตัวเชื่อมช่องทางชี้มาที่ HOTEL24 · การจองใหม่ไม่เข้า ${src.name}`
+                  : `${src.name} is a 30-day read-only archive. Channel manager now points at HOTEL24. New reservations do not land in ${src.name}.`}
               </p>
-              <Link href="/channels" className="btn btn-ghost" style={{ paddingLeft: 0, marginTop: 8 }}><T en="Check channel mappings" th="ตรวจ mapping ช่องทาง" /> →</Link>
+              <p style={{ margin: "10px 0 0", fontSize: 13 }}>
+                <T en="One-day path:" th="ย้ายในหนึ่งวัน:" />{" "}
+                <Link href="/mapping"><T en="Map rooms/rates" th="map ห้อง/เรท" /></Link>
+                {" · "}
+                <Link href="/channels"><T en="Booking / Agoda / Expedia" th="Booking / Agoda / Expedia" /></Link>
+                {" · "}
+                <Link href="/inventory"><T en="Validate inventory" th="ตรวจห้องคงเหลือ" /></Link>
+                {" · "}
+                <Link href="/sync"><T en="Reconcile OTAs" th="กระทบยอด OTA" /></Link>
+              </p>
             </div>
           )}
         </aside>

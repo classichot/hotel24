@@ -138,9 +138,9 @@ export const SWITCH_STEPS = [
     id: "cut",
     en: "Cut over — HOTEL24 is live",
     th: "ตัดสลับ — HOTEL24 เป็นระบบจริง",
-    detail: "Channel manager points here. Old PMS goes read-only.",
-    detailTh: "ตัวจัดการช่องทางชี้มาที่นี่ ระบบเดิมเป็นโหมดอ่านอย่างเดียว",
-    audit: "Cut over complete — HOTEL24 is the system of record",
+    detail: "Channel manager points here. Validate Booking/Agoda/Expedia inventory, then the old PMS goes read-only.",
+    detailTh: "ตัวจัดการช่องทางชี้มาที่นี่ ตรวจห้องบน Booking/Agoda/Expedia แล้วระบบเดิมเป็นโหมดอ่านอย่างเดียว",
+    audit: "Cut over complete — HOTEL24 is the system of record · ARI writes from HOTEL24",
   },
 ];
 

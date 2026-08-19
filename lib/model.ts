@@ -6,7 +6,7 @@ export type HkStatus = 0 | 1 | 2 | 3;
 export type AiMode = "recommend" | "auto";
 
 export const CHANNELS: Record<ChannelKey, { en: string; th: string; ink: string; fg: string }> = {
-  direct: { en: "Direct", th: "จองตรง", ink: "#cf1b17", fg: "#f8f4f4" },
+  direct: { en: "Direct", th: "จองตรง", ink: "#ff6a3c", fg: "#201e1d" },
   booking: { en: "Booking.com", th: "Booking.com", ink: "#201e1d", fg: "#f8f4f4" },
   agoda: { en: "Agoda", th: "Agoda", ink: "#605d5d", fg: "#f8f4f4" },
   airbnb: { en: "Airbnb", th: "Airbnb", ink: "#7d7979", fg: "#f8f4f4" },

@@ -30,7 +30,7 @@ export default function FrontDeskPage() {
         {PAYMENTS.map((p) => (
           <div key={p.what} className="stat-cell">
             <div className="stat-label">{p.what}</div>
-            <div className="stat-val" style={{ fontSize: 22, color: p.amt < 0 ? "var(--color-accent-700)" : undefined }}>{thb(p.amt)}</div>
+            <div className="stat-val" style={{ fontSize: 22, color: p.amt < 0 ? "var(--color-hot-700)" : undefined }}>{thb(p.amt)}</div>
           </div>
         ))}
       </div>
@@ -70,7 +70,7 @@ export default function FrontDeskPage() {
                       </td>
                       <td>{a.room}</td>
                       <td className="num">{a.nights}</td>
-                      <td style={{ color: a.due > 0 ? "var(--color-accent-700)" : undefined, fontWeight: 700 }}>{a.bal}</td>
+                      <td style={{ color: a.due > 0 ? "var(--color-hot-700)" : undefined, fontWeight: 700 }}>{a.bal}</td>
                       <td>{a.eta}</td>
                       <td><span className={statusCls(docOk ? "Ready" : "Awaiting scan")}>{docOk ? a.doc : "Scan needed · TM30"}</span></td>
                       <td>

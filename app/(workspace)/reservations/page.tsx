@@ -20,8 +20,8 @@ export default function ReservationsPage() {
         kickerTh="ปฏิทินเดียว"
         titleEn="Reservation calendar"
         titleTh="ปฏิทินการจอง"
-        subEn="OTA, direct, walk-in and agent bookings on one grid. Grey is OTA. Lacquer red is direct."
-        subTh="OTA, จองตรง, วอล์กอิน และเอเจนต์อยู่ในปฏิทินเดียว — เทาคือ OTA แดงคือจองตรง"
+        subEn="OTA, direct, walk-in and agent bookings on one grid. Grey is OTA. Orange is direct."
+        subTh="OTA, จองตรง, วอล์กอิน และเอเจนต์อยู่ในปฏิทินเดียว — เทาคือ OTA ส้มคือจองตรง"
         actions={
           <>
             <div className="seg">
@@ -94,7 +94,7 @@ export default function ReservationsPage() {
             <div className="cal-stub"><T en="Occupancy" th="อัตราเข้าพัก" /></div>
             <div className="cal-days">
               {OCC.map((p, i) => (
-                <div key={i} className="cal-day" style={{ color: p >= 90 ? "var(--color-accent-700)" : undefined, fontWeight: 800, fontFamily: "var(--font-heading)" }}>
+                <div key={i} className="cal-day" style={{ color: p >= 90 ? "var(--color-hot-700)" : undefined, fontWeight: 800, fontFamily: "var(--font-heading)" }}>
                   {p}%
                 </div>
               ))}
@@ -109,7 +109,7 @@ export default function ReservationsPage() {
               </span>
             ))}
             <span className="text-muted" style={{ marginLeft: "auto" }}>
-              <T en="Red = direct. Grey weights = OTA, by commission depth." th="แดง = จองตรง เทา = OTA ตามความลึกของค่าคอม" />
+              <T en="Orange = direct. Grey weights = OTA, by commission depth." th="ส้ม = จองตรง เทา = OTA ตามความลึกของค่าคอม" />
             </span>
           </div>
         </div>

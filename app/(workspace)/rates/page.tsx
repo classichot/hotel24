@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { RATE_DAYS, RATE_GRID, RECS_SEED } from "@/lib/model";
 import { PageHead } from "@/components/PageHead";
 import { T } from "@/lib/i18n";
@@ -91,7 +92,7 @@ export default function RatesPage() {
                     <td style={{ fontWeight: 700, whiteSpace: "nowrap" }}>{row.name}</td>
                     {row.cells.map((c, i) => (
                       <td key={i} className="num" style={{
-                        color: c[1] === 1 ? "var(--color-accent-700)" : c[1] === 2 ? "var(--color-neutral-600)" : undefined,
+                        color: c[1] === 1 ? "var(--color-hot-700)" : c[1] === 2 ? "var(--color-neutral-600)" : undefined,
                         fontWeight: c[1] === 1 ? 800 : 400,
                         fontFamily: c[1] ? "var(--font-heading)" : undefined,
                       }}>{c[0]}</td>
@@ -102,8 +103,9 @@ export default function RatesPage() {
             </table>
           </div>
           <p className="text-muted" style={{ fontSize: 12, marginTop: 12 }}>
-            <T en="Accent cells are AI-touched: weekend lift, Agoda last-minute, 2-night minimum, stop-sell." th="ช่องสีแดงคือจุดที่ AI แตะ: ขึ้นสุดสัปดาห์, นาทีสุดท้าย Agoda, ขั้นต่ำ 2 คืน, ปิดขาย" />
+            <T en="Accent cells are AI-touched: weekend lift, Agoda last-minute, 2-night minimum, stop-sell. Apply queues ARI through the sync worker — the rate grid does not call OTAs itself." th="ช่องสีส้มคือจุดที่ AI แตะ: ขึ้นสุดสัปดาห์, นาทีสุดท้าย Agoda, ขั้นต่ำ 2 คืน, ปิดขาย กดใช้แล้วเข้าคิว ARI ผ่านตัวซิงก์ ตารางราคายิง OTA เองไม่ได้" />
           </p>
+          <Link href="/inventory" className="btn btn-ghost" style={{ paddingLeft: 0, marginTop: 8 }}><T en="Open inventory & ARI" th="เปิดห้องคงเหลือและ ARI" /> →</Link>
           <div className="callout" style={{ marginTop: 16 }}>
             <T en="Managed Revenue Service — let the HOTEL24 team run rates for you. Monthly fee or performance-based." th="บริการจัดการรายได้ — ให้ทีม HOTEL24 ดูแลราคาให้ คิดรายเดือนหรือตามผลงาน" />
           </div>
