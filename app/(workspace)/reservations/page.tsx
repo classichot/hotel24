@@ -8,7 +8,7 @@ import { T } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 
 export default function ReservationsPage() {
-  const { setWalkInOpen, setNewResOpen, calRange, setCalRange, assigned, autoAssign, shieldClosed } = useStore();
+  const { setWalkInOpen, setNewResOpen, calRange, setCalRange, assigned, autoAssign, shieldClosed, switchStatus, switchSource } = useStore();
   const days = calRange === "14" ? CAL_DAYS : CAL_DAYS;
   const leftover = UNASSIGNED.filter((u) => !assigned[u.g]);
 
@@ -37,6 +37,14 @@ export default function ReservationsPage() {
           </>
         }
       />
+
+      {switchStatus === "done" && (
+        <div className="callout" style={{ marginTop: 16 }}>
+          <strong><T en="Imported from" th="นำเข้าจาก" /> {switchSource === "hotelier" ? "Little Hotelier" : "Cloudbeds"}.</strong>{" "}
+          <T en="Future reservations, room types and OTA mappings are on this calendar. Channel manager now writes from HOTEL24." th="การจองอนาคต ประเภทห้อง และ mapping OTA อยู่บนปฏิทินนี้แล้ว ตัวจัดการช่องทางเขียนจาก HOTEL24" />
+          {" "}<Link href="/switch"><T en="View switch log" th="ดูบันทึกการย้าย" /> →</Link>
+        </div>
+      )}
 
       <div className="cal-layout">
         <div className="cal-board">

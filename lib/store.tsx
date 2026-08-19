@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -22,6 +23,7 @@ import {
   type RecStatus,
   type Role,
 } from "./model";
+import { PMS_SOURCES, SWITCH_STEPS, type PmsSource, type SwitchStatus } from "./migrate";
 
 export type AuditEvent = { t: string; who: string; what: string; kind: string };
 export type Mapping = (typeof MAPPINGS_SEED)[number];
@@ -82,6 +84,12 @@ type Store = {
   autoAssign: () => void;
   calRange: "14" | "30" | "month";
   setCalRange: (r: "14" | "30" | "month") => void;
+  switchSource: PmsSource;
+  setSwitchSource: (s: PmsSource) => void;
+  switchStatus: SwitchStatus;
+  switchStep: number;
+  startSwitch: () => void;
+  resetSwitch: () => void;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -114,18 +122,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [benefits, setBenefits] = useState<Record<string, boolean>>({ b1: true, b2: true, b3: true, b4: false });
   const [assigned, setAssigned] = useState<Record<string, boolean>>({});
   const [calRange, setCalRange] = useState<"14" | "30" | "month">("14");
+  const [switchSource, setSwitchSourceState] = useState<PmsSource>("cloudbeds");
+  const [switchStatus, setSwitchStatus] = useState<SwitchStatus>("idle");
+  const [switchStep, setSwitchStep] = useState(-1);
+  const switchTimers = useRef<number[]>([]);
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) {
-        const s = JSON.parse(raw) as { authed?: boolean; role?: Role; theme?: string; lang?: Lang; propertyId?: string; aiMode?: AiMode };
+        const s = JSON.parse(raw) as {
+          authed?: boolean; role?: Role; theme?: string; lang?: Lang; propertyId?: string; aiMode?: AiMode;
+          switchSource?: PmsSource; switchStatus?: SwitchStatus;
+        };
         if (s.authed) setAuthed(true);
         if (s.role) setRole(s.role);
         if (s.theme) setThemeState(normalizeTheme(s.theme));
         if (s.lang === "th" || s.lang === "en") setLangState(s.lang);
         if (s.propertyId) setPropertyId(s.propertyId);
         if (s.aiMode) setAiModeState(s.aiMode);
+        if (s.switchSource === "cloudbeds" || s.switchSource === "hotelier") setSwitchSourceState(s.switchSource);
+        if (s.switchStatus === "done") {
+          setSwitchStatus("done");
+          setSwitchStep(SWITCH_STEPS.length - 1);
+        }
       }
     } catch { /* ignore */ }
     setReady(true);
@@ -133,8 +153,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!ready) return;
-    localStorage.setItem(KEY, JSON.stringify({ authed, role, theme, lang, propertyId, aiMode }));
-  }, [ready, authed, role, theme, lang, propertyId, aiMode]);
+    localStorage.setItem(KEY, JSON.stringify({
+      authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus: switchStatus === "running" ? "idle" : switchStatus,
+    }));
+  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus]);
 
   const flash = useCallback((m: string) => {
     setToast(m);
@@ -259,6 +281,41 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     flash("3 reservations assigned");
   }, [flash, stamp]);
 
+  const setSwitchSource = useCallback((s: PmsSource) => {
+    if (switchStatus === "running") return;
+    setSwitchSourceState(s);
+  }, [switchStatus]);
+
+  const resetSwitch = useCallback(() => {
+    switchTimers.current.forEach((id) => window.clearTimeout(id));
+    switchTimers.current = [];
+    setSwitchStatus("idle");
+    setSwitchStep(-1);
+    stamp("HOTEL24 Switch", "Reset switch — source PMS still archived", "system");
+  }, [stamp]);
+
+  const startSwitch = useCallback(() => {
+    if (switchStatus === "running") return;
+    switchTimers.current.forEach((id) => window.clearTimeout(id));
+    switchTimers.current = [];
+    setSwitchStatus("running");
+    setSwitchStep(-1);
+    const src = PMS_SOURCES[switchSource];
+    stamp("HOTEL24 Switch", `Started one-button move from ${src.name} · ${src.propertyId}`, "system");
+    flash(`Connecting to ${src.name}…`);
+    SWITCH_STEPS.forEach((step, i) => {
+      const id = window.setTimeout(() => {
+        setSwitchStep(i);
+        stamp("HOTEL24 Switch", step.audit, "system");
+        if (i === SWITCH_STEPS.length - 1) {
+          setSwitchStatus("done");
+          flash(`${src.name} cut over. HOTEL24 is the system of record.`);
+        }
+      }, 780 * (i + 1));
+      switchTimers.current.push(id);
+    });
+  }, [flash, stamp, switchSource, switchStatus]);
+
   const themeVars = THEMES[theme].vars as unknown as Record<string, string>;
 
   const value = useMemo<Store>(
@@ -272,6 +329,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       mappings, fixLoftMapping, agodaRetry, forceAgoda, shieldClosed, closeShield,
       audit, walkInOpen, setWalkInOpen, newResOpen, setNewResOpen, addWalkIn,
       benefits, toggleBenefit, assigned, autoAssign, calRange, setCalRange,
+      switchSource, setSwitchSource, switchStatus, switchStep, startSwitch, resetSwitch,
     }),
     [
       ready, authed, login, logout, role, theme, setTheme, themeVars, lang, setLang,
@@ -279,6 +337,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       rooms, advanceRoom, checked, checkIn, collectDue, tm30Filed, fileTm30, scanned, scanPassport,
       thread, sent, sendDraft, mappings, fixLoftMapping, agodaRetry, forceAgoda, shieldClosed, closeShield,
       audit, walkInOpen, newResOpen, addWalkIn, benefits, toggleBenefit, assigned, autoAssign, calRange,
+      switchSource, setSwitchSource, switchStatus, switchStep, startSwitch, resetSwitch,
     ]
   );
 

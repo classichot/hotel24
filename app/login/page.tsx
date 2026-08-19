@@ -10,20 +10,22 @@ import type { Role } from "@/lib/model";
 import { T } from "@/lib/i18n";
 
 export default function LoginPage() {
-  const { login, authed, ready } = useStore();
+  const { login, authed, ready, role: storedRole, switchStatus } = useStore();
   const router = useRouter();
   const [email, setEmail] = useState("som@baantalay.com");
   const [password, setPassword] = useState("demo1234");
   const [role, setRole] = useState<Role>("owner");
 
   useEffect(() => {
-    if (ready && authed) router.replace("/reservations");
-  }, [ready, authed, router]);
+    if (!ready || !authed) return;
+    if (storedRole === "housekeeping") router.replace("/housekeeping");
+    else if (storedRole === "front") router.replace("/front-desk");
+    else router.replace(switchStatus === "done" ? "/reservations" : "/switch");
+  }, [ready, authed, router, storedRole, switchStatus]);
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
     login(role);
-    router.push(role === "housekeeping" ? "/housekeeping" : role === "front" ? "/front-desk" : "/reservations");
   }
 
   return (
@@ -47,8 +49,8 @@ export default function LoginPage() {
           </h1>
           <p className="login-lede">
             <T
-              en="Not another booking calendar. Thai localisation, LINE-first operation, AI revenue management and real OTA profitability — for independent properties with 10–80 rooms."
-              th="ไม่ใช่แค่ปฏิทินจองห้อง ทำมาสำหรับที่พักอิสระไทย: LINE-first, TM30, AI จัดการรายได้ และกำไรจริงต่อช่องทาง"
+              en="Not another booking calendar. One button moves Cloudbeds or Little Hotelier into HOTEL24. Then Thai localisation, LINE-first operation, AI revenue and real OTA profit."
+              th="ไม่ใช่แค่ปฏิทินจองห้อง ปุ่มเดียวย้าย Cloudbeds หรือ Little Hotelier เข้า HOTEL24 แล้วใช้ LINE-first, TM30, AI รายได้ และกำไรจริงต่อช่องทาง"
             />
           </p>
         </div>
@@ -79,13 +81,13 @@ export default function LoginPage() {
           <form className="login-card" onSubmit={onSubmit}>
             <h2><T en="Enter the console" th="เข้าคอนโซล" /></h2>
             <p className="text-muted login-card-note">
-              <T en="Demo property: Baan Talay Boutique Resort, Ao Nang, Krabi · 42 rooms." th="ที่พักตัวอย่าง: บ้านทะเล บูทีครีสอร์ต อ่าวนาง กระบี่ · 42 ห้อง" />
+              <T en="Demo property: Baan Talay Boutique Resort · switch from Cloudbeds or Little Hotelier in one click." th="ที่พักตัวอย่าง: บ้านทะเล บูทีครีสอร์ต · ย้ายจาก Cloudbeds หรือ Little Hotelier ได้ปุ่มเดียว" />
             </p>
             <div className="login-modes" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
               <button type="button" className={`login-mode${role === "owner" ? " on" : ""}`} onClick={() => { setRole("owner"); setEmail("som@baantalay.com"); }}>
                 <LayoutDashboard size={18} />
                 <strong><T en="Owner" th="เจ้าของ" /></strong>
-                <span><T en="LINE brief, rates, profit, multi-property." th="สรุป LINE ราคา กำไร หลายที่พัก" /></span>
+                <span><T en="Switch from Cloudbeds, LINE, rates, profit." th="ย้ายจาก Cloudbeds, LINE, ราคา, กำไร" /></span>
               </button>
               <button type="button" className={`login-mode${role === "front" ? " on" : ""}`} onClick={() => { setRole("front"); setEmail("front@baantalay.com"); }}>
                 <BedDouble size={18} />

@@ -17,7 +17,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Console: [http://localhost:3000/login](http://localhost:3000/login) · `som@baantalay.com` / `demo1234`
+Console: [http://localhost:3000/login](http://localhost:3000/login) · `som@baantalay.com` / `demo1234` — owners land on **Switch from PMS** (`/switch`): one button moves Cloudbeds or Little Hotelier.
 
 Guest booking page: [http://localhost:3000/book/baantalay](http://localhost:3000/book/baantalay)
 
@@ -35,6 +35,7 @@ Seeded property: **Baan Talay Boutique Resort**, Ao Nang, Krabi, 42 rooms, plus 
 8. Automated LINE notifications  
 9. Basic AI pricing recommendations  
 10. OTA commission and net-revenue reporting  
+11. **One-button switch** from Cloudbeds or Little Hotelier (rooms, rates, mappings, reservations, guests, folios, then cut over)  
 
 Plus Thailand compliance: passport capture, TM30 workflow, PDPA controls, tax-document support.
 

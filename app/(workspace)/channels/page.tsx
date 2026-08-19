@@ -7,7 +7,7 @@ import { useStore } from "@/lib/store";
 import Link from "next/link";
 
 export default function ChannelsPage() {
-  const { mappings, fixLoftMapping, forceAgoda, agodaRetry, shieldClosed, closeShield, audit } = useStore();
+  const { mappings, fixLoftMapping, forceAgoda, agodaRetry, shieldClosed, closeShield, audit, switchStatus, switchSource } = useStore();
 
   return (
     <div>
@@ -21,6 +21,17 @@ export default function ChannelsPage() {
         subTh="HOTEL24 PMS → ผู้ให้บริการ connectivity แบบ white-label → Booking.com, Agoda, Expedia, Airbnb, Trip.com"
         actions={<span className="tag tag-neutral">Channex · 60+ channels</span>}
       />
+
+      {switchStatus === "done" && (
+        <div className="callout" style={{ marginTop: 16 }}>
+          <strong><T en="Channel manager now writes from HOTEL24." th="ตัวจัดการช่องทางเขียนจาก HOTEL24 แล้ว" /></strong>{" "}
+          <T
+            en={`${switchSource === "hotelier" ? "Little Hotelier" : "Cloudbeds"} mappings were imported. New ARI does not go back to the old PMS.`}
+            th={`${switchSource === "hotelier" ? "Little Hotelier" : "Cloudbeds"} mapping ถูกนำเข้าแล้ว ARI ใหม่ไม่กลับไประบบเดิม`}
+          />
+          {" "}<Link href="/switch"><T en="Switch log" th="บันทึกการย้าย" /> →</Link>
+        </div>
+      )}
 
       <div className="stat-row" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
         <div className="stat-cell">

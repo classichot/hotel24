@@ -48,6 +48,7 @@ const NAV = [
       { href: "/line", en: "LINE Owner Mode", th: "สรุปเช้าทาง LINE" },
       { href: "/compliance", en: "Compliance TM30", th: "TM30 & PDPA" },
       { href: "/finance", en: "Finance", th: "เงินสดและใบเสร็จ" },
+      { href: "/switch", en: "Switch from PMS", th: "ย้ายจากระบบเดิม" },
     ],
   },
 ];
@@ -69,7 +70,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const {
     logout, toast, navOpen, setNavOpen, lang, role, propertyId, setPropertyId,
-    search, setSearch, aiMode, recState, shieldClosed,
+    search, setSearch, aiMode, recState, shieldClosed, switchStatus,
   } = useStore();
   const user = role === "front" || role === "housekeeping" ? FRONT_USER : OWNER;
   const property = PROPERTIES.find((p) => p.id === propertyId) ?? PROPERTIES[0];
@@ -91,6 +92,15 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <button className="icon-btn menu-btn ink-icon" onClick={() => setNavOpen(false)} aria-label="Close menu"><X size={18} /></button>
         </div>
+        <div className="ink-start">
+          <div className="ink-start-kicker"><T en="Start here" th="เริ่มที่นี่" /></div>
+          <Link href="/switch" className="btn btn-start btn-block" onClick={() => setNavOpen(false)}>
+            <span className="btn-start-mark" aria-hidden>→</span>
+            {switchStatus === "done"
+              ? <T en="PMS switched" th="ย้ายระบบแล้ว" />
+              : <T en="Switch to HOTEL24" th="ย้ายมา HOTEL24" />}
+          </Link>
+        </div>
         <nav style={{ flex: 1, overflow: "auto", padding: "8px 0" }}>
           {NAV.map((g) => (
             <div key={g.group.en}>
@@ -104,6 +114,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   </span>
                   {item.href === "/rates" && pending < 3 && aiMode === "recommend" && <span className="ink-dot" />}
                   {item.href === "/channels" && shieldOpen && <span className="ink-dot" />}
+                  {item.href === "/switch" && switchStatus !== "done" && <span className="ink-dot" />}
                 </Link>
               ))}
             </div>

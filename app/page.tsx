@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { PLANS } from "@/lib/model";
 import { LangToggle } from "@/components/LangToggle";
 import { T } from "@/lib/i18n";
@@ -59,6 +58,7 @@ const FEATURES = [
 ];
 
 const MODULES = [
+  { en: "One-button PMS switch", th: "ย้ายจาก Cloudbeds / Little Hotelier" },
   { en: "Central Reservation", th: "ปฏิทินการจองรวมทุกช่องทาง" },
   { en: "Channel Manager", th: "ซิงก์ห้อง ราคา เงื่อนไข กับ OTA" },
   { en: "Front Desk PMS", th: "เช็คอิน–เช็คเอาท์ จัดห้อง มัดจำ" },
@@ -80,19 +80,20 @@ const PROFIT = [
 ];
 
 export default function LandingPage() {
-  const { lang, authed, ready } = useStore();
-  const router = useRouter();
+  const { lang, authed, ready, switchStatus } = useStore();
+  const consoleHref = ready && authed ? (switchStatus === "done" ? "/reservations" : "/switch") : "/login";
 
   return (
     <div className="landing">
       <nav className="nav landing-nav">
         <span className="nav-brand">HOTEL<span>24</span></span>
         <a href="#system"><T en="System" th="ระบบ" /></a>
+        <a href="#switch"><T en="Switch" th="ย้ายระบบ" /></a>
         <a href="#profit"><T en="Real profit" th="กำไรจริง" /></a>
         <a href="#thai">TM30 &amp; PDPA</a>
         <a href="#pricing"><T en="Pricing" th="ราคา" /></a>
         <LangToggle />
-        <Link href={ready && authed ? "/reservations" : "/login"} className="btn btn-secondary"><T en="See the console" th="ดูระบบจริง" /></Link>
+        <Link href={consoleHref} className="btn btn-secondary"><T en="See the console" th="ดูระบบจริง" /></Link>
         <Link href="/login" className="btn btn-primary"><T en="Start 30-day trial" th="ทดลองฟรี 30 วัน" /></Link>
       </nav>
 
@@ -110,11 +111,11 @@ export default function LandingPage() {
             />
           </p>
           <p className="lede-sub">
-            <T en="LINE-first. TM30-ready. Honest about what each channel actually pays you." th="LINE-first, พร้อม TM30 และบอกตรง ๆ ว่าช่องทางไหนจ่ายคุณจริง" />
+            <T en="One button moves Cloudbeds or Little Hotelier. Then LINE-first, TM30-ready, and honest about what each channel actually pays you." th="ปุ่มเดียวย้าย Cloudbeds หรือ Little Hotelier แล้วใช้ LINE-first, TM30 และบอกตรง ๆ ว่าช่องทางไหนจ่ายคุณจริง" />
           </p>
           <div className="landing-cta">
             <Link href="/login" className="btn btn-primary"><T en="Start free trial · 30 days" th="เริ่มทดลองใช้ฟรี 30 วัน" /></Link>
-            <Link href="/login" className="btn btn-secondary" onClick={(e) => { e.preventDefault(); router.push("/login"); }}><T en="See the console" th="ดูระบบจริง · See the console" /></Link>
+            <a href="#switch" className="btn btn-secondary"><T en="Switch from Cloudbeds" th="ย้ายจาก Cloudbeds" /></a>
           </div>
           <div className="landing-fine"><T en="No commission on bookings · cancel any month · Thai-speaking team" th="ไม่คิดค่าคอมมิชชันต่อการจอง · ยกเลิกได้ทุกเดือน · ทีมงานพูดไทย" /></div>
         </section>
@@ -229,7 +230,7 @@ export default function LandingPage() {
         </section>
 
         <section className="landing-section">
-          <div className="page-kicker"><T en="Eleven modules. One system." th="หนึ่งระบบแทนงานทั้งหมด · สิบเอ็ดโมดูล" /></div>
+          <div className="page-kicker"><T en="Twelve modules. One system." th="หนึ่งระบบแทนงานทั้งหมด · สิบสองโมดูล" /></div>
           <div className="module-grid">
             {MODULES.map((m) => (
               <div key={m.en} className="module-cell">
@@ -237,6 +238,20 @@ export default function LandingPage() {
                 <span>{m.th}</span>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section id="switch" className="landing-section">
+          <div className="page-kicker"><T en="Switching from Cloudbeds or Little Hotelier" th="ย้ายจาก Cloudbeds หรือ Little Hotelier" /></div>
+          <h2><T en="One button. Your old PMS comes with you." th="ปุ่มเดียว ระบบเดิมตามมาด้วย" /></h2>
+          <p className="lede-sub">
+            <T
+              en="Rooms, rates, OTA mappings, future reservations, guests and folios move from Cloudbeds or Little Hotelier. Overbooking Shield checks the import. Then HOTEL24 is the system of record and the old PMS stays read-only for 30 days."
+              th="ย้ายห้อง ราคา mapping OTA การจองอนาคต แขก และโฟลิโอจาก Cloudbeds หรือ Little Hotelier Shield ตรวจตอนนำเข้า แล้ว HOTEL24 เป็นระบบจริง ระบบเดิมเหลือโหมดอ่านอย่างเดียว 30 วัน"
+            />
+          </p>
+          <div className="landing-cta">
+            <Link href="/login" className="btn btn-primary"><T en="Move my hotel to HOTEL24" th="ย้ายโรงแรมมา HOTEL24" /></Link>
           </div>
         </section>
 
@@ -263,7 +278,7 @@ export default function LandingPage() {
                 ))}
                 <tr>
                   <td style={{ fontWeight: 800 }}><T en="Setup & migration" th="ติดตั้งและย้ายข้อมูล" /></td>
-                  <td><T en="OTA mapping, room setup, training" th="mapping OTA, ตั้งค่าห้อง, อบรมทีม" /></td>
+                  <td><T en="One-button Cloudbeds / Little Hotelier move, mapping, training" th="ย้าย Cloudbeds / Little Hotelier ปุ่มเดียว, mapping, อบรมทีม" /></td>
                   <td className="num">฿5,000–25,000</td>
                 </tr>
                 <tr>
