@@ -1,12 +1,16 @@
 # HOTEL24
 
-**An AI Hotel Operating System for independent hotels, boutique resorts, hostels, villas and serviced apartments.**
+**Make your hotel AI-bookable.**
 
-> Manage every reservation, OTA, room rate, guest message and hotel operation from one simple system—while AI helps increase revenue and reduce manual work.
+Hotel operating system + AI distribution network for independent hotels, boutique resorts, hostels and villas.
 
-Positioned for independent Thai properties (about 10–80 rooms) that already sit on two or more OTAs and still run the house through Excel, paper, LINE and extranets.
+> Connect once. Be discovered by every AI. Take the reservation directly. **Own your guest.**
 
-This is not a simpler PMS. Cloudbeds and Little Hotelier already combine PMS, channel management and direct booking. HOTEL24’s edge is **Thai localisation + LINE-first operation + AI revenue management + real OTA profitability**.
+Today the traveler goes through Booking.com. Tomorrow they ask ChatGPT. HOTEL24 sits underneath:
+
+`Traveler → ChatGPT / Gemini / MCP agent → HOTEL24 Agent Gateway → hotel PMS → Direct booking`
+
+The hotel owns the booking, the payment and the customer. OTAs remain **one channel** inside HOTEL24 — they are not the centre.
 
 ## Demo
 
@@ -17,68 +21,67 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Console: [http://localhost:3000/login](http://localhost:3000/login) · `som@baantalay.com` / `demo1234` — owners land on **Switch from PMS** (`/switch`): one button moves Cloudbeds or Little Hotelier.
+- Public agent playground: [http://localhost:3000/agents](http://localhost:3000/agents)
+- Hotel identity: [http://localhost:3000/.well-known/hotel24.json](http://localhost:3000/.well-known/hotel24.json)
+- Console: [http://localhost:3000/login](http://localhost:3000/login) · `som@baantalay.com` / `demo1234`
+- Guest booking page: [http://localhost:3000/book/baantalay](http://localhost:3000/book/baantalay)
 
-Guest booking page: [http://localhost:3000/book/baantalay](http://localhost:3000/book/baantalay)
+Seeded graph: **Baan Talay Boutique Resort** (Ao Nang) plus Chiang Mai boutiques, a hostel and villas.
 
-Seeded property: **Baan Talay Boutique Resort**, Ao Nang, Krabi, 42 rooms, plus a hostel and three villas.
-
-## MVP
-
-1. Reservation calendar and PMS  
-2. White-label OTA **channel manager** (Channex first — Connectivity, not Demand API). HOTEL24 stays the system of record.  
-3. Direct-booking engine  
-4. Rate and inventory management  
-5. Check-in/out and payment records  
-6. Housekeeping board  
-7. Owner dashboard  
-8. Automated LINE notifications  
-9. Basic AI pricing recommendations  
-10. OTA commission and net-revenue reporting  
-11. **One-button switch** from Cloudbeds or Little Hotelier (rooms, rates, mappings, reservations, guests, folios, then cut over)  
-
-Plus Thailand compliance: passport capture, TM30 workflow, PDPA controls, tax-document support.
-
-## Killing features
-
-1. **AI Revenue Manager** — occupancy, pace, holidays, seasonality, competitor rates → rates, min-stay, last-minute, stop-sell, with a readable reason.  
-2. **OTA Profit Analyzer** — net per channel after commission, promos, payment fees, tax, cancellations, ads.  
-3. **AI Guest Concierge** — LINE / WhatsApp / OTA; routine questions; escalate the rest.  
-4. **Owner Mode on LINE** — morning brief and approve-in-chat.  
-5. **Direct Booking Booster** — LINE OA, Facebook, Instagram, TikTok, GBP, QR. Benefit, not a public undercut.  
-6. **Overbooking Shield** — unmapped rooms, delayed ARI, conflicts, failed imports, duplicates, audit log.  
-7. **OTA Connectivity Service** — property master, mapping, inventory/ARI, reservation receiver (NEW/MODIFIED/CANCELLED/NO SHOW), queued sync, health, automatic reconciliation, tokenised payments. ChannexConnector implements `OTAConnector` so STAAH Su or DerbySoft can replace it later.
-
-## Architecture
+## Five engines
 
 ```
-HOTEL24 PMS (system of record)
-  Property · Rooms · Rates · Inventory · Reservations
-           │
-           ▼
-HOTEL24 OTA Sync Service  (queue, retry, reconcile, health)
-           │
-           ▼
-OTAConnector  →  ChannexConnector (live)  |  STAAH later  |  DerbySoft later
-           │
-           ▼
-Booking.com · Agoda · Expedia · Trip.com · Airbnb · 50+
+HOTEL24
+│
+├── HOTEL24 PMS
+├── Channel Manager          Booking / Agoda / Trip / Expedia
+├── HOTEL24 Direct           hotel website booking
+├── HOTEL24 AI Distribution  ChatGPT · Gemini · MCP · UCP · ACP
+└── HOTEL24 Revenue AI       pricing / inventory / direct offers
 ```
 
-Do not start with direct OTA integrations. Booking.com Connectivity is paused for new providers. Demand APIs (Booking Demand, Expedia Rapid) sell travel to travellers — the wrong direction for a PMS.
+**HOTEL24 Agent Direct** is the strategic pillar. Cloudbeds-style PMS is necessary infrastructure. Agent Direct is the differentiator: *what a hotel needs when the guest’s first interface is an AI agent rather than Booking.com.*
 
-Console engines: `/channels` Connection Center · `/mapping` · `/inventory` ARI · `/sync` queue/health/reconcile. Combined with `/switch`, the offer is **switch in one day**: import Cloudbeds or Little Hotelier, map rooms, connect Booking/Agoda/Expedia, validate inventory, cut over.
+## Hotel Agent Protocol (HAP)
+
+Open spec on top of Schema.org, MCP, OpenAI ACP and Google UCP — not a replacement for them.
+
+Every HOTEL24 hotel automatically becomes **AI Agent Ready**:
+
+- `/.well-known/hotel24.json` — identity HOTEL24 defines
+- Schema.org JSON-LD, sitemaps, `llms.txt`, OAI-SearchBot rules (**AEO** beside SEO)
+- MCP tools at `GET /api/hap/mcp` · invoke `POST /api/hap/invoke`
+- ACP-shaped Travel feed at `GET /api/hap/feed` (mapped, not certified)
+- Verified registry at `GET /api/hap/registry`
+
+The owner never has to learn those names. They connect HOTEL24 once.
+
+Tools: `search_hotels` · `search_availability` · `get_room_types` · `get_live_rate` · `get_direct_offer` · `get_cancellation_policy` · `compare_rooms` · `create_room_hold` · `create_booking` · `modify_booking` · `cancel_booking` · `get_directions` · `get_facilities` · `ask_hotel` · `get_hotel_identity`
+
+Aliases: `create_quote()` · `hold_room()` · `book_room()`
+
+## Position
+
+Not another OTA. Not primarily “beat Cloudbeds.”
+
+> We don’t own your guests. You do.
+
+Revenue: SaaS subscription + a low AI-direct transaction fee (demo: 1.9%) + payments + premium AI/revenue features.
+
+## Also in the console
+
+White-label OTA channel manager (Channex first). One-button switch from Cloudbeds / Little Hotelier. Thai compliance (passport, TM30, PDPA). Seven house engines: AI GM, Revenue Autopilot, Guest Agent, OTA Reconcile, Reputation → Ops, Migration Agent, Morning Brief.
+
+Do not start with direct OTA integrations. Booking.com Connectivity is paused for new providers. Demand APIs sell travel to travellers — the wrong direction for a PMS.
 
 ## Design
 
-Modernist system in `design-ref/`: Archivo + IBM Plex Sans Thai, 0px radius, 2px rules, **Mango orange `#ff6a3c`**. Ink type on orange. Grey weights on the calendar are OTAs; orange is direct booking, AI, and anything that needs the owner now. Green is only a quiet “healthy / synced” status, not the brand.
+Modernist system in `design-ref/`: Archivo + IBM Plex Sans Thai, 0px radius, 2px rules, **Mango orange `#ff6a3c`**. Ink type on orange. Grey weights on the calendar are OTAs; orange is direct booking, AI, and Agent Direct. Green is only a quiet “healthy / synced” status, not the brand.
 
 ## Ecosystem
 
-- **HOTEL24** — accommodation supply and hotel operations  
-- **TOUR24** — travel packages  
-- **VACATION24** — rooms, tours, transfers together  
-
-HOTEL24 inventory can later publish into TOUR24.
+- **HOTEL24** — accommodation supply, hotel operations, AI distribution
+- **TOUR24** — travel packages
+- **VACATION24** — rooms, tours, transfers together
 
 Check Thai trademarks and domains before using the name commercially — “Hotel24” is generic.

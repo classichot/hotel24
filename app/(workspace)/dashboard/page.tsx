@@ -30,7 +30,7 @@ export default function DashboardPage() {
         titleTh="ภาพรวมเจ้าของ"
         subEn="Cash flow and channel performance without sitting at the front desk."
         subTh="ดูกระแสเงินสดและผลงานต่อช่องทาง โดยไม่ต้องนั่งที่เคาน์เตอร์"
-        actions={<Link href="/line" className="btn btn-primary"><T en="This morning on LINE" th="สรุปเช้าบน LINE" /></Link>}
+        actions={<Link href="/gm" className="btn btn-primary"><T en="Open AI General Manager" th="เปิด GM อัตโนมัติ" /></Link>}
       />
 
       <div className="stat-row" style={{ gridTemplateColumns: "repeat(5, 1fr)" }}>

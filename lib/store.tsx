@@ -24,6 +24,7 @@ import {
   type Role,
 } from "./model";
 import { PMS_SOURCES, SWITCH_STEPS, type PmsSource, type SwitchStatus } from "./migrate";
+import { AI_ACTIONS, ALLOTMENT_SEED, type AiEngine } from "./ai";
 import {
   activeConnector,
   cloneAri,
@@ -126,6 +127,17 @@ type Store = {
   applyModification: () => void;
   applyCancellation: () => void;
   runReconcile: () => void;
+  aiState: Record<string, RecStatus>;
+  applyAi: (id: string) => void;
+  dismissAi: (id: string) => void;
+  applyEngine: (engine: AiEngine) => void;
+  applyHigh: () => void;
+  allotment: Record<string, number>;
+  collected: Record<string, boolean>;
+  agentReady: boolean;
+  setAgentReady: (v: boolean) => void;
+  agentBooks: Record<string, unknown>[];
+  receiveAgentBooking: (booking: Record<string, unknown>) => void;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -172,6 +184,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [invType, setInvType] = useState("garden");
   const [reconcile, setReconcile] = useState<"open" | "running" | "resolved">("open");
   const [tripActual, setTripActual] = useState(2);
+  const [aiState, setAiState] = useState<Record<string, RecStatus>>({});
+  const [allotment, setAllotment] = useState<Record<string, number>>(() =>
+    Object.fromEntries(ALLOTMENT_SEED.map((a) => [a.id, a.rooms]))
+  );
+  const [collected, setCollected] = useState<Record<string, boolean>>({});
+  const [agentReady, setAgentReadyState] = useState(true);
+  const [agentBooks, setAgentBooks] = useState<Record<string, unknown>[]>([]);
+  const aiStateRef = useRef<Record<string, RecStatus>>({});
+  aiStateRef.current = aiState;
 
   useEffect(() => {
     try {
@@ -179,7 +200,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const s = JSON.parse(raw) as {
           authed?: boolean; role?: Role; theme?: string; lang?: Lang; propertyId?: string; aiMode?: AiMode;
-          switchSource?: PmsSource; switchStatus?: SwitchStatus;
+          switchSource?: PmsSource; switchStatus?: SwitchStatus; agentReady?: boolean;
+          agentBooks?: Record<string, unknown>[];
         };
         if (s.authed) setAuthed(true);
         if (s.role) setRole(s.role);
@@ -188,6 +210,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (s.propertyId) setPropertyId(s.propertyId);
         if (s.aiMode) setAiModeState(s.aiMode);
         if (s.switchSource === "cloudbeds" || s.switchSource === "hotelier") setSwitchSourceState(s.switchSource);
+        if (typeof s.agentReady === "boolean") setAgentReadyState(s.agentReady);
+        if (Array.isArray(s.agentBooks)) setAgentBooks(s.agentBooks);
         if (s.switchStatus === "done") {
           setSwitchStatus("done");
           setSwitchStep(SWITCH_STEPS.length - 1);
@@ -200,9 +224,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return;
     localStorage.setItem(KEY, JSON.stringify({
-      authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus: switchStatus === "running" ? "idle" : switchStatus,
+      authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus: switchStatus === "running" ? "idle" : switchStatus, agentReady, agentBooks,
     }));
-  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus]);
+  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus, agentReady, agentBooks]);
 
   const flash = useCallback((m: string) => {
     setToast(m);
@@ -261,6 +285,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const collectDue = useCallback((id: string) => {
     const a = ARRIVALS_SEED.find((x) => x.id === id);
+    setCollected((s) => ({ ...s, [id]: true }));
     stamp("front@baantalay", `Collected ${a?.bal ?? "balance"} · PromptPay`, "manual");
     flash("Balance collected · PromptPay");
   }, [flash, stamp]);
@@ -604,6 +629,206 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }, 900);
   }, [patchOta, stamp, flash]);
 
+  const markAi = useCallback((id: string) => {
+    const action = AI_ACTIONS.find((a) => a.id === id);
+    if (!action) return [] as string[];
+    if (aiStateRef.current[id] === "applied") return [];
+    const ids = AI_ACTIONS.filter((a) => a.effect === action.effect).map((a) => a.id);
+    setAiState((s) => {
+      const next = { ...s };
+      ids.forEach((i) => { next[i] = "applied"; });
+      return next;
+    });
+    return ids;
+  }, []);
+
+  const applyAi = useCallback((id: string) => {
+    const action = AI_ACTIONS.find((a) => a.id === id);
+    if (!action) return;
+    if (aiStateRef.current[id] === "applied" || aiStateRef.current[id] === "dismissed") return;
+    const marked = markAi(id);
+    if (!marked.length) return;
+
+    switch (action.effect) {
+      case "fix-loft":
+        fixLoftMapping();
+        break;
+      case "force-agoda":
+        forceAgoda();
+        break;
+      case "collect-unpaid":
+        collectDue("a2");
+        collectDue("a4");
+        break;
+      case "hk-priority":
+        setRooms((list) => list.map((r) =>
+          r.no === "104" || r.no === "207" || r.no === "311" || r.no === "V2"
+            ? { ...r, s: r.s === 0 ? 1 : r.s, staff: r.staff || "มาลี", note: "GM: priority arrival · cleaning" }
+            : r
+        ));
+        stamp("AI General Manager", "Pushed 104, 207, 311, V2 to Cleaning before 14:00 arrivals", "ai");
+        flash("Four rooms pushed to Cleaning");
+        break;
+      case "file-tm30":
+        scanPassport("tm2");
+        scanPassport("tm3");
+        fileTm30();
+        break;
+      case "move-209":
+        setRooms((list) => list.map((r) => {
+          if (r.no === "209") return { ...r, s: 0 as HkStatus, note: "OOO aircon · guest moved to 301", staff: "ช่าง" };
+          if (r.no === "301") return { ...r, note: "Assigned · move from 209", s: 3 as HkStatus };
+          return r;
+        }));
+        stamp("AI General Manager", "Moved in-house guest 209 → 301 · aircon OOO · no refund", "ai");
+        flash("Guest moved to 301. 209 closed for maintenance.");
+        break;
+      case "ack-cash":
+        stamp("AI General Manager", "Cash short ฿1,200 on 18 Aug kept open on Finance — not written off", "ai");
+        flash("Cash exception stays open on Finance");
+        break;
+      case "apply-r1":
+        applyRec("r1");
+        setAri((grid) => ({
+          ...grid,
+          garden: (grid.garden ?? []).map((r) =>
+            r.date === "22 Aug" || r.date === "23 Aug" ? { ...r, rate: 2550 } : r
+          ),
+        }));
+        setJobs((list) => [
+          { id: `q-ap-r1-${Date.now()}`, kind: "ARI", channel: "All connected OTAs", payload: "Garden Deluxe Sat–Sun BAR ฿2,550", payloadTh: "ดีลักซ์สวน สุดสัปดาห์ BAR ฿2,550", status: "complete", attempts: 1, age: "now" },
+          ...list,
+        ]);
+        break;
+      case "apply-r2":
+        applyRec("r2");
+        setAri((grid) => ({
+          ...grid,
+          pool: (grid.pool ?? []).map((r) =>
+            r.date === "24 Aug" || r.date === "25 Aug" ? { ...r, minStay: 2 } : r
+          ),
+        }));
+        break;
+      case "apply-r3":
+        applyRec("r3");
+        setAri((grid) => ({
+          ...grid,
+          suite: (grid.suite ?? []).map((r) => (r.date === "19 Aug" ? { ...r, rate: 3784 } : r)),
+        }));
+        break;
+      case "alloc-direct":
+        setAllotment((s) => ({
+          ...s,
+          agoda: Math.max(0, (s.agoda ?? 12) - 4),
+          direct: (s.direct ?? 14) + 4,
+        }));
+        stamp("Revenue Autopilot", "Allotment: Agoda 12→8, Direct 14→18 on Garden · net/night Agoda ฿751 worse", "ai");
+        setJobs((list) => [
+          { id: `q-alloc-${Date.now()}`, kind: "ARI", channel: "Agoda + Direct", payload: "Garden stop-sell 4 rooms on Agoda · held for Direct", payloadTh: "สวน ปิดขาย 4 ห้องบน Agoda · กันให้จองตรง", status: "complete", attempts: 1, age: "now" },
+          ...list,
+        ]);
+        flash("Four Garden rooms held for Direct. Agoda allotment cut.");
+        break;
+      case "send-transfer":
+        setSent((s) => ({ ...s, 0: [...(s[0] ?? []), "sent"] }));
+        stamp("AI Guest Agent", "Confirmed Krabi airport transfer 14:00 · ฿800 on folio H24-8841", "ai");
+        flash("Transfer confirmed · LINE sent in Thai");
+        break;
+      case "early-checkin":
+        stamp("AI Guest Agent", "Held room 101 from 11:00 for Müller · free early check-in", "ai");
+        flash("Room 101 held from 11:00");
+        break;
+      case "apply-mod":
+        applyModification();
+        break;
+      case "webhook-new":
+        receiveWebhook();
+        break;
+      case "run-reconcile":
+        runReconcile();
+        break;
+      case "merge-dup":
+        stamp("AI OTA Reconciliation", "Merged Cloudbeds 7F92A1 into H24-8802 Müller · one room-night", "ai");
+        flash("Duplicate Müller merged. H24-8802 is the record.");
+        break;
+      case "staff-brief":
+        stamp("Reputation → Ops", "F&B briefing: +2 staff 08:00–09:30 while occupancy > 75%", "ai");
+        flash("Breakfast staffing brief sent to F&B lead");
+        break;
+      case "hk-102":
+        setRooms((list) => list.map((r) =>
+          r.no === "102" ? { ...r, note: "No vacuum after 21:00 when 101 occupied" } : r
+        ));
+        stamp("Reputation → Ops", "HK rule: 102 no late vacuum adjacent to 101", "ai");
+        flash("Housekeeping rule added on 102");
+        break;
+      case "send-reply":
+        stamp("Reputation → Ops", "Queued public replies EN/TH for Google 2★, Agoda 3★, Booking.com 3★ — no refund in public", "ai");
+        flash("Three public replies queued for owner edit");
+        break;
+      case "tag-finance":
+        stamp("AI Migration Agent", "Tagged 2 hotel-collect rates with missing tax split for Finance", "ai");
+        flash("Finance tagged. Cut-over is not blocked.");
+        break;
+      case "start-switch":
+        startSwitch();
+        break;
+    }
+  }, [
+    applyModification, applyRec, collectDue, fileTm30, fixLoftMapping, flash,
+    forceAgoda, markAi, receiveWebhook, runReconcile, scanPassport, stamp, startSwitch,
+  ]);
+
+  const dismissAi = useCallback((id: string) => {
+    setAiState((s) => ({ ...s, [id]: "dismissed" }));
+    flash("Dismissed · AI will not re-suggest today");
+  }, [flash]);
+
+  const applyEngine = useCallback((engine: AiEngine) => {
+    AI_ACTIONS.filter((a) => (engine === "brief" ? a.brief : a.engine === engine)).forEach((a) => applyAi(a.id));
+  }, [applyAi]);
+
+  const applyHigh = useCallback(() => {
+    AI_ACTIONS.filter((a) => a.sev === "High").forEach((a) => applyAi(a.id));
+  }, [applyAi]);
+
+  useEffect(() => {
+    if (aiMode !== "auto") return;
+    AI_ACTIONS.filter((a) => a.engine === "autopilot").forEach((a) => applyAi(a.id));
+  }, [aiMode, applyAi]);
+
+  const setAgentReady = useCallback((v: boolean) => {
+    setAgentReadyState(v);
+    stamp("HOTEL24 Agent Direct", v ? "Published hotel24.json — AI Agent Ready" : "Unpublished from the Agent Gateway", "system");
+    flash(v ? "AI Agent Ready · identity is live" : "Unpublished from the Agent Gateway");
+  }, [flash, stamp]);
+
+  const receiveAgentBooking = useCallback((booking: Record<string, unknown>) => {
+    setAgentBooks((list) => [booking, ...list]);
+    const id = String(booking.bookingId || `H24-AG-${Date.now()}`);
+    setInbound((list) => [
+      {
+        id,
+        otaId: String(booking.holdId || id),
+        channel: "HOTEL24 Agent Direct",
+        event: "NEW",
+        guest: String(booking.guest || "AI traveler"),
+        room: String(booking.room || "Garden Deluxe"),
+        rate: "Direct",
+        checkIn: String(booking.checkIn || "22 Aug"),
+        checkOut: String(booking.checkOut || "23 Aug"),
+        price: Number(booking.total) || 0,
+        tax: Number(booking.tax) || 0,
+        commission: 0,
+        pay: "Pay at Hotel",
+        status: "Agent Direct · hotel owns the guest · PromptPay",
+        statusTh: "Agent Direct · โรงแรมเป็นเจ้าของแขก · PromptPay",
+      },
+      ...list,
+    ]);
+    stamp("HOTEL24 Agent Gateway", `Direct booking ${id} · ${String(booking.guest)} · commission ฿0 · OTA not involved`, "system");
+  }, [stamp]);
+
   const themeVars = THEMES[theme].vars as unknown as Record<string, string>;
 
   const value = useMemo<Store>(
@@ -621,6 +846,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       selectedOta, setSelectedOta, otaChannels, roomMaps, rateMaps, jobs, inbound, ari,
       invType, setInvType, reconcile, tripActual, connectChannel, syncNow, pauseAgoda,
       pushAri, retryJob, receiveWebhook, applyModification, applyCancellation, runReconcile,
+      aiState, applyAi, dismissAi, applyEngine, applyHigh, allotment, collected,
+      agentReady, setAgentReady, agentBooks, receiveAgentBooking,
     }),
     [
       ready, authed, login, logout, role, theme, setTheme, themeVars, lang, setLang,
@@ -631,7 +858,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       switchSource, setSwitchSource, switchStatus, switchStep, startSwitch, resetSwitch,
       selectedOta, otaChannels, roomMaps, rateMaps, jobs, inbound, ari, invType, reconcile, tripActual,
       connectChannel, syncNow, pauseAgoda, pushAri, retryJob, receiveWebhook, applyModification,
-      applyCancellation, runReconcile,
+      applyCancellation, runReconcile, aiState, applyAi, dismissAi, applyEngine, applyHigh, allotment, collected,
+      agentReady, setAgentReady, agentBooks, receiveAgentBooking,
     ]
   );
 

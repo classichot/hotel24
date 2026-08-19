@@ -1202,6 +1202,13 @@ html[data-theme="bw"] .map-dot.topup {
 .phone-msg { background: #f8f4f4; color: #201e1d; padding: 14px; }
 .phone-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.55; margin-bottom: 8px; }
 .phone-row { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--color-divider); }
+button.phone-row {
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--color-divider);
+  font: inherit;
+  color: inherit;
+}
 .push-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--color-divider); font-size: 13px; }
 .benefit { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--color-divider); cursor: pointer; }
 .benefit strong { display: block; font-size: 13px; }
@@ -1290,6 +1297,18 @@ html[data-theme="bw"] .map-dot.topup {
 .book-card { background: var(--color-surface); padding: 20px; }
 .book-perks { margin: 12px 0 16px; padding-left: 18px; font-size: 13px; }
 .login-mark { font-size: 40px; }
+.hap-json {
+  font-size: 11px;
+  line-height: 1.45;
+  overflow: auto;
+  max-height: 420px;
+  background: var(--color-surface);
+  padding: 12px 14px;
+  border: 2px solid var(--color-divider);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
 .dist-nav {
   display: flex;
   flex-wrap: wrap;

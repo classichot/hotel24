@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { FRONT_USER, OWNER, PROPERTIES, TODAY, TODAY_TH } from "@/lib/model";
+import { pendingCount } from "@/lib/ai";
 import { useStore } from "@/lib/store";
 import { LangToggle } from "@/components/LangToggle";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -23,6 +24,29 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
 const NAV = [
+  {
+    group: { en: "Agent Direct", th: "Agent Direct" },
+    items: [
+      { href: "/agent-direct", en: "AI identity", th: "ตัวตน AI" },
+      { href: "/gateway", en: "Agent Gateway", th: "เกตเวย์เอเจนต์" },
+      { href: "/registry", en: "AI Registry", th: "ทะเบียน AI" },
+      { href: "/agent-offers", en: "Direct Offers", th: "ข้อเสนอตรง" },
+      { href: "/aeo", en: "AEO", th: "AEO" },
+      { href: "/hap", en: "HAP spec", th: "สเปก HAP" },
+    ],
+  },
+  {
+    group: { en: "AI", th: "AI" },
+    items: [
+      { href: "/gm", en: "AI General Manager", th: "GM อัตโนมัติ" },
+      { href: "/autopilot", en: "Revenue Autopilot", th: "ออโตไพลอตรายได้" },
+      { href: "/agent", en: "Guest Agent", th: "เอเจนต์แขก" },
+      { href: "/reconcile", en: "OTA Reconcile", th: "กระทบยอด OTA" },
+      { href: "/reputation", en: "Reputation Ops", th: "รีวิว → ปฏิบัติการ" },
+      { href: "/migrate", en: "Migration Agent", th: "เอเจนต์ย้ายระบบ" },
+      { href: "/line", en: "Morning Brief", th: "สรุปเช้า + ปุ่ม" },
+    ],
+  },
   {
     group: { en: "Operate", th: "หน้างาน" },
     items: [
@@ -53,7 +77,6 @@ const NAV = [
     group: { en: "Oversight", th: "เจ้าของกิจการ" },
     items: [
       { href: "/dashboard", en: "Owner Dashboard", th: "ภาพรวมเจ้าของ" },
-      { href: "/line", en: "LINE Owner Mode", th: "สรุปเช้าทาง LINE" },
       { href: "/compliance", en: "Compliance TM30", th: "TM30 & PDPA" },
       { href: "/finance", en: "Finance", th: "เงินสดและใบเสร็จ" },
       { href: "/switch", en: "Switch from PMS", th: "ย้ายจากระบบเดิม" },
@@ -62,9 +85,9 @@ const NAV = [
 ];
 
 const TABS = [
+  { href: "/gm", label: "GM", icon: Sparkles },
   { href: "/reservations", label: "Cal", icon: CalendarDays },
   { href: "/front-desk", label: "Desk", icon: BedDouble },
-  { href: "/rates", label: "AI", icon: Sparkles },
   { href: "/inbox", label: "Inbox", icon: MessageSquare },
   { href: "/dashboard", label: "Owner", icon: LayoutDashboard },
 ];
@@ -78,7 +101,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const {
     logout, toast, navOpen, setNavOpen, lang, role, propertyId, setPropertyId,
-    search, setSearch, aiMode, recState, shieldClosed, switchStatus, otaChannels,
+    search, setSearch, aiMode, recState, shieldClosed, switchStatus, otaChannels, aiState, agentReady,
   } = useStore();
   const user = role === "front" || role === "housekeeping" ? FRONT_USER : OWNER;
   const property = PROPERTIES.find((p) => p.id === propertyId) ?? PROPERTIES[0];
@@ -86,6 +109,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pending = Object.values(recState).filter((s) => s === "applied").length;
   const shieldOpen = !shieldClosed.s1;
   const otaWarn = otaChannels.some((c) => c.pendingUpdates > 0 || (c.status === "connected" && c.health < 100) || c.status === "paused");
+  const gmOpen = pendingCount(aiState);
 
   useEffect(() => { setNavOpen(false); }, [path, setNavOpen]);
 
@@ -122,6 +146,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <span className="ink-th">{item.th}</span>
                   </span>
                   {item.href === "/rates" && pending < 3 && aiMode === "recommend" && <span className="ink-dot" />}
+                  {item.href === "/gm" && gmOpen > 0 && <span className="ink-dot" />}
+                  {item.href === "/agent-direct" && !agentReady && <span className="ink-dot" />}
+                  {item.href === "/line" && pendingCount(aiState, "brief") > 0 && <span className="ink-dot" />}
                   {item.href === "/channels" && (shieldOpen || otaWarn) && <span className="ink-dot" />}
                   {item.href === "/sync" && otaWarn && <span className="ink-dot" />}
                   {item.href === "/switch" && switchStatus !== "done" && <span className="ink-dot" />}
@@ -131,7 +158,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <div className="ink-foot">
-          Connectivity: white-label · 61+ channels<br />Hotel stays in HOTEL24
+          Connectivity: white-label · 61+ channels<br />Agent Direct · hotel owns the guest
         </div>
       </aside>
 

@@ -28,10 +28,12 @@ export default function SwitchPage() {
         actions={
           done ? (
             <>
-              <Link href="/reservations" className="btn btn-primary"><T en="Open calendar" th="เปิดปฏิทิน" /></Link>
+              <Link href="/gm" className="btn btn-primary"><T en="Open GM" th="เปิด GM" /></Link>
               <button className="btn btn-secondary" onClick={resetSwitch}><T en="Run again" th="ทำอีกครั้ง" /></button>
             </>
-          ) : null
+          ) : (
+            <Link href="/migrate" className="btn btn-secondary"><T en="AI Migration Agent first" th="ให้เอเจนต์ย้ายระบบก่อน" /></Link>
+          )
         }
       />
 

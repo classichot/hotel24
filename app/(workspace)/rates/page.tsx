@@ -38,6 +38,8 @@ export default function RatesPage() {
         <strong>{aiMode === "auto" ? <T en="Auto-apply is on — AI pushes rates and tells you after." th="โหมดปรับอัตโนมัติ — AI ดันราคาแล้วบอกทีหลัง" /> : <T en="Recommend only — nothing changes until you approve." th="เสนออย่างเดียว — ไม่เปลี่ยนจนกว่าคุณจะอนุมัติ" />}</strong>
         {" "}
         <T en="AI monitors occupancy, booking pace, holidays, seasonality and competitor pricing. It never hides the reason." th="AI ดูอัตราเข้าพัก จังหวะจอง วันหยุด ฤดูกาล และราคาคู่แข่ง และไม่ซ่อนเหตุผล" />
+        {" "}
+        <Link href="/autopilot"><T en="Open Revenue Autopilot" th="เปิดออโตไพลอตรายได้" /> →</Link>
       </div>
 
       <div className="split-main">

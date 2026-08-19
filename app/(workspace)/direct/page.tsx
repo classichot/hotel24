@@ -20,7 +20,12 @@ export default function DirectPage() {
         titleTh="ดันการจองตรง"
         subEn="Mobile booking links for LINE OA, Facebook, Instagram, TikTok, Google Business Profile and lobby QR. Same public rate. Better inclusions."
         subTh="ลิงก์จองตรงสำหรับ LINE OA, Facebook, Instagram, TikTok, Google และ QR — ราคาเท่า OTA แต่ให้สิทธิพิเศษแทนส่วนลด"
-        actions={<Link href="/book/baantalay" className="btn btn-primary"><T en="Open guest booking page" th="เปิดหน้าจองของแขก" /></Link>}
+        actions={
+          <>
+            <Link href="/agent-offers" className="btn btn-secondary"><T en="AI Direct Offers" th="ข้อเสนอตรงสำหรับ AI" /></Link>
+            <Link href="/book/baantalay" className="btn btn-primary"><T en="Open guest booking page" th="เปิดหน้าจองของแขก" /></Link>
+          </>
+        }
       />
 
       <div className="split-main">

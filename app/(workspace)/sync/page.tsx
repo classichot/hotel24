@@ -6,6 +6,7 @@ import { PAY_KINDS, RECONCILE_SEED, healthTone, jobLabel } from "@/lib/ota";
 import { thb } from "@/lib/format";
 import { T } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
+import Link from "next/link";
 
 export default function SyncPage() {
   const {
@@ -30,6 +31,7 @@ export default function SyncPage() {
           <>
             <button className="btn btn-primary" onClick={receiveWebhook}><T en="Simulate Agoda booking" th="จำลองจองจาก Agoda" /></button>
             <button className="btn btn-secondary" onClick={runReconcile} disabled={reconcile === "resolved"}><T en="Run reconciliation" th="กระทบยอดห้อง" /></button>
+            <Link href="/reconcile" className="btn btn-ghost"><T en="AI Reconcile" th="กระทบยอดด้วย AI" /></Link>
           </>
         }
       />

@@ -8,78 +8,82 @@ import { useStore } from "@/lib/store";
 
 const FEATURES = [
   {
+    n: "00",
+    title: "HOTEL24 Agent Direct",
+    th: "ให้ทุก AI จองตรงได้",
+    copy: "Not another OTA. Every hotel publishes a machine-readable identity, live availability, rates, policies and a booking API. ChatGPT, Gemini and any MCP agent query the HOTEL24 Agent Gateway — then hold and book into your PMS. You own the guest.",
+    copyTh: "ไม่ใช่ OTA อีกตัว ทุกโรงแรมมีตัวตนที่เครื่องอ่านได้ ห้องว่าง ราคา นโยบาย และ API จอง ChatGPT, Gemini และเอเจนต์ MCP ถามเกตเวย์ HOTEL24 แล้วกันห้องและจองเข้า PMS ของคุณ คุณเป็นเจ้าของแขก",
+    proof: "search_hotels → create_room_hold → book_room. Booking.com never has to be involved.",
+  },
+  {
     n: "01",
-    title: "AI Revenue Manager",
-    th: "ผู้จัดการรายได้ที่ทำงานทุกคืน",
-    copy: "AI monitors occupancy, booking pace, holidays, seasonality and competitor pricing, then recommends or automatically adjusts rates, minimum stay, last-minute promotions, OTA-specific offers and stop-sell — with a reason you can read.",
-    copyTh: "AI ดูอัตราเข้าพัก จังหวะการจอง วันหยุด ฤดูกาล และราคาคู่แข่ง แล้วเสนอปรับราคา ขั้นต่ำการเข้าพัก โปรโมชันนาทีสุดท้าย และการปิดขาย — พร้อมเหตุผลที่อ่านเข้าใจได้",
-    proof: "“Increase Deluxe Room from ฿2,200 to ฿2,550 this weekend because occupancy reached 82% and local demand is rising.”",
+    title: "AI General Manager",
+    th: "GM ที่เฝ้าโรงแรมทั้งหลัง",
+    copy: "Watches overselling, rooms not ready, unpaid arrivals, TM30, stale ARI, cash exceptions and complaints. Ranks what will hurt tonight. You approve — each tap writes into the same store as the calendar, housekeeping and sync.",
+    copyTh: "เฝ้าขายเกิน ห้องไม่พร้อม ค้างชำระ TM30 ARI ค้าง เงินสดขาด และคำร้องเรียน เรียงสิ่งที่จะเสียหายคืนนี้ คุณกดอนุมัติ — แต่ละครั้งเขียนลงคลังเดียวกับปฏิทิน แม่บ้าน และซิงก์",
+    proof: "Four dirty rooms before 14:00, ฿16,810 unpaid, Family Loft oversold on Expedia — one Approve-all-high.",
   },
   {
     n: "02",
-    title: "OTA Profit Analyzer",
-    th: "กำไรจริงต่อช่องทาง",
-    copy: "Most systems show gross OTA revenue. HOTEL24 subtracts commission, promotions, payment charges, taxes, cancellations and advertising — then ranks which channel actually paid you per room-night.",
-    copyTh: "ระบบอื่นบอกยอดขายรวมของแต่ละ OTA HOTEL24 หักค่าคอมมิชชัน โปรโมชัน ค่าธรรมเนียมการชำระเงิน ภาษี ค่ายกเลิก และค่าโฆษณา ออกก่อน แล้วเรียงให้เห็นว่าช่องทางไหนคุ้มที่สุดต่อหนึ่งคืน",
-    proof: "Agoda sold 1.8× more than direct, but left ฿751 less profit per night.",
+    title: "Revenue + Channel Autopilot",
+    th: "ออโตไพลอตรายได้และช่องทาง",
+    copy: "Rates, min-stay, last-minute and which OTA may hold the room — ranked by real net, not by who shouts on the extranet. Agoda sold more and still left ฿751 less profit per night, so four Garden rooms move to Direct.",
+    copyTh: "ราคา ขั้นต่ำ นาทีสุดท้าย และ OTA ไหนกันห้องได้ — เรียงจากกำไรสุทธิจริง ไม่ใช่จากใครตะโกนในเอกซ์ทราเน็ต Agoda ขายมากกว่าแต่สุทธิต่ำกว่า ฿751 ต่อคืน จึงกัน Garden 4 ห้องให้จองตรง",
+    proof: "Garden Deluxe ฿2,200 → ฿2,550 this weekend because occupancy hit 82%.",
   },
   {
     n: "03",
-    title: "AI Guest Concierge",
-    th: "ผู้ช่วยตอบแขกหลายภาษา",
-    copy: "A multilingual agent answers routine questions on LINE, WhatsApp and OTA messaging — check-in, transfers, breakfast, upgrades, late checkout, activities, cancellation. Sensitive questions go to staff.",
-    copyTh: "ตอบคำถามซ้ำ ๆ ทาง LINE, WhatsApp และข้อความ OTA เป็นภาษาที่แขกใช้ เรื่องละเอียดอ่อนเช่นการคืนเงินส่งต่อให้พนักงานทันที",
-    proof: "Compensation and refunds are outside AI authority — they escalate.",
+    title: "AI Reservation / Guest Agent",
+    th: "เอเจนต์จองและแขก",
+    copy: "Not a chatbot on the inbox. It creates, modifies and cancels stays, holds a clean room for 11:00, adds a ฿800 transfer to the folio, answers in the guest’s language — and still escalates refunds.",
+    copyTh: "ไม่ใช่แชทบอทบนกล่องข้อความ สร้าง แก้ ยกเลิกการเข้าพัก กันห้องสะอาดไว้ 11:00 ใส่รถรับ ฿800 ที่โฟลิโอ ตอบภาษาแขก — และยังส่งเรื่องคืนเงินต่อคน",
+    proof: "Compensation and refunds stay outside AI authority.",
   },
   {
     n: "04",
-    title: "Owner Mode on LINE",
-    th: "โหมดเจ้าของบน LINE",
-    copy: "Every morning the owner receives arrivals, occupancy, unpaid reservations, rooms not ready, pricing recommendations, complaints and cash exceptions — and can approve a rate from the chat.",
-    copyTh: "ทุกเช้าเจ้าของได้สรุปเข้า LINE และอนุมัติราคาได้จากในแชท — เจ้าของโรงแรมไทยสั่งงานผ่าน LINE อยู่แล้ว",
-    proof: "Thai owners already run the property through LINE. Approving a rate from chat is a smaller ask than logging into a dashboard.",
+    title: "AI OTA Reconciliation",
+    th: "กระทบยอด OTA ด้วย AI",
+    copy: "Every few hours HOTEL24 is compared to each OTA. Mismatch, duplicate, stale ARI, failed import. Auto-resync. Alert only if it cannot close. The hotel is the system of record — remotes are forced to the master.",
+    copyTh: "ทุกไม่กี่ชั่วโมงเทียบ HOTEL24 กับแต่ละ OTA ความไม่ตรง จองซ้ำ ARI ค้าง นำเข้าล้ม ซิงก์อัตโนมัติ เตือนเมื่อปิดเองไม่ได้ โรงแรมเป็นต้นฉบับ — ฝั่ง OTA ถูกบังคับให้ตาม",
+    proof: "Trip.com Garden 20 Aug shows 2. HOTEL24 has 3. Forced. Recheck passed.",
   },
   {
     n: "05",
-    title: "Direct Booking Booster",
-    th: "ดันการจองตรงให้เป็นช่องทางหลัก",
-    copy: "Mobile booking links for LINE OA, Facebook, Instagram, TikTok, Google Business Profile and lobby QR. Direct benefit without undercutting the public OTA rate — breakfast, late checkout, free cancellation.",
-    copyTh: "ลิงก์จองตรงสำหรับ LINE OA, Facebook, Instagram, TikTok, Google และ QR — ให้สิทธิพิเศษแทนการลดราคา ราคาหน้าเว็บยังเท่า OTA",
-    proof: "Breakfast for two costs ฿180. A 15% OTA commission on the same night is ฿330.",
+    title: "AI Reputation → Operations",
+    th: "รีวิวกลายเป็นงานหน้างาน",
+    copy: "A 2-star Google review is a room, a breakfast shift or a vacuum after 21:00 — not a marketing problem. Extract the defect, open the ticket, then draft a public reply that says what changed. Never refund in public.",
+    copyTh: "รีวิว Google 2 ดาวคือห้อง กะอาหารเช้า หรือเครื่องดูดฝุ่นหลัง 21:00 — ไม่ใช่ปัญหาการตลาด ดึงจุดเสีย เปิดงาน แล้วค่อยร่างตอบสาธารณะว่าเปลี่ยนอะไร ห้ามคืนเงินในที่สาธารณะ",
+    proof: "209 aircon → move to 301. Three slow-breakfast mentions → +2 F&B staff 08:00–09:30.",
   },
   {
     n: "06",
-    title: "Overbooking Shield",
-    th: "ป้องกันห้องขายเกิน",
-    copy: "Detects unmapped rooms, delayed OTA updates, conflicting inventory, failed imports, duplicates and suspicious manual adjustments. Every inventory change has a complete audit log.",
-    copyTh: "ตรวจห้องที่ยังไม่ map, การอัปเดต OTA ที่ล่าช้า, จำนวนห้องที่ขัดกัน, การนำเข้าที่ล้มเหลว, การจองซ้ำ และการแก้ด้วยมือที่น่าสงสัย",
-    proof: "Who changed it, or what system changed it, and when.",
+    title: "AI Migration Agent",
+    th: "เอเจนต์ย้ายระบบ",
+    copy: "Cloudbeds and Little Hotelier do not arrive clean. The agent proposes room/rate maps with a confidence score, flags duplicate stays and tax splits, then runs the one-button cut-over only when Shield will pass.",
+    copyTh: "Cloudbeds กับ Little Hotelier ไม่ได้มาสะอาด เอเจนต์เสนอ map ห้อง/เรท พร้อมคะแนนความมั่นใจ ชี้การจองซ้ำและแยกภาษี แล้วค่อยกดตัดสลับเมื่อ Shield ผ่าน",
+    proof: "Family Loft → Expedia Family Loft at 96%. Müller’s two source ids merge into H24-8802.",
   },
   {
     n: "07",
-    title: "White-label Channel Manager",
-    th: "ตัวจัดการช่องทางแบบ white-label",
-    copy: "HOTEL24 does not certify Booking.com or Expedia itself. It keeps the canonical hotel, rooms, rates and reservations, then a white-label connectivity layer (Channex first) pushes ARI and pulls bookings. Mapping, queue, retry, health and reconciliation stay inside HOTEL24.",
-    copyTh: "HOTEL24 ไม่ไป certification กับ Booking.com หรือ Expedia เอง ระบบเก็บต้นฉบับโรงแรม ห้อง ราคา และการจอง แล้วชั้น connectivity แบบ white-label ดัน ARI และดึงการจอง Mapping คิว retry สุขภาพช่องทาง และกระทบยอดอยู่ใน HOTEL24",
-    proof: "Booking.com’s Connectivity API is the hotel-to-OTA direction. Demand APIs sell travel to travellers — the wrong door for a PMS.",
+    title: "Owner Morning Brief + Action",
+    th: "สรุปเช้าพร้อมปุ่มอนุมัติ",
+    copy: "A brief without a button is a report. Each LINE row is a decision: mapping, collection, rate, room move. Approve writes into HOTEL24 — the same store the GM uses. Thai owners already live in that chat.",
+    copyTh: "สรุปที่ไม่มีปุ่มคือรายงาน แต่ละบรรทัดบน LINE คือการตัดสินใจ: map เก็บเงิน ราคา ย้ายห้อง กดอนุมัติแล้วเขียนลง HOTEL24 — คลังเดียวกับ GM เจ้าของไทยอยู่ในแชทนั้นอยู่แล้ว",
+    proof: "“I look at one LINE thread and tap approve.”",
   },
 ];
 
 const MODULES = [
+  { en: "HOTEL24 Agent Direct", th: "เชื่อมครั้งเดียว — ทุก AI จองตรงได้" },
+  { en: "Hotel Agent Protocol (HAP)", th: "สเปกเปิดบน Schema.org / MCP / ACP / UCP" },
+  { en: "AI Hotel Registry", th: "โรงแรมที่ยืนยันแล้ว ให้เอเจนต์ถามได้" },
+  { en: "AI Direct Offers", th: "ราคาเท่า OTA สิทธิ์ดีกว่า อ่านได้โดยเอเจนต์" },
+  { en: "AEO", th: "hotel24.json · llms.txt · OAI-SearchBot" },
+  { en: "AI General Manager", th: "GM อัตโนมัติ — อนุมัติงานทั้งโรงแรม" },
+  { en: "Revenue + Channel Autopilot", th: "ราคา ขั้นต่ำ จัดสรรห้องตามกำไรสุทธิ" },
+  { en: "White-label Channel Manager", th: "OTA เป็นช่องทางหนึ่ง ไม่ใช่ศูนย์กลาง" },
   { en: "One-button PMS switch", th: "ย้ายจาก Cloudbeds / Little Hotelier" },
-  { en: "Central Reservation", th: "ปฏิทินการจองรวมทุกช่องทาง" },
-  { en: "Channel Manager", th: "ซิงก์ห้อง ราคา เงื่อนไข กับ OTA" },
-  { en: "OTA Mapping Engine", th: "จับคู่ห้องและเรทกับแต่ละ OTA" },
-  { en: "Inventory & ARI", th: "ความว่าง ราคา ข้อจำกัด ต้นฉบับเดียว" },
-  { en: "OTA Sync Service", th: "คิว retry สุขภาพช่องทาง กระทบยอด" },
   { en: "Front Desk PMS", th: "เช็คอิน–เช็คเอาท์ จัดห้อง มัดจำ" },
-  { en: "Direct Booking Engine", th: "หน้าจองของโรงแรมเอง" },
-  { en: "Rate Manager", th: "ราคาตามฤดูกาลและอัตราเข้าพัก" },
-  { en: "Guest Inbox", th: "LINE, WhatsApp, อีเมล, OTA" },
-  { en: "Housekeeping", th: "สถานะห้อง งานทำความสะอาด" },
-  { en: "Owner Dashboard", th: "Occupancy, ADR, RevPAR, เงินสด" },
-  { en: "Finance", th: "ใบแจ้งหนี้ ใบเสร็จ คืนเงิน กระทบยอด" },
-  { en: "Multi-property", th: "ดูแลหลายโรงแรมหรือวิลล่า" },
   { en: "Thailand Compliance", th: "พาสปอร์ต TM30 PDPA ภาษี" },
 ];
 
@@ -92,13 +96,14 @@ const PROFIT = [
 
 export default function LandingPage() {
   const { lang, authed, ready, switchStatus } = useStore();
-  const consoleHref = ready && authed ? (switchStatus === "done" ? "/reservations" : "/switch") : "/login";
+  const consoleHref = ready && authed ? (switchStatus === "done" ? "/gm" : "/switch") : "/login";
 
   return (
     <div className="landing">
       <nav className="nav landing-nav">
         <span className="nav-brand">HOTEL<span>24</span></span>
-        <a href="#system"><T en="System" th="ระบบ" /></a>
+        <a href="#agent"><T en="Agent Direct" th="Agent Direct" /></a>
+        <a href="#system"><T en="AI" th="AI" /></a>
         <a href="#connect"><T en="Channels" th="ช่องทาง" /></a>
         <a href="#switch"><T en="Switch" th="ย้ายระบบ" /></a>
         <a href="#profit"><T en="Real profit" th="กำไรจริง" /></a>
@@ -112,34 +117,34 @@ export default function LandingPage() {
       <div className="landing-inner">
         <section className="landing-hero">
           <h1>
-            <span><T en="An AI hotel" th="ระบบปฏิบัติการโรงแรม" /></span>
-            <span><T en="operating system." th="ที่ทำงานแทนคุณ" /></span>
-            <span className="hero-accent"><T en="ระบบปฏิบัติการโรงแรมที่ทำงานแทนคุณ" th="An AI hotel operating system." /></span>
+            <span><T en="Make your hotel" th="ทำให้โรงแรมคุณ" /></span>
+            <span><T en="AI-bookable." th="จองผ่าน AI ได้" /></span>
+            <span className="hero-accent"><T en="Connect once. Own the guest." th="เชื่อมครั้งเดียว เป็นเจ้าของแขก" /></span>
           </h1>
           <p className="lede">
             <T
-              en="Manage every reservation, OTA, room rate, guest message and hotel operation from one simple system—while AI helps increase revenue and reduce manual work. Built for independent hotels, boutique resorts, hostels and villas with 10–80 rooms."
-              th="จัดการทุกการจอง ทุก OTA ทุกราคาห้อง ทุกข้อความจากแขก และงานหน้างานทั้งหมด จากระบบเดียว — พร้อม AI ที่ช่วยเพิ่มรายได้และลดงานซ้ำ ๆ สำหรับโรงแรมอิสระ รีสอร์ตบูทีค โฮสเทล และวิลล่า ขนาด 10–80 ห้อง"
+              en="Today the traveler goes through Booking.com. Tomorrow they ask ChatGPT. HOTEL24 sits underneath: AI agent → Agent Gateway → your PMS → a Direct booking. You keep the guest, the payment, and the relationship."
+              th="วันนี้ผู้เดินทางผ่าน Booking.com พรุ่งนี้เขาถาม ChatGPT HOTEL24 อยู่ข้างล่าง: เอเจนต์ AI → เกตเวย์ → PMS ของคุณ → จองตรง คุณเก็บแขก การชำระ และความสัมพันธ์"
             />
           </p>
           <p className="lede-sub">
-            <T en="One button moves Cloudbeds or Little Hotelier. Then LINE-first, TM30-ready, and honest about what each channel actually pays you." th="ปุ่มเดียวย้าย Cloudbeds หรือ Little Hotelier แล้วใช้ LINE-first, TM30 และบอกตรง ๆ ว่าช่องทางไหนจ่ายคุณจริง" />
+            <T en="Not another OTA. Hotel operating system + AI distribution network. OTAs become one channel inside HOTEL24 — not the centre." th="ไม่ใช่ OTA อีกตัว ระบบปฏิบัติการโรงแรม + เครือข่ายกระจายผ่าน AI OTA เป็นช่องทางหนึ่งใน HOTEL24 — ไม่ใช่ศูนย์กลาง" />
           </p>
           <div className="landing-cta">
-            <Link href="/login" className="btn btn-primary"><T en="Start free trial · 30 days" th="เริ่มทดลองใช้ฟรี 30 วัน" /></Link>
-            <a href="#switch" className="btn btn-secondary"><T en="Switch from Cloudbeds" th="ย้ายจาก Cloudbeds" /></a>
+            <Link href="/agents" className="btn btn-primary"><T en="Ask an agent to book" th="ให้เอเจนต์จองให้ดู" /></Link>
+            <Link href="/login" className="btn btn-secondary"><T en="Open the hotel console" th="เปิดคอนโซลโรงแรม" /></Link>
           </div>
-          <div className="landing-fine"><T en="No commission on bookings · cancel any month · Thai-speaking team" th="ไม่คิดค่าคอมมิชชันต่อการจอง · ยกเลิกได้ทุกเดือน · ทีมงานพูดไทย" /></div>
+          <div className="landing-fine"><T en="We don’t own your guests. You do. SaaS + a low AI-direct fee — never an OTA-style cut." th="เราไม่ได้เป็นเจ้าของแขกคุณ คุณเป็น รายเดือน + ค่าธรรมเนียมจองตรงผ่าน AI ต่ำ — ไม่หักแบบ OTA" /></div>
         </section>
 
         <hr className="hr" />
 
         <section className="stat-row landing-stats" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
           {[
-            { n: "60+", en: "OTA channels through one white-label connection", th: "ช่องทาง OTA ผ่านการเชื่อมต่อครั้งเดียว" },
-            { n: "2–4", en: "weeks to install and map rooms", th: "สัปดาห์ ติดตั้งและ mapping ห้องเสร็จ" },
-            { n: "฿751", en: "extra net per night, Direct vs Agoda", th: "กำไรต่อคืนที่ต่างกันระหว่าง OTA กับจองตรง" },
-            { n: "07:00", en: "owner brief on LINE every morning", th: "สรุปเช้าเข้า LINE เจ้าของทุกวัน" },
+            { n: "15", en: "MCP tools every AI can call", th: "เครื่องมือ MCP ที่ทุก AI เรียกได้" },
+            { n: "HAP", en: "Hotel Agent Protocol — open spec", th: "โปรโตคอลเอเจนต์โรงแรม — สเปกเปิด" },
+            { n: "฿0", en: "OTA commission on an Agent Direct booking", th: "ค่าคอม OTA ต่อการจอง Agent Direct" },
+            { n: "1.9%", en: "AI-direct transaction fee. You own the guest.", th: "ค่าธรรมเนียมจองตรงผ่าน AI แขกเป็นของคุณ" },
           ].map((s) => (
             <div key={s.n} className="stat-cell">
               <div className="stat-val" style={{ color: "var(--color-accent-700)" }}>{s.n}</div>
@@ -148,8 +153,37 @@ export default function LandingPage() {
           ))}
         </section>
 
+        <section id="agent" className="landing-section">
+          <div className="page-kicker">HOTEL24 Agent Direct</div>
+          <h2><T en="Connect your hotel once. Become bookable by every AI." th="เชื่อมโรงแรมครั้งเดียว ให้ทุก AI จองได้" /></h2>
+          <p className="lede-sub">
+            <T
+              en="A hashtag is not enough. Agents need structured, current rooms, rates, taxes, cancellation, photos and a way to reserve. HOTEL24 publishes hotel24.json, Schema.org JSON-LD, MCP tools, an ACP-shaped Travel feed, and AEO for OAI-SearchBot. The owner never has to learn those names."
+              th="แฮชแท็กไม่พอ เอเจนต์ต้องได้ห้อง ราคา ภาษี การยกเลิก รูป และวิธีจอง HOTEL24 ปล่อย hotel24.json, Schema.org JSON-LD, เครื่องมือ MCP, ฟีด Travel แบบ ACP และ AEO สำหรับ OAI-SearchBot เจ้าของไม่ต้องไปเรียนชื่อพวกนั้น"
+            />
+          </p>
+          <div className="module-grid" style={{ marginTop: 22 }}>
+            {[
+              { en: "HOTEL24 PMS", th: "ต้นฉบับห้อง ราคา การจอง" },
+              { en: "Channel Manager", th: "Booking / Agoda / Trip / Expedia" },
+              { en: "HOTEL24 Direct", th: "หน้าจองของโรงแรมเอง" },
+              { en: "AI Distribution", th: "ChatGPT · Gemini · MCP · UCP · ACP" },
+              { en: "Revenue AI", th: "ราคา ห้องคงเหลือ ข้อเสนอตรง" },
+            ].map((m) => (
+              <div key={m.en} className="module-cell">
+                <strong>{m.en}</strong>
+                <span>{m.th}</span>
+              </div>
+            ))}
+          </div>
+          <div className="landing-cta">
+            <Link href="/agents" className="btn btn-primary"><T en="Watch an agent book Chiang Mai" th="ดูเอเจนต์จองเชียงใหม่" /></Link>
+            <a href="/.well-known/hotel24.json" className="btn btn-secondary">hotel24.json</a>
+          </div>
+        </section>
+
         <section id="system" className="landing-section">
-          <div className="page-kicker"><T en="Seven things that are not just another booking calendar" th="เจ็ดอย่างที่ทำให้ต่างจากระบบจองทั่วไป" /></div>
+          <div className="page-kicker"><T en="The defining idea, then the engines that run the house" th="แนวคิดหลัก แล้วเครื่องยนต์ที่ดูแลโรงแรม" /></div>
           {FEATURES.map((f) => (
             <div key={f.n} className="feature-row">
               <div className="feature-n"><span />{f.n}</div>
@@ -204,8 +238,8 @@ export default function LandingPage() {
               </div>
               <div className="proof" style={{ marginTop: 16 }}>
                 <T
-                  en="Move 15% of OTA volume to direct and you keep about ฿40,100 more per month at the same occupancy."
-                  th="ย้ายยอดจาก OTA มาจองตรงเพียง 15% เท่ากับกำไรเพิ่มราว ฿40,100 ต่อเดือน ที่อัตราเข้าพักเดิม"
+                  en="Agent Direct is not in this OTA table on purpose. A ChatGPT booking lands as Direct — 1.9% fee, hotel owns the guest, Booking.com is not in the path."
+                  th="Agent Direct ไม่ได้อยู่ในตาราง OTA นี้โดยตั้งใจ การจองจาก ChatGPT ลงเป็นจองตรง — ค่าธรรมเนียม 1.9% โรงแรมเป็นเจ้าของแขก ไม่มี Booking.com ในเส้นทาง"
                 />
               </div>
             </div>
@@ -289,8 +323,8 @@ export default function LandingPage() {
 
         <section id="pricing" className="landing-section">
           <div className="page-kicker"><T en="Pricing" th="ราคา" /></div>
-          <h2><T en="A monthly SaaS fee. Never a cut of your bookings." th="ค่าบริการรายเดือน ไม่หักจากการจอง" /></h2>
-          <p className="lede-sub"><T en="Owners already pay OTA commission. HOTEL24 does not stack another one." th="เจ้าของโรงแรมจ่ายค่าคอมมิชชันให้ OTA มากพอแล้ว" /></p>
+          <h2><T en="SaaS + a low AI-direct fee. We don’t own your guests." th="รายเดือน + ค่าธรรมเนียมจองตรงผ่าน AI ต่ำ เราไม่ได้เป็นเจ้าของแขกคุณ" /></h2>
+          <p className="lede-sub"><T en="OTAs take 15–20%. HOTEL24 Agent Direct is 1.9% on AI-direct bookings only — because the hotel keeps the guest, the payment, and the relationship." th="OTA หัก 15–20% HOTEL24 Agent Direct เก็บ 1.9% เฉพาะจองตรงผ่าน AI — เพราะโรงแรมเก็บแขก การชำระ และความสัมพันธ์" /></p>
           <div className="table-wrap" style={{ marginTop: 22 }}>
             <table className="table">
               <thead>
@@ -301,6 +335,11 @@ export default function LandingPage() {
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td><strong>Agent Direct</strong></td>
+                  <td><T en="AI-direct bookings only. Hotel owns the guest." th="เฉพาะจองตรงผ่าน AI โรงแรมเป็นเจ้าของแขก" /></td>
+                  <td className="num">1.9%</td>
+                </tr>
                 {PLANS.map((p, i) => (
                   <tr key={p.name}>
                     <td style={{ fontWeight: 800, color: i === 1 ? "var(--color-accent-700)" : undefined }}>{p.name}</td>
@@ -326,8 +365,8 @@ export default function LandingPage() {
         <section className="landing-quote">
           <blockquote>
             <T
-              en="“I used to open three OTA extranets and Excel every morning. Now I look at one LINE thread and tap approve.”"
-              th="“เมื่อก่อนต้องเปิดสามเว็บ OTA กับ Excel ทุกเช้า ตอนนี้ดูใน LINE อันเดียว แล้วกดอนุมัติราคา”"
+              en="“Booking.com used to own the guest. Now ChatGPT asks HOTEL24, holds the room, and we take the booking ourselves.”"
+              th="“เมื่อก่อน Booking.com เป็นเจ้าของแขก ตอนนี้ ChatGPT ถาม HOTEL24 จองห้อง แล้วเราเก็บการจองเอง”"
             />
           </blockquote>
           <figcaption><T en="— owner, 38-room resort, Ao Nang, Krabi · pilot" th="— เจ้าของรีสอร์ต 38 ห้อง, อ่าวนาง กระบี่ · pilot property" /></figcaption>
@@ -337,12 +376,12 @@ export default function LandingPage() {
       <section className="poster">
         <div className="landing-inner">
           <h3>
-            <span><T en="Let AI run the rates and the repeats." th="ให้ AI ดูแลราคาและงานซ้ำ ๆ" /></span>
-            <span><T en="You look after the guest." th="คุณดูแลแขก" /></span>
+            <span><T en="Connect once. Be discovered by every AI." th="เชื่อมครั้งเดียว ให้ทุก AI ค้นพบ" /></span>
+            <span><T en="Take the reservation. Own the guest." th="รับจองเอง เป็นเจ้าของแขก" /></span>
           </h3>
           <div className="landing-cta">
-            <Link href="/login" className="btn btn-ghost poster-btn"><T en="Start 30-day trial" th="เริ่มทดลองใช้ฟรี 30 วัน" /></Link>
-            <Link href="/login" className="btn btn-ghost poster-btn"><T en="Open the console first" th="ดูระบบจริงก่อน" /></Link>
+            <Link href="/agents" className="btn btn-ghost poster-btn"><T en="Ask an agent to book" th="ให้เอเจนต์จองให้ดู" /></Link>
+            <Link href="/login" className="btn btn-ghost poster-btn"><T en="Open the hotel console" th="เปิดคอนโซลโรงแรม" /></Link>
           </div>
         </div>
       </section>
@@ -350,7 +389,7 @@ export default function LandingPage() {
       <footer className="landing-foot">
         <div>
           <div className="nav-brand">HOTEL<span>24</span></div>
-          <div style={{ marginTop: 8 }}><T en="AI hotel operating system for independent Thai properties." th="ระบบปฏิบัติการโรงแรมด้วย AI สำหรับที่พักอิสระในประเทศไทย" /></div>
+          <div style={{ marginTop: 8 }}><T en="Hotel operating system + AI distribution. Make independent hotels AI-bookable." th="ระบบปฏิบัติการโรงแรม + เครือข่ายกระจายผ่าน AI ทำให้โรงแรมอิสระจองผ่าน AI ได้" /></div>
         </div>
         <div>
           <strong>VIBE24</strong>
@@ -358,7 +397,7 @@ export default function LandingPage() {
         </div>
         <div>
           <strong><T en="Console" th="ระบบ" /></strong>
-          <div style={{ marginTop: 8 }}><Link href="/login"><T en="Sign in" th="เข้าสู่ระบบ" /></Link><br /><Link href="/book/baantalay"><T en="Direct booking page" th="หน้าจองตรง" /></Link></div>
+          <div style={{ marginTop: 8 }}><Link href="/login"><T en="Sign in" th="เข้าสู่ระบบ" /></Link><br /><Link href="/agents"><T en="Agent playground" th="หน้าทดลองเอเจนต์" /></Link><br /><Link href="/book/baantalay"><T en="Direct booking page" th="หน้าจองตรง" /></Link></div>
         </div>
         <div className="text-muted" style={{ fontSize: 13 }}>
           <T en="Name and pricing here are for the product demo. Check trademarks and domains before using HOTEL24 commercially." th="ชื่อและราคาในหน้านี้เป็นตัวอย่างสำหรับการนำเสนอ · ตรวจสอบเครื่องหมายการค้าและโดเมนก่อนใช้ชื่อ HOTEL24 จริง" />

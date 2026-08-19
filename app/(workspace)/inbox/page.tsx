@@ -4,6 +4,7 @@ import { THREADS } from "@/lib/model";
 import { PageHead, statusCls } from "@/components/PageHead";
 import { T } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
+import Link from "next/link";
 
 export default function InboxPage() {
   const { thread, setThread, sent, sendDraft } = useStore();
@@ -20,6 +21,7 @@ export default function InboxPage() {
         titleTh="กล่องข้อความแขก"
         subEn="LINE, WhatsApp, email and OTA messages in one workspace. AI answers the repeats. Staff take the rest."
         subTh="LINE, WhatsApp, อีเมล และข้อความ OTA อยู่ในที่เดียว — AI ตอบคำถามซ้ำ ๆ ให้ก่อน"
+        actions={<Link href="/agent" className="btn btn-primary"><T en="Open guest agent" th="เปิดเอเจนต์แขก" /></Link>}
       />
 
       <div className="inbox-split">

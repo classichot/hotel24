@@ -39,6 +39,14 @@ export default function ChannelsPage() {
       />
       <DistNav />
 
+      <div className="callout" style={{ marginTop: 16 }}>
+        <strong>HOTEL24 Agent Direct</strong>
+        {" · "}
+        <T en="OTAs are one channel. AI agents are another — same PMS, hotel owns the guest." th="OTA เป็นช่องทางหนึ่ง เอเจนต์ AI เป็นอีกช่อง — PMS เดียวกัน โรงแรมเป็นเจ้าของแขก" />
+        {" "}
+        <Link href="/agent-direct"><T en="Open Agent Direct" th="เปิด Agent Direct" /> →</Link>
+      </div>
+
       {switchStatus === "done" && (
         <div className="callout" style={{ marginTop: 16 }}>
           <strong><T en="Cut over complete." th="ตัดสลับแล้ว" /></strong>{" "}

@@ -20,7 +20,7 @@ export default function LoginPage() {
     if (!ready || !authed) return;
     if (storedRole === "housekeeping") router.replace("/housekeeping");
     else if (storedRole === "front") router.replace("/front-desk");
-    else router.replace(switchStatus === "done" ? "/reservations" : "/switch");
+    else router.replace(switchStatus === "done" ? "/gm" : "/switch");
   }, [ready, authed, router, storedRole, switchStatus]);
 
   function onSubmit(e: FormEvent) {
@@ -36,21 +36,21 @@ export default function LoginPage() {
             <div className="login-mark">
               HOTEL24<span />
             </div>
-            <span className="login-kicker">AI Hotel Operating System</span>
+            <span className="login-kicker">Make your hotel AI-bookable</span>
           </div>
           <LangToggle />
         </header>
         <div className="login-pane-body">
           <h1 className="login-headline">
             <T
-              en="Manage every reservation, OTA, room rate, guest message and hotel operation from one system."
-              th="จัดการทุกการจอง ทุก OTA ทุกราคาห้อง ทุกข้อความจากแขก และงานหน้างาน จากระบบเดียว"
+              en="Connect once. Become bookable by every AI. Take the reservation directly. Own the guest."
+              th="เชื่อมครั้งเดียว ให้ทุก AI จองได้ จองตรง โรงแรมเป็นเจ้าของแขก"
             />
           </h1>
           <p className="login-lede">
             <T
-              en="Not another booking calendar. One button moves Cloudbeds or Little Hotelier into HOTEL24. Then Thai localisation, LINE-first operation, AI revenue and real OTA profit."
-              th="ไม่ใช่แค่ปฏิทินจองห้อง ปุ่มเดียวย้าย Cloudbeds หรือ Little Hotelier เข้า HOTEL24 แล้วใช้ LINE-first, TM30, AI รายได้ และกำไรจริงต่อช่องทาง"
+              en="Traveler → ChatGPT → HOTEL24 Agent Gateway → this PMS. OTAs stay a channel. We don’t own your guests."
+              th="ผู้เดินทาง → ChatGPT → เกตเวย์ HOTEL24 → PMS นี้ OTA ยังเป็นช่องทาง เราไม่ได้เป็นเจ้าของแขกคุณ"
             />
           </p>
         </div>
@@ -65,8 +65,8 @@ export default function LoginPage() {
               <span><T en="Best net / night" th="กำไรสุทธิต่อคืนสูงสุด" /></span>
             </div>
             <div>
-              <strong>1</strong>
-              <span><T en="Shield alert" th="เตือนขายเกิน" /></span>
+              <strong>15</strong>
+              <span><T en="MCP tools live" th="เครื่องมือ MCP พร้อมใช้" /></span>
             </div>
           </div>
         </footer>
