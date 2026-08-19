@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="_ds/modernist-0535cbd5-0c64-445a-914d-3cb24acb6cae/styles.css">
+  <script src="_ds/modernist-0535cbd5-0c64-445a-914d-3cb24acb6cae/_ds_bundle.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&family=Familjen+Grotesk:wght@400;500;600;700&family=Chivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-accent: #f2c318;
+      --color-accent-100: #fffcea; --color-accent-200: #fff5c2; --color-accent-300: #fbe98a;
+      --color-accent-400: #f7d245; --color-accent-500: #efc60a; --color-accent-600: #d2a30c;
+      --color-accent-700: #7a5c00; --color-accent-800: #5c4400; --color-accent-900: #3d2e00;
+      --color-accent-2: #f2c318; --color-accent-2-600: #d2a30c; --color-accent-2-700: #7a5c00;
+      --font-heading: 'Archivo', 'IBM Plex Sans Thai', sans-serif;
+      --font-body: 'Archivo', 'IBM Plex Sans Thai', sans-serif;
+    }
+    /* Saffron is a field colour (1.5:1 on this ground): type on it is always ink,
+       and any accent-coloured text, hairline or small mark drops to the 700 step. */
+    .btn-primary { color: #201e1d; }
+    .btn-primary:active { background: var(--color-accent-700); color: var(--color-bg); }
+    .btn-ghost, .card-kicker, .nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent-700); }
+    .tag-outline { border-color: var(--color-accent-700); color: var(--color-accent-700); }
+    .seg-opt:has(input:checked) { color: #201e1d; }
+    .radio input:checked + .dot { border-color: var(--color-accent-700); background: var(--color-accent-700); }
+    .input:focus-visible { border-color: var(--color-accent-700); }
+    :focus-visible { outline-color: var(--color-accent-700); }
+    body { margin: 0; text-wrap: pretty; background: var(--color-bg); }
+    a { color: var(--color-accent-700); text-decoration: none; }
+    a:hover { color: var(--color-accent-800); text-decoration: underline; text-underline-offset: 3px; }
+  </style>
+</helmet>
+
+<section style="padding:44px clamp(20px,4vw,56px) 76px;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg)">
+  <div style="max-width:1400px;margin:0 auto">
+
+    <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;border-bottom:2px solid var(--color-divider);padding-bottom:20px">
+      <div style="flex:1 1 460px">
+        <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:8px">Turn 3 · Latin typeface study</div>
+        <h1 style="font-size:clamp(30px,3.4vw,44px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 0 -0.03em">Six Latin faces for HOTEL<span style="color:var(--color-accent-700)">24</span></h1>
+        <p style="font-size:16px;line-height:26px;max-width:72ch;margin:14px 0 0;color:color-mix(in srgb, var(--color-text) 82%, transparent)">Archivo is the Modernist system's own face, so <a href="#3a">3a</a> is the baseline you'd be replacing — the rest are shown against it. Thai stays IBM Plex Sans Thai behind every option. What actually decides this is the wordmark, and the figures: this product is a wall of ฿ amounts, occupancy percentages and rate grids, so a face without tabular numerals costs you column alignment on every table in the console.</p>
+      </div>
+      <div style="flex:0 1 300px;font-size:13px;line-height:21px;color:color-mix(in srgb, var(--color-text) 70%, transparent)">Note the design system is binding on style, not on this specimen: swapping the Latin face is a real deviation from Modernist. Worth doing only if the wordmark or the numerals gain something Archivo doesn't give you.</div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:2px;background:var(--color-divider);border:2px solid var(--color-divider);border-top:0">
+      <sc-for list="{{ options }}" as="o" hint-placeholder-count="6">
+        <div id="{{ o.id }}" style="flex:1 1 560px;min-width:400px;background:var(--color-surface);display:flex;flex-direction:column">
+
+          <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:15px 20px;border-bottom:2px solid var(--color-divider);background:{{ o.headBg }}">
+            <span style="font-family:var(--font-heading);font-weight:800;font-size:12px;letter-spacing:0.08em;border:1px solid currentColor;padding:2px 7px">{{ o.id }}</span>
+            <span style="font-family:var(--font-heading);font-weight:800;font-size:18px;letter-spacing:-0.01em">{{ o.name }}</span>
+            <span style="font-size:12.5px;opacity:0.7">{{ o.character }}</span>
+            <span style="margin-left:auto;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.75">{{ o.figures }}</span>
+          </div>
+
+          <div style="padding:20px;display:flex;flex-direction:column;gap:18px;font-family:{{ o.stack }}">
+
+            <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap">
+              <div>
+                <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Wordmark · 34px</div>
+                <div style="font-size:34px;line-height:1;letter-spacing:-0.03em;font-weight:{{ o.headWeight }}">HOTEL<span style="color:var(--color-accent-700)">24</span></div>
+              </div>
+              <div style="margin-left:auto;text-align:right">
+                <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Series</div>
+                <div style="font-size:15px;line-height:1.35;font-weight:{{ o.uiWeight }};letter-spacing:0.01em">TOUR24 · VACATION24</div>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px">
+              <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Hero · 38px / {{ o.headWeight }}</div>
+              <div style="font-size:38px;line-height:1.1;letter-spacing:-0.02em;font-weight:{{ o.headWeight }}">An AI hotel<br>operating system.</div>
+              <div style="font-size:19px;line-height:1.35;font-weight:{{ o.headWeight }};margin-top:10px;color:var(--color-accent-700)">ระบบปฏิบัติการโรงแรม · Thai stays Plex</div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px">
+              <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Figures · the test that matters</div>
+              <div style="font-size:23px;line-height:1.25;font-weight:{{ o.headWeight }};letter-spacing:-0.01em">฿2,244 · 82% · ฿1.05M · 0123456789</div>
+              <div style="margin-top:10px;display:grid;grid-template-columns:1fr auto auto;gap:0;font-variant-numeric:tabular-nums;font-size:13px">
+                <sc-for list="{{ rateRows }}" as="r" hint-placeholder-count="4">
+                  <div style="padding:5px 0;border-bottom:1px solid var(--color-divider);font-weight:{{ o.uiWeight }}">{{ r.ch }}</div>
+                  <div style="padding:5px 14px;border-bottom:1px solid var(--color-divider);text-align:right;opacity:0.75">{{ r.gross }}</div>
+                  <div style="padding:5px 0;border-bottom:1px solid var(--color-divider);text-align:right;font-weight:{{ o.uiWeight }};color:{{ r.color }}">{{ r.net }}</div>
+                </sc-for>
+              </div>
+              <div style="font-size:12px;line-height:19px;margin-top:7px;font-family:var(--font-body);opacity:0.6">{{ o.figureNote }}</div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px">
+              <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Body · 16px / 27px</div>
+              <div style="font-size:16px;line-height:27px;max-width:54ch">Gross revenue is not profit. HOTEL24 subtracts commission, promotions, payment fees, tax and cancellation cost from every channel, then tells you which one actually paid you — per room-night sold.</div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px">
+              <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Console UI · 11–12.5px</div>
+              <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start">
+                <div style="flex:0 0 176px;background:#201e1d;color:#f8f4f4;padding:8px 0">
+                  <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+                    <div style="display:flex;align-items:center;gap:8px;padding:5px 10px">
+                      <span style="width:3px;height:26px;flex:none;background:{{ n.bar }}"></span>
+                      <span>
+                        <span style="display:block;font-size:12.5px;font-weight:{{ o.uiWeight }}">{{ n.en }}</span>
+                        <span style="display:block;font-size:11px;opacity:0.66">{{ n.th }}</span>
+                      </span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="flex:1 1 200px;min-width:190px;display:flex;flex-direction:column;gap:9px">
+                  <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button type="button" class="btn btn-primary" style="font-family:inherit;font-weight:{{ o.uiWeight }}">New reservation</button>
+                    <button type="button" class="btn btn-secondary" style="font-family:inherit;font-weight:{{ o.uiWeight }}">Walk-in</button>
+                  </div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <span class="tag tag-accent" style="font-family:inherit">Overbooking Shield</span>
+                    <span class="tag tag-neutral" style="font-family:inherit">Synced 2 min</span>
+                  </div>
+                  <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;font-family:inherit;font-weight:{{ o.uiWeight }}">M-04 · OTA PROFIT ANALYZER</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px;font-family:var(--font-body)">
+              <div style="font-size:14.5px;line-height:23px;color:color-mix(in srgb, var(--color-text) 84%, transparent)">{{ o.note }}</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center">
+                <span class="tag {{ o.tagClass }}">{{ o.verdict }}</span>
+                <span style="font-size:12px;opacity:0.6">{{ o.weights }}</span>
+                <span style="margin-left:auto;font-size:11.5px;font-family:var(--font-heading);font-weight:800;letter-spacing:0.02em;opacity:0.75">{{ o.css }}</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:28px;margin-top:28px;padding-top:22px;border-top:2px solid var(--color-divider)">
+      <div style="flex:1 1 440px;min-width:320px">
+        <h2 style="font-size:21px;margin:0 0 8px">What I would pick</h2>
+        <p style="font-size:16px;line-height:26px;margin:0;max-width:58ch">Stay on <a href="#3a">3a Archivo</a>. It is the design system's face, it has the widest weight range of the six, its 800 holds the wordmark better than anything here, and the <span style="font-weight:800">24</span> is unmistakable at nav size. Changing it costs you the system and buys very little.</p>
+        <p style="font-size:16px;line-height:26px;margin:12px 0 0;max-width:58ch">If you do want to move, <a href="#3b">3b IBM Plex Sans</a> is the only argument I find honest: it is the Latin half of the Thai face you already chose, drawn by the same team on the same skeleton, so Thai and Latin stop being a pairing and become one typeface. You lose Archivo's 800 — Plex stops at 700, so the wordmark gets lighter — and the whole system's Latin identity shifts with it. That is the trade.</p>
+      </div>
+      <div style="flex:1 1 340px;min-width:300px;background:var(--color-surface);padding:18px">
+        <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;margin-bottom:10px">Whichever you pick</div>
+        <sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+          <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--color-divider);font-size:13.5px;line-height:21px">
+            <span style="width:8px;height:8px;background:var(--color-accent-700);flex:none;margin-top:7px"></span>
+            <span>{{ r }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 1400 }
+}">
+const OPTIONS = [
+  {
+    id: '3a', name: 'Archivo', character: 'the system face · grotesque', figures: 'tabular · 100–900',
+    latin: 'Archivo', headWeight: 800, uiWeight: 600, weights: '100–900 + expanded widths',
+    verdict: 'Keep · system default', tagClass: 'tag-accent',
+    figureNote: 'True tabular figures and a full weight axis — rate grids stay aligned and headline numbers can go to 900.',
+    note: 'The Modernist system is built on it, so nothing has to be re-derived: rules, spacing, button labels and the poster close are all tuned to this face. Its 800 is the heaviest wordmark on this board, and the numerals are properly tabular. The honest downside is familiarity — it is a widely used Google grotesque, so it does not make HOTEL24 look proprietary.'
+  },
+  {
+    id: '3b', name: 'IBM Plex Sans', character: 'engineered · Thai’s own Latin half', figures: 'tabular · 400–700',
+    latin: 'IBM Plex Sans', headWeight: 700, uiWeight: 600, weights: '400 · 500 · 600 · 700 (+ italics)',
+    verdict: 'One type system', tagClass: 'tag-accent',
+    figureNote: 'Same skeleton as the Thai you picked — the ฿ figures and Thai captions share one rhythm with no seam.',
+    note: 'Choosing this makes the product a single typeface rather than a Latin/Thai pairing: identical stroke logic, identical x-height, identical numerals across both scripts. Slightly warmer and more technical than Archivo, and it reads as infrastructure — appropriate for a PMS. Costs you weight: no 800, so the wordmark loses some punch and needs tighter tracking to compensate.'
+  },
+  {
+    id: '3c', name: 'Space Grotesk', character: 'technical, quirky terminals', figures: 'tabular · 400–700',
+    latin: 'Space Grotesk', headWeight: 700, uiWeight: 500, weights: '400 · 500 · 600 · 700',
+    verdict: 'Most distinctive', tagClass: 'tag-neutral',
+    figureNote: 'Distinctive one, two and four shapes — memorable in a headline figure, slightly restless in a dense table.',
+    note: 'The most ownable of the six: the flattened terminals and odd digit shapes make the wordmark instantly recognisable, which is exactly what a series brand wants. It is also the least neutral — across eleven console modules of tables and labels that personality starts to compete with the data, and Thai next to it looks calmer than the Latin.'
+  },
+  {
+    id: '3d', name: 'Instrument Sans', character: 'contemporary neutral', figures: 'tabular · 400–700',
+    latin: 'Instrument Sans', headWeight: 700, uiWeight: 600, weights: '400 · 500 · 600 · 700 (+ width axis)',
+    verdict: 'Cleanest interface', tagClass: 'tag-neutral',
+    figureNote: 'Tight, even figures that hold at 11px — the strongest small-size performance on this board.',
+    note: 'Modern, tightly spaced and very well behaved at interface sizes; the sidebar labels and 11px captions are the crispest here. The trade is character: it is deliberately neutral, so the wordmark has to earn its identity from the red 24 alone rather than from the letterforms.'
+  },
+  {
+    id: '3e', name: 'Familjen Grotesk', character: 'Swiss-modernist, more voice', figures: 'lining · 400–700',
+    latin: 'Familjen Grotesk', headWeight: 700, uiWeight: 600, weights: '400 · 500 · 600 · 700',
+    verdict: 'Closest in spirit', tagClass: 'tag-neutral',
+    figureNote: 'Handsome display figures, but check column alignment — figure width is less strictly tabular than Archivo.',
+    note: 'Of the alternatives this is the most Modernist in attitude: a proper Swiss grotesque with a little more personality in the a and g, which suits the flat rules and the red poster field. Best on the landing page. In the console it is marginally wider than Archivo, so the densest tables — OTA Profit with eleven columns — get tighter.'
+  },
+  {
+    id: '3f', name: 'Chivo', character: 'sturdy, editorial grotesque', figures: 'tabular · 100–900',
+    latin: 'Chivo', headWeight: 800, uiWeight: 600, weights: '100–900 (+ italics)',
+    verdict: 'Heaviest voice', tagClass: 'tag-outline',
+    figureNote: 'Full weight range and solid tabular figures — the 900 is the strongest number on this board.',
+    note: 'From the same foundry as Archivo and built for signage and headlines, so it keeps the wordmark weight while reading sturdier and more news-like. That editorial tone is a good fit for the investor story and a slightly odd one for a working front-desk screen, where its higher contrast makes long label runs feel busier than Archivo.'
+  }
+];
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      options: OPTIONS.map((o, i) => Object.assign({}, o, {
+        stack: "'" + o.latin + "', 'IBM Plex Sans Thai', sans-serif",
+        css: "font-family: " + o.latin + ", IBM Plex Sans Thai",
+        headBg: i === 0 ? 'var(--color-accent-200)' : 'var(--color-bg)'
+      })),
+      rateRows: [
+        { ch: 'Booking.com', gross: '฿1,046,000', net: '฿731,700', color: 'var(--color-text)' },
+        { ch: 'Agoda', gross: '฿872,000', net: '฿531,560', color: 'var(--color-text)' },
+        { ch: 'HOTEL24 Direct', gross: '฿520,000', net: '฿444,400', color: 'var(--color-accent-700)' },
+        { ch: 'Expedia', gross: '฿181,000', net: '฿118,570', color: 'var(--color-text)' }
+      ],
+      nav: [
+        { en: 'Reservations', th: 'ปฏิทินการจอง', bar: 'var(--color-accent-700)' },
+        { en: 'Rate & AI Revenue', th: 'ราคาห้อง & AI', bar: 'transparent' },
+        { en: 'OTA Profit', th: 'กำไรจริงต่อช่องทาง', bar: 'transparent' },
+        { en: 'Compliance TM30', th: 'TM30 & PDPA', bar: 'transparent' }
+      ],
+      rules: [
+        'Tabular figures stay on for every table, rate grid and KPI — font-variant-numeric: tabular-nums, so columns of ฿ amounts align down the page.',
+        'The wordmark takes the heaviest weight the face offers and −0.03em tracking; if the face stops at 700, tighten rather than fake a bolder weight.',
+        'Thai remains IBM Plex Sans Thai in every option — one Thai face across HOTEL24, TOUR24 and VACATION24.',
+        'Moving off Archivo is a deviation from the bound design system: worth it for 3b, harder to justify for the rest.'
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

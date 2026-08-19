@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="_ds/modernist-0535cbd5-0c64-445a-914d-3cb24acb6cae/styles.css">
+  <script src="_ds/modernist-0535cbd5-0c64-445a-914d-3cb24acb6cae/_ds_bundle.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Anuphan:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400..800&family=Bai+Jamjuree:wght@400;500;600;700&family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-accent: #f2c318;
+      --color-accent-100: #fffcea; --color-accent-200: #fff5c2; --color-accent-300: #fbe98a;
+      --color-accent-400: #f7d245; --color-accent-500: #efc60a; --color-accent-600: #d2a30c;
+      --color-accent-700: #7a5c00; --color-accent-800: #5c4400; --color-accent-900: #3d2e00;
+      --color-accent-2: #f2c318; --color-accent-2-600: #d2a30c; --color-accent-2-700: #7a5c00;
+    }
+    /* Saffron is a field colour (1.5:1 on this ground): type on it is always ink,
+       and any accent-coloured text, hairline or small mark drops to the 700 step. */
+    .btn-primary { color: #201e1d; }
+    .btn-primary:active { background: var(--color-accent-700); color: var(--color-bg); }
+    .btn-ghost, .card-kicker, .nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent-700); }
+    .tag-outline { border-color: var(--color-accent-700); color: var(--color-accent-700); }
+    .seg-opt:has(input:checked) { color: #201e1d; }
+    .radio input:checked + .dot { border-color: var(--color-accent-700); background: var(--color-accent-700); }
+    .input:focus-visible { border-color: var(--color-accent-700); }
+    :focus-visible { outline-color: var(--color-accent-700); }
+    body { margin: 0; text-wrap: pretty; background: var(--color-bg); }
+    a { color: var(--color-accent-700); text-decoration: none; }
+    a:hover { color: var(--color-accent-800); text-decoration: underline; text-underline-offset: 3px; }
+  </style>
+</helmet>
+
+<section style="padding:44px clamp(20px,4vw,56px) 76px;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg)">
+  <div style="max-width:1400px;margin:0 auto">
+
+    <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;border-bottom:2px solid var(--color-divider);padding-bottom:20px">
+      <div style="flex:1 1 460px">
+        <div style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:8px">Turn 2 · Thai typeface study</div>
+        <h1 style="font-size:clamp(30px,3.4vw,44px);line-height:1.08;letter-spacing:-0.02em;margin:0 0 0 -0.03em">Six Thai faces to sit under Archivo</h1>
+        <p style="font-size:16px;line-height:26px;max-width:72ch;margin:14px 0 0;color:color-mix(in srgb, var(--color-text) 82%, transparent)">Archivo carries no Thai glyphs, so today every Thai string in HOTEL24 is being rendered by whatever the device happens to have — different on a Mac, a Windows PC and an Android phone. Each option below fixes that by declaring Archivo first and a Thai face behind it: Latin keeps the Modernist identity, Thai comes from the named font. Same six strings in every specimen, at the sizes they actually appear.</p>
+      </div>
+      <div style="flex:0 1 300px;font-size:13px;line-height:21px;color:color-mix(in srgb, var(--color-text) 70%, transparent)">Three things decide this: loopless vs looped (Modernist is a grotesque — looped Thai reads decorative next to it), whether the face survives 12–13px in table cells, and whether its heaviest weight can hold a 44px headline beside Archivo 800.</div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:2px;background:var(--color-divider);border:2px solid var(--color-divider);border-top:0">
+      <sc-for list="{{ options }}" as="o" hint-placeholder-count="6">
+        <div id="{{ o.id }}" style="flex:1 1 560px;min-width:400px;background:var(--color-surface);display:flex;flex-direction:column">
+
+          <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding:15px 20px;border-bottom:2px solid var(--color-divider);background:{{ o.headBg }}">
+            <span style="font-family:var(--font-heading);font-weight:800;font-size:12px;letter-spacing:0.08em;border:1px solid currentColor;padding:2px 7px">{{ o.id }}</span>
+            <span style="font-family:var(--font-heading);font-weight:800;font-size:18px;letter-spacing:-0.01em">{{ o.name }}</span>
+            <span style="font-size:12.5px;opacity:0.7">{{ o.character }}</span>
+            <span style="margin-left:auto;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.75">{{ o.loop }}</span>
+          </div>
+
+          <div style="padding:20px;display:flex;flex-direction:column;gap:18px;font-family:{{ o.stack }}">
+
+            <div>
+              <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Hero · 40px / {{ o.headWeight }}</div>
+              <div style="font-size:40px;line-height:1.16;letter-spacing:-0.015em;font-weight:{{ o.headWeight }}">ระบบปฏิบัติการโรงแรม<br>ที่ทำงานแทนคุณ</div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px">
+              <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Mixed Latin + Thai + ตัวเลข · 26px</div>
+              <div style="font-size:26px;line-height:1.3;font-weight:{{ o.headWeight }};letter-spacing:-0.01em">จองตรง · Book direct · ฿2,244 ต่อคืน</div>
+              <div style="font-size:12.5px;line-height:20px;margin-top:6px;font-family:var(--font-body);opacity:0.6">Watch the baseline and the height of ฿2,244 against จองตรง — this is the join that shows.</div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px">
+              <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Body · 16px / 27px</div>
+              <div style="font-size:16px;line-height:27px;max-width:52ch">จัดการทุกการจอง ทุก OTA ทุกราคาห้อง ทุกข้อความจากแขก และงานหน้างานทั้งหมด จากระบบเดียว — พร้อม AI ที่ช่วยเพิ่มรายได้และลดงานซ้ำ ๆ สำหรับโรงแรมอิสระ รีสอร์ตบูทีค โฮสเทล และวิลล่า ขนาด 10–80 ห้อง</div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px">
+              <div style="font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-bottom:7px;font-family:var(--font-body)">Console UI · 12.5px sidebar and table</div>
+              <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:stretch">
+                <div style="flex:0 0 168px;background:#201e1d;color:#f8f4f4;padding:8px 0">
+                  <sc-for list="{{ nav }}" as="n" hint-placeholder-count="4">
+                    <div style="display:flex;align-items:center;gap:8px;padding:5px 10px">
+                      <span style="width:3px;height:26px;flex:none;background:{{ n.bar }}"></span>
+                      <span>
+                        <span style="display:block;font-size:12.5px;font-weight:{{ o.uiWeight }}">{{ n.en }}</span>
+                        <span style="display:block;font-size:11px;opacity:0.66">{{ n.th }}</span>
+                      </span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="flex:1 1 220px;min-width:200px">
+                  <table class="table" style="font-size:12.5px">
+                    <thead><tr><th style="font-size:11px">ห้อง</th><th style="font-size:11px">สถานะ</th><th style="font-size:11px;text-align:right">ยอดค้าง</th></tr></thead>
+                    <tbody>
+                      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="3">
+                        <tr>
+                          <td style="font-size:12.5px;font-weight:{{ o.uiWeight }}">{{ r.room }}</td>
+                          <td style="font-size:12.5px;opacity:0.8">{{ r.state }}</td>
+                          <td style="font-size:12.5px;text-align:right;color:{{ r.color }};font-weight:{{ o.uiWeight }}">{{ r.due }}</td>
+                        </tr>
+                      </sc-for>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button type="button" class="btn btn-primary" style="font-family:inherit;font-weight:{{ o.uiWeight }}">ทดลองฟรี 30 วัน</button>
+              <button type="button" class="btn btn-secondary" style="font-family:inherit;font-weight:{{ o.uiWeight }}">ดูระบบจริง</button>
+              <span class="tag tag-accent" style="font-family:inherit">TM30 แบบชุด</span>
+            </div>
+
+            <div style="border-top:1px solid var(--color-divider);padding-top:14px;font-family:var(--font-body)">
+              <div style="font-size:14.5px;line-height:23px;color:color-mix(in srgb, var(--color-text) 84%, transparent)">{{ o.note }}</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center">
+                <span class="tag {{ o.tagClass }}">{{ o.verdict }}</span>
+                <span style="font-size:12px;opacity:0.6">{{ o.weights }}</span>
+                <span style="margin-left:auto;font-size:11.5px;font-family:var(--font-heading);font-weight:800;letter-spacing:0.02em;opacity:0.75">{{ o.css }}</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:28px;margin-top:28px;padding-top:22px;border-top:2px solid var(--color-divider)">
+      <div style="flex:1 1 440px;min-width:320px">
+        <h2 style="font-size:21px;margin:0 0 8px">What I would pick</h2>
+        <p style="font-size:16px;line-height:26px;margin:0;max-width:58ch"><a href="#2a">2a IBM Plex Sans Thai</a> for HOTEL24. It was drawn as the Thai companion to a grotesque, so its stroke weight, terminals and x-height land almost exactly on Archivo's — the mixed line <span style="font-family:'Archivo','IBM Plex Sans Thai',sans-serif;font-weight:600">จองตรง · ฿2,244</span> reads as one typeface rather than two. It also stays legible at the 11–12.5px the console's sidebar and tables run at, which is where most of these fail.</p>
+        <p style="font-size:16px;line-height:26px;margin:12px 0 0;max-width:58ch">If the landing page needs more warmth than the console, <a href="#2c">2c Sarabun</a> is the honest second: it is the face Thai owners see in government and bank documents every day, so it reads as trustworthy rather than as a startup. Do not run two Thai faces in one product — pick one and let weight do the work.</p>
+      </div>
+      <div style="flex:1 1 340px;min-width:300px;background:var(--color-surface);padding:18px">
+        <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;margin-bottom:10px">How the pick gets applied</div>
+        <sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+          <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--color-divider);font-size:13.5px;line-height:21px">
+            <span style="width:8px;height:8px;background:var(--color-accent-700);flex:none;margin-top:7px"></span>
+            <span>{{ r }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1440, &quot;height&quot;: 1400 }
+}">
+const OPTIONS = [
+  {
+    id: '2a', name: 'IBM Plex Sans Thai', character: 'engineered grotesque companion', loop: 'loopless',
+    thai: 'IBM Plex Sans Thai', headWeight: 700, uiWeight: 600, weights: '400 · 500 · 600 · 700',
+    verdict: 'Best structural match', tagClass: 'tag-accent',
+    note: 'Drawn as the Thai extension of a Latin grotesque, so stroke contrast, terminals and x-height line up with Archivo almost without adjustment. Holds its shape at 11–12.5px in the sidebar and table cells, which is where the console lives. Its 700 is a touch lighter than Archivo 800 in the headline — set Thai headings at 700 and leave Latin at 800.'
+  },
+  {
+    id: '2b', name: 'Anuphan', character: 'contemporary geometric', loop: 'loopless',
+    thai: 'Anuphan', headWeight: 700, uiWeight: 600, weights: '100–700 variable',
+    verdict: 'Cleanest headline', tagClass: 'tag-neutral',
+    note: 'The most modern of the six: tall, open, geometric, with very even rhythm at display size — the 40px Thai headline is the best-looking on this board. Slightly narrower apertures than Plex at small sizes, so the 11px secondary labels in the sidebar tighten up. Strong choice if the landing page matters more than the console.'
+  },
+  {
+    id: '2c', name: 'Sarabun', character: 'the official Thai document face', loop: 'loopless',
+    thai: 'Sarabun', headWeight: 700, uiWeight: 600, weights: '400 · 500 · 600 · 700 · 800',
+    verdict: 'Most trusted by owners', tagClass: 'tag-neutral',
+    note: 'Thailand’s de facto administrative typeface — the one on tax forms, bank letters and government paperwork. That reads as credibility rather than as design, which is worth a lot on a page asking a hotel owner for money. Slightly humanist and a little wider than Archivo, so long Thai paragraphs run about 4% longer.'
+  },
+  {
+    id: '2d', name: 'Noto Sans Thai', character: 'neutral system default', loop: 'loopless',
+    thai: 'Noto Sans Thai', headWeight: 700, uiWeight: 600, weights: '100–800 variable',
+    verdict: 'Safest, least character', tagClass: 'tag-neutral',
+    note: 'The widest coverage and the most predictable rendering anywhere, including old Android phones — which matters for the guest-facing booking page and LINE. It is also the most anonymous: nothing about it says HOTEL24. Good default, poor differentiator.'
+  },
+  {
+    id: '2e', name: 'Bai Jamjuree', character: 'squared, technical', loop: 'loopless',
+    thai: 'Bai Jamjuree', headWeight: 700, uiWeight: 600, weights: '400 · 500 · 600 · 700',
+    verdict: 'Most software-like', tagClass: 'tag-outline',
+    note: 'Flattened curves and squared counters give it a tooling, dashboard-native feel that suits the console’s grid and the audit-log side of the product. The same squareness makes long Thai body copy on the landing page feel harder than it needs to — best if the console is the hero and marketing copy stays short.'
+  },
+  {
+    id: '2f', name: 'Kanit', character: 'display, high personality', loop: 'loopless',
+    thai: 'Kanit', headWeight: 600, uiWeight: 500, weights: '400 · 500 · 600 · 700',
+    verdict: 'Headlines only', tagClass: 'tag-outline',
+    note: 'The most distinctive Thai face here and the most common in Thai marketing — heavy, slightly condensed, confident at 40px. It is also the loudest: at 12.5px in a table it fights the data, and paragraphs feel like advertising. Use it for the hero and section heads with a quieter face underneath, or not at all.'
+  }
+];
+
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      options: OPTIONS.map((o, i) => Object.assign({}, o, {
+        stack: "'Archivo', '" + o.thai + "', sans-serif",
+        css: "font-family: Archivo, " + o.thai,
+        headBg: i === 0 ? 'var(--color-accent-200)' : 'var(--color-bg)'
+      })),
+      nav: [
+        { en: 'Reservations', th: 'ปฏิทินการจอง', bar: 'var(--color-accent-700)' },
+        { en: 'Front Desk', th: 'เช็คอิน–เช็คเอาท์', bar: 'transparent' },
+        { en: 'Housekeeping', th: 'แม่บ้าน', bar: 'transparent' },
+        { en: 'OTA Profit', th: 'กำไรจริงต่อช่องทาง', bar: 'transparent' }
+      ],
+      rows: [
+        { room: '104 ดีลักซ์สวน', state: 'ยังไม่ทำความสะอาด', due: '฿4,410', color: 'var(--color-accent-700)' },
+        { room: '207 พูลแอคเซส', state: 'พร้อมขาย', due: '—', color: 'var(--color-text)' },
+        { room: 'V2 วิลล่าริมหาด', state: 'กำลังทำ', due: '฿12,400', color: 'var(--color-accent-700)' }
+      ],
+      rules: [
+        'One declaration does it: font-family: Archivo, <Thai face>, sans-serif — Latin resolves from Archivo, Thai falls through to the Thai face. No per-string spans, no second stylesheet.',
+        'Thai headings run one weight lighter than Latin (700 against Archivo 800); most Thai families stop at 700 and synthesised bold would smear the loops.',
+        'Thai needs a little more leading than Latin at the same size — body stays 16/27, but Thai-only paragraphs go to 16/28.',
+        'Whatever is picked gets applied to both HOTEL24 files at once, and it is the same face TOUR24 uses — the series is one type system, differentiated by name, not by font.'
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

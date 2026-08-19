@@ -1,0 +1,84 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { BENEFITS, ROOM_TYPES } from "@/lib/model";
+import { thb } from "@/lib/format";
+import { T } from "@/lib/i18n";
+import { useStore } from "@/lib/store";
+
+export default function BookingPage() {
+  const { lang, setLang, benefits } = useStore();
+  const [nights, setNights] = useState(3);
+  const [code, setCode] = useState("");
+  const [ok, setOk] = useState(false);
+  const promo = code.trim().toUpperCase() === "LINE24";
+  const rooms = useMemo(
+    () =>
+      ROOM_TYPES.filter((r) => r.id === "garden" || r.id === "pool").map((r) => ({
+        ...r,
+        total: r.base * nights,
+      })),
+    [nights]
+  );
+
+  if (ok) {
+    return (
+      <div className="book-page">
+        <header className="book-nav">
+          <span className="nav-brand">Baan Talay<span> · HOTEL24</span></span>
+        </header>
+        <main className="book-hero">
+          <h1><T en="Request received." th="รับคำขอจองแล้ว" /></h1>
+          <p><T en="Pay the deposit by PromptPay. Confirmation comes on LINE." th="ชำระมัดจำผ่าน PromptPay ใบยืนยันส่งเข้า LINE" /></p>
+          <Link href="/" className="btn btn-primary"><T en="Back to HOTEL24" th="กลับสู่ HOTEL24" /></Link>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="book-page">
+      <header className="book-nav">
+        <span className="nav-brand">Baan Talay<span> · HOTEL24</span></span>
+        <div className="seg">
+          <label className="seg-opt"><input type="radio" checked={lang === "en"} onChange={() => setLang("en")} /><span>EN</span></label>
+          <label className="seg-opt"><input type="radio" checked={lang === "th"} onChange={() => setLang("th")} /><span>ไทย</span></label>
+        </div>
+      </header>
+      <main className="book-hero">
+        <div className="page-kicker"><T en="Direct booking · same public rate" th="จองตรง · ราคาเท่า OTA" /></div>
+        <h1><T en="Book Baan Talay without the OTA cut." th="จองบ้านทะเลโดยไม่ผ่าน OTA" /></h1>
+        <p className="lede-sub">
+          <T en="Ao Nang, Krabi. Breakfast, 14:00 checkout and free cancellation when you book here — the rate on Booking.com stays the same." th="อ่าวนาง กระบี่ จองที่นี่ได้อาหารเช้า เช็คเอาท์ 14:00 และยกเลิกฟรี — ราคาหน้า Booking.com ไม่เปลี่ยน" />
+        </p>
+        <div className="book-bar">
+          <div className="field">
+            <label><T en="Nights" th="จำนวนคืน" /></label>
+            <input className="input" type="number" min={1} max={14} value={nights} onChange={(e) => setNights(Number(e.target.value) || 1)} />
+          </div>
+          <div className="field">
+            <label><T en="Promo code" th="รหัสโปรโมชัน" /></label>
+            <input className="input" value={code} onChange={(e) => setCode(e.target.value)} placeholder="LINE24" />
+          </div>
+          {promo && <span className="tag tag-accent"><T en="LINE OA · extra late checkout" th="LINE OA · เช็คเอาท์สายเพิ่ม" /></span>}
+        </div>
+        <div className="book-rooms">
+          {rooms.map((r) => (
+            <article key={r.id} className="book-card">
+              <h3>{lang === "th" ? r.th : r.en}</h3>
+              <div className="stat-val" style={{ color: "var(--color-accent-700)" }}>{thb(r.base)} <span style={{ fontSize: 14, fontWeight: 600 }}>/<T en="night" th="คืน" /></span></div>
+              <p className="text-muted"><T en={`Total ${nights} nights ${thb(r.total)}`} th={`รวม ${nights} คืน ${thb(r.total)}`} /></p>
+              <ul className="book-perks">
+                {BENEFITS.filter((b) => b.id !== "b4").map((b) => (
+                  <li key={b.id}><T en={b.text} th={b.textTh} /></li>
+                ))}
+              </ul>
+              <button className="btn btn-primary btn-block" onClick={() => setOk(true)}><T en="Book with PromptPay" th="จองด้วย PromptPay" /></button>
+            </article>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}

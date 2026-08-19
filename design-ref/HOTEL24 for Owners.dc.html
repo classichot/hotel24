@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/modernist-0535cbd5-0c64-445a-914d-3cb24acb6cae/styles.css">
+  <script src="_ds/modernist-0535cbd5-0c64-445a-914d-3cb24acb6cae/_ds_bundle.js"></script>
+  <script src="./image-slot.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;500;600;700;800;900&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-heading: 'Chivo', 'IBM Plex Sans Thai', sans-serif;
+      --font-body: 'Chivo', 'IBM Plex Sans Thai', sans-serif;
+      --color-accent: #f2c318;
+      --color-accent-100: #fffcea; --color-accent-200: #fff5c2; --color-accent-300: #fbe98a;
+      --color-accent-400: #f7d245; --color-accent-500: #efc60a; --color-accent-600: #d2a30c;
+      --color-accent-700: #7a5c00; --color-accent-800: #5c4400; --color-accent-900: #3d2e00;
+      --color-accent-2: #f2c318;
+      --color-accent-2-100: #fffcea; --color-accent-2-200: #fff5c2; --color-accent-2-300: #fbe98a;
+      --color-accent-2-400: #f7d245; --color-accent-2-500: #efc60a; --color-accent-2-600: #d2a30c;
+      --color-accent-2-700: #7a5c00; --color-accent-2-800: #5c4400; --color-accent-2-900: #3d2e00;
+    }
+    /* Saffron is a field colour (1.5:1 on this ground): type on it is always ink,
+       and any accent-coloured text, hairline or small mark drops to the 700 step. */
+    .btn-primary { color: #201e1d; }
+    .btn-primary:active { background: var(--color-accent-700); color: var(--color-bg); }
+    .btn-ghost, .card-kicker, .nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent-700); }
+    .tag-outline { border-color: var(--color-accent-700); color: var(--color-accent-700); }
+    .seg-opt:has(input:checked) { color: #201e1d; }
+    .radio input:checked + .dot { border-color: var(--color-accent-700); background: var(--color-accent-700); }
+    .input:focus-visible { border-color: var(--color-accent-700); }
+    :focus-visible { outline-color: var(--color-accent-700); }
+    body { margin: 0; text-wrap: pretty; background: var(--color-bg); }
+    a { color: var(--color-accent-700); text-decoration: none; }
+    a:hover { color: var(--color-accent-800); text-decoration: underline; text-underline-offset: 3px; }
+  </style>
+</helmet>
+<div style="background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:17px;line-height:28px">
+
+  <nav class="nav" style="padding-inline:clamp(20px,5vw,72px);gap:20px;flex-wrap:wrap">
+    <span class="nav-brand" style="font-size:20px">HOTEL<span style="color:var(--color-accent-700)">24</span></span>
+    <a href="#system">ระบบ</a>
+    <a href="#profit">กำไรจริง</a>
+    <a href="#thai">TM30 &amp; PDPA</a>
+    <a href="#pricing">ราคา</a>
+    <a href="HOTEL24 Console.dc.html">ดูตัวระบบ</a>
+    <button type="button" class="btn btn-primary">ทดลองฟรี {{ trialDays }} วัน</button>
+  </nav>
+
+  <div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,5vw,72px)">
+
+    <section style="padding:96px 0 76px">
+      <h1 style="font-family:var(--font-heading);font-weight:800;font-size:clamp(36px,5.7vw,76px);line-height:1.06;letter-spacing:-0.02em;margin:0 0 0 -0.058em">
+        <span style="display:block">ระบบปฏิบัติการโรงแรม</span>
+        <span style="display:block">ที่ทำงานแทนคุณ</span>
+        <span style="display:block;color:var(--color-accent-700)">An AI hotel operating system.</span>
+      </h1>
+      <p style="font-size:18px;line-height:29px;max-width:58ch;margin:32px 0 0">จัดการทุกการจอง ทุก OTA ทุกราคาห้อง ทุกข้อความจากแขก และงานหน้างานทั้งหมด จากระบบเดียว — พร้อม AI ที่ช่วยเพิ่มรายได้และลดงานซ้ำ ๆ สำหรับโรงแรมอิสระ รีสอร์ตบูทีค โฮสเทล และวิลล่า ขนาด 10–80 ห้อง</p>
+      <p style="font-size:16px;line-height:27px;max-width:58ch;margin:14px 0 0;color:color-mix(in srgb, var(--color-text) 78%, transparent)">Built for independent Thai properties: LINE-first, TM30-ready, and honest about what each channel actually pays you.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:30px">
+        <button type="button" class="btn btn-primary">เริ่มทดลองใช้ฟรี {{ trialDays }} วัน</button>
+        <a class="btn btn-secondary" href="HOTEL24 Console.dc.html">ดูระบบจริง · See the console</a>
+      </div>
+      <div style="font-size:14px;line-height:22px;margin-top:18px;color:color-mix(in srgb, var(--color-text) 70%, transparent)">ไม่คิดค่าคอมมิชชันต่อการจอง · ยกเลิกได้ทุกเดือน · ทีมงานพูดไทย</div>
+    </section>
+
+    <hr class="hr" style="margin:0">
+
+    <section style="padding:52px 0">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:32px 24px">
+        <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+          <div>
+            <div style="font-family:var(--font-heading);font-weight:800;font-size:clamp(30px,3.2vw,44px);line-height:1.1;color:var(--color-accent-700);margin-left:-0.045em">{{ s.n }}</div>
+            <div style="font-size:13px;line-height:19px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 70%, transparent);margin-top:12px;max-width:26ch">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <hr class="hr" style="margin:0">
+
+    <section id="system" style="padding:72px 0 48px">
+      <div style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:24px">หกอย่างที่ทำให้ต่างจากระบบจองทั่วไป</div>
+      <sc-for list="{{ features }}" as="f" hint-placeholder-count="6">
+        <div style="display:flex;flex-wrap:wrap;gap:18px clamp(24px,4vw,64px);align-items:baseline;padding:34px 0;border-top:2px solid var(--color-divider)">
+          <div style="flex:0 0 92px;display:flex;align-items:baseline;gap:12px">
+            <span style="width:10px;height:10px;background:var(--color-accent-700);flex:none"></span>
+            <span style="font-family:var(--font-heading);font-weight:800;font-size:15px">{{ f.n }}</span>
+          </div>
+          <div style="flex:1 1 300px;min-width:250px">
+            <h2 style="font-size:25px;line-height:30px;letter-spacing:-0.01em;margin:0">{{ f.title }}</h2>
+            <div style="font-size:15px;line-height:24px;color:color-mix(in srgb, var(--color-text) 65%, transparent);margin-top:4px">{{ f.th }}</div>
+          </div>
+          <div style="flex:2 1 420px;min-width:280px">
+            <p style="font-size:16px;line-height:27px;margin:0;max-width:52ch;color:color-mix(in srgb, var(--color-text) 82%, transparent)">{{ f.copy }}</p>
+            <div style="font-size:14px;line-height:23px;margin-top:10px;padding-left:12px;border-left:2px solid var(--color-accent-700);max-width:56ch">{{ f.proof }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+
+    <sc-if value="{{ showProfit }}" hint-placeholder-val="{{ true }}">
+      <section id="profit" style="padding:52px 0 64px;border-top:2px solid var(--color-divider)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,480px),1fr));gap:36px clamp(24px,5vw,64px);align-items:start">
+          <div>
+            <div style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px">รายงานที่ OTA ไม่เคยให้คุณ</div>
+            <h2 style="font-size:clamp(28px,3vw,38px);line-height:1.1;letter-spacing:-0.015em;margin:0">ยอดขายไม่ใช่กำไร</h2>
+            <p style="font-size:16px;line-height:27px;margin:20px 0 0;max-width:46ch;color:color-mix(in srgb, var(--color-text) 82%, transparent)">HOTEL24 หักค่าคอมมิชชัน โปรโมชัน ค่าธรรมเนียมการชำระเงิน ภาษี และต้นทุนการยกเลิก ออกจากทุกช่องทาง แล้วบอกตรง ๆ ว่าช่องทางไหนทำกำไรจริง ต่อหนึ่งคืนที่ขายได้</p>
+            <p style="font-size:16px;line-height:27px;margin:14px 0 0;max-width:46ch;color:color-mix(in srgb, var(--color-text) 82%, transparent)">Same 42-room property, one month. Every channel sold rooms. They did not all pay you the same.</p>
+          </div>
+          <div>
+            <div style="overflow-x:auto">
+              <table class="table" style="min-width:520px;white-space:nowrap">
+                <thead><tr><th>ช่องทาง</th><th style="text-align:right">ยอดขาย</th><th style="text-align:right">ต้นทุนการขาย</th><th style="text-align:right">กำไรสุทธิ</th><th style="text-align:right">ต่อคืน</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ profitRows }}" as="p" hint-placeholder-count="4">
+                    <tr>
+                      <td style="font-family:var(--font-heading);font-weight:800;font-size:14px;color:{{ p.color }}"><span style="display:inline-block;width:9px;height:9px;background:{{ p.ink }};margin-right:9px"></span>{{ p.ch }}</td>
+                      <td style="text-align:right;font-size:14px">{{ p.gross }}</td>
+                      <td style="text-align:right;font-size:14px;opacity:0.75">{{ p.cost }}</td>
+                      <td style="text-align:right;font-size:14px;font-family:var(--font-heading);font-weight:800">{{ p.net }}</td>
+                      <td style="text-align:right;font-size:14px;font-family:var(--font-heading);font-weight:800;color:{{ p.color }}">{{ p.netAdr }}</td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+            <div style="font-size:15px;line-height:25px;margin-top:18px;padding-left:14px;border-left:3px solid var(--color-accent-700);max-width:58ch">Agoda ขายได้ 1.8 เท่าของการจองตรง แต่เหลือกำไรน้อยกว่าคืนละ ฿751 — ย้ายยอดจาก OTA มาจองตรงเพียง 15% เท่ากับกำไรเพิ่มราว ฿40,100 ต่อเดือน ที่อัตราเข้าพักเดิม</div>
+          </div>
+        </div>
+      </section>
+    </sc-if>
+
+    <section id="thai" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:28px clamp(24px,5vw,80px);align-items:center;padding:52px 0 72px;border-top:2px solid var(--color-divider)">
+      <div>
+        <div style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px">ทำงานได้จริงในโรงแรมไทย</div>
+        <h2 style="font-size:clamp(26px,2.7vw,34px);line-height:1.15;letter-spacing:-0.015em;margin:0">พาสปอร์ต, TM30, PDPA — งานที่ระบบต่างชาติไม่ทำให้</h2>
+        <p style="font-size:16px;line-height:27px;margin:20px 0 0;max-width:46ch;color:color-mix(in srgb, var(--color-text) 82%, transparent)">สแกนพาสปอร์ตตอนเช็คอิน ระบบเตรียมแจ้งที่พักคนต่างชาติ TM30 ให้ภายใน 24 ชั่วโมง เก็บใบรับแจ้งไว้กับการจอง คุมสิทธิ์การเข้าถึงข้อมูลตาม PDPA และออกใบกำกับภาษีกับสรุปรายวันให้บัญชี</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:22px">
+          <span class="tag tag-neutral">TM30 แบบชุด</span>
+          <span class="tag tag-neutral">PDPA เก็บ 90 วัน</span>
+          <span class="tag tag-neutral">ใบกำกับภาษี</span>
+          <span class="tag tag-neutral">LINE-first</span>
+          <span class="tag tag-neutral">PromptPay</span>
+        </div>
+      </div>
+      <figure class="grayscale" style="margin:0">
+        <image-slot id="h24-property" shape="rect" placeholder="Drop a photograph of the property — front desk, pool or villa" style="width:100%;aspect-ratio:951/665"></image-slot>
+      </figure>
+    </section>
+
+    <section style="padding:52px 0 64px;border-top:2px solid var(--color-divider)">
+      <div style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:22px">หนึ่งระบบแทนงานทั้งหมด · สิบเอ็ดโมดูล เข้าระบบเดียว</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:2px;background:var(--color-divider);border:2px solid var(--color-divider)">
+        <sc-for list="{{ modules }}" as="m" hint-placeholder-count="11">
+          <div style="background:var(--color-surface);padding:16px;min-height:102px">
+            <div style="font-family:var(--font-heading);font-weight:800;font-size:15px;line-height:20px">{{ m.en }}</div>
+            <div style="font-size:13px;line-height:19px;color:color-mix(in srgb, var(--color-text) 62%, transparent);margin-top:4px">{{ m.th }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:15px;line-height:25px;margin-top:18px;max-width:78ch;color:color-mix(in srgb, var(--color-text) 78%, transparent)">เชื่อมต่อ OTA กว่า 60 ช่องทางผ่านผู้ให้บริการ connectivity แบบ white-label — ติดตั้งและ mapping เสร็จใน 2–4 สัปดาห์ ไม่ต้องรอ certification ของแต่ละ OTA</div>
+    </section>
+
+    <sc-if value="{{ showPricing }}" hint-placeholder-val="{{ true }}">
+      <section id="pricing" style="padding:52px 0 64px;border-top:2px solid var(--color-divider)">
+        <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px">
+          <div>
+            <div style="font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:12px">ราคา</div>
+            <h2 style="font-size:clamp(26px,2.7vw,34px);line-height:1.15;letter-spacing:-0.015em;margin:0">ค่าบริการรายเดือน ไม่หักจากการจอง</h2>
+          </div>
+          <div style="margin-left:auto;font-size:15px;line-height:24px;max-width:38ch;color:color-mix(in srgb, var(--color-text) 78%, transparent)">เจ้าของโรงแรมจ่ายค่าคอมมิชชันให้ OTA มากพอแล้ว HOTEL24 คิดค่าบริการรายเดือนแบบตรงไปตรงมา</div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="table" style="min-width:640px">
+            <thead><tr><th>แพ็กเกจ</th><th>เหมาะกับ</th><th style="text-align:right">ราคา</th></tr></thead>
+            <tbody>
+              <sc-for list="{{ plans }}" as="p" hint-placeholder-count="6">
+                <tr>
+                  <td style="font-family:var(--font-heading);font-weight:800;font-size:14.5px;color:{{ p.color }}">{{ p.name }}</td>
+                  <td style="font-size:14px;opacity:0.8">{{ p.who }}</td>
+                  <td style="text-align:right;font-size:14px;font-family:var(--font-heading);font-weight:800;white-space:nowrap">{{ p.price }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="font-size:14px;line-height:23px;margin-top:16px;max-width:76ch;color:color-mix(in srgb, var(--color-text) 74%, transparent)">ทดลองใช้ฟรี {{ trialDays }} วัน รวมการตั้งค่าห้องและ mapping OTA เบื้องต้น · ย้ายข้อมูลจาก Excel และระบบเดิมได้</div>
+      </section>
+    </sc-if>
+
+    <section style="padding:52px 0 68px;border-top:2px solid var(--color-divider)">
+      <figure style="margin:0">
+        <blockquote style="font-family:var(--font-heading);font-weight:800;font-size:clamp(24px,2.6vw,34px);line-height:1.32;letter-spacing:-0.015em;max-width:34ch;margin:0">“เมื่อก่อนต้องเปิดสามเว็บ OTA กับ Excel ทุกเช้า ตอนนี้ดูใน LINE อันเดียว แล้วกดอนุมัติราคา”</blockquote>
+        <figcaption style="font-size:15.5px;line-height:26px;margin-top:26px;color:color-mix(in srgb, var(--color-text) 70%, transparent)">— เจ้าของรีสอร์ต 38 ห้อง, อ่าวนาง กระบี่ · pilot property</figcaption>
+      </figure>
+    </section>
+  </div>
+
+  <section style="background:var(--color-accent);color:#201e1d">
+    <div style="max-width:1200px;margin:0 auto;padding:76px clamp(20px,5vw,72px)">
+      <h3 style="font-family:var(--font-heading);font-weight:800;font-size:clamp(30px,4vw,54px);line-height:1.07;letter-spacing:-0.015em;margin:0 0 0 -0.058em">
+        <span style="display:block">ให้ AI ดูแลราคาและงานซ้ำ ๆ</span>
+        <span style="display:block">คุณดูแลแขก</span>
+      </h3>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:34px">
+        <button type="button" class="btn btn-ghost" style="color:#201e1d;border-color:#201e1d">เริ่มทดลองใช้ฟรี {{ trialDays }} วัน</button>
+        <a class="btn btn-ghost" href="HOTEL24 Console.dc.html" style="color:#201e1d;border-color:#201e1d">ดูระบบจริงก่อน</a>
+      </div>
+      <div style="font-size:15px;line-height:25px;margin-top:26px;max-width:56ch;opacity:0.9">โทรหาเราได้เลย — ทีมงานพูดไทย และเคยทำงานหน้าเคาน์เตอร์มาก่อน</div>
+    </div>
+  </section>
+
+  <div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,5vw,72px)">
+    <footer style="padding:52px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:28px;font-size:14px;line-height:23px;color:color-mix(in srgb, var(--color-text) 72%, transparent)">
+      <div>
+        <div style="font-family:var(--font-heading);font-weight:800;font-size:18px;color:var(--color-text)">HOTEL<span style="color:var(--color-accent-700)">24</span></div>
+        <div style="margin-top:8px">ระบบปฏิบัติการโรงแรมด้วย AI สำหรับที่พักอิสระในประเทศไทย</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-heading);font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-text)">VIBE24 series</div>
+        <div style="margin-top:8px">HOTEL24 — ที่พักและงานหน้างาน<br>TOUR24 — ทัวร์และแพ็กเกจเดินทาง<br>VACATION24 — ห้อง ทัวร์ รถรับส่ง ในที่เดียว</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-heading);font-weight:800;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-text)">ระบบ</div>
+        <div style="margin-top:8px"><a href="HOTEL24 Console.dc.html">ดูตัวระบบ</a><br><a href="HOTEL24 Accent Options.dc.html">Accent study</a></div>
+      </div>
+      <div style="font-size:13px">ชื่อและราคาในหน้านี้เป็นตัวอย่างสำหรับการนำเสนอ · ตรวจสอบเครื่องหมายการค้าและโดเมนก่อนใช้ชื่อ HOTEL24 จริง</div>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;trialDays&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 30, &quot;min&quot;: 7, &quot;max&quot;: 90, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Offer&quot; },
+  &quot;showPricing&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot; },
+  &quot;showProfit&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot; }
+}">
+const INK = '#201e1d';
+
+class Component extends DCLogic {
+  renderVals() {
+    const trial = this.props.trialDays || 30;
+    return {
+      trialDays: trial,
+      showProfit: this.props.showProfit !== false,
+      showPricing: this.props.showPricing !== false,
+
+      stats: [
+        { n: '60+', label: 'ช่องทาง OTA ผ่านการเชื่อมต่อครั้งเดียว' },
+        { n: '2–4', label: 'สัปดาห์ ติดตั้งและ mapping ห้องเสร็จ' },
+        { n: '฿751', label: 'กำไรต่อคืนที่ต่างกันระหว่าง OTA กับจองตรง' },
+        { n: '07:00', label: 'สรุปเช้าเข้า LINE เจ้าของทุกวัน' }
+      ],
+
+      features: [
+        { n: '01', title: 'AI Revenue Manager', th: 'ผู้จัดการรายได้ที่ทำงานทุกคืน',
+          copy: 'AI ดูอัตราเข้าพัก จังหวะการจอง วันหยุด ฤดูกาล และราคาคู่แข่ง แล้วเสนอปรับราคา ขั้นต่ำการเข้าพัก โปรโมชันนาทีสุดท้าย และการปิดขาย — พร้อมเหตุผลที่อ่านเข้าใจได้ ไม่ใช่กราฟที่ต้องตีความ',
+          proof: '“ขึ้นราคา Deluxe จาก ฿2,200 เป็น ฿2,550 เฉพาะสุดสัปดาห์นี้ เพราะห้องเต็ม 82% และความต้องการในกระบี่กำลังขึ้น”' },
+        { n: '02', title: 'OTA Profit Analyzer', th: 'กำไรจริงต่อช่องทาง',
+          copy: 'ระบบอื่นบอกยอดขายรวมของแต่ละ OTA HOTEL24 หักค่าคอมมิชชัน โปรโมชัน ค่าธรรมเนียมการชำระเงิน ภาษี ค่ายกเลิก และค่าโฆษณา ออกก่อน แล้วเรียงให้เห็นว่าช่องทางไหนคุ้มที่สุดต่อหนึ่งคืน',
+          proof: 'ตัดสินใจได้จริงว่าจะทุ่มไปที่ Agoda, Booking.com, เอเจนต์ หรือดันการจองตรง' },
+        { n: '03', title: 'AI Guest Concierge', th: 'ผู้ช่วยตอบแขกหลายภาษา',
+          copy: 'ตอบคำถามซ้ำ ๆ ทาง LINE, WhatsApp และข้อความ OTA — วิธีเช็คอิน รถรับส่ง เวลาอาหารเช้า อัปเกรดห้อง เช็คเอาท์สาย กิจกรรมใกล้เคียง และเงื่อนไขการยกเลิก ตอบเป็นภาษาที่แขกใช้',
+          proof: 'เรื่องละเอียดอ่อน เช่น การคืนเงินหรือคำร้องเรียน ส่งต่อให้พนักงานทันที ไม่ตอบเอง' },
+        { n: '04', title: 'Owner Mode on LINE', th: 'โหมดเจ้าของบน LINE',
+          copy: 'ทุกเช้าเจ้าของได้สรุปเข้า LINE: แขกเข้า–ออกวันนี้ อัตราเข้าพัก รายได้ ยอดค้างชำระ ห้องที่ยังไม่พร้อมขาย ข้อเสนอราคาจาก AI คำร้องเรียนสำคัญ และรายการเงินสดที่ไม่ตรง',
+          proof: 'อนุมัติราคาได้จากในแชท — เจ้าของโรงแรมไทยสั่งงานผ่าน LINE อยู่แล้ว ไม่ต้องเปลี่ยนพฤติกรรม' },
+        { n: '05', title: 'Direct Booking Booster', th: 'ดันการจองตรงให้เป็นช่องทางหลัก',
+          copy: 'สร้างลิงก์จองบนมือถือสำหรับ LINE OA, Facebook, Instagram, TikTok, Google Business Profile และ QR ในล็อบบี้ — พร้อมหน้าจองสองภาษา รับ PromptPay และบัตรเครดิต',
+          proof: 'ให้สิทธิพิเศษแทนการลดราคา: อาหารเช้า เช็คเอาท์ 14:00 ยกเลิกฟรี — ราคาหน้าเว็บยังเท่า OTA' },
+        { n: '06', title: 'Overbooking Shield', th: 'ป้องกันห้องขายเกิน',
+          copy: 'ตรวจห้องหรือ rate plan ที่ยังไม่ map, การอัปเดต OTA ที่ล่าช้า, จำนวนห้องที่ขัดกัน, การนำเข้าการจองที่ล้มเหลว, การจองซ้ำ และการแก้ไขห้องด้วยมือที่น่าสงสัย',
+          proof: 'ทุกการเปลี่ยนแปลงห้องและราคามี audit log ว่าใคร — หรือระบบใด — แก้ และแก้เมื่อไร' }
+      ],
+
+      profitRows: [
+        { ch: 'Booking.com', gross: '฿1,046,000', cost: '−฿314,300', net: '฿731,700', netAdr: '฿1,776', ink: INK, color: 'var(--color-text)' },
+        { ch: 'Agoda', gross: '฿872,000', cost: '−฿340,440', net: '฿531,560', netAdr: '฿1,493', ink: 'var(--color-neutral-700)', color: 'var(--color-text)' },
+        { ch: 'จองตรง · Direct', gross: '฿520,000', cost: '−฿75,600', net: '฿444,400', netAdr: '฿2,244', ink: '#d2a30c', color: 'var(--color-accent-700)' },
+        { ch: 'Airbnb', gross: '฿243,000', cost: '−฿63,250', net: '฿179,750', netAdr: '฿1,872', ink: 'var(--color-neutral-600)', color: 'var(--color-text)' }
+      ],
+
+      modules: [
+        { en: 'Central Reservation', th: 'ปฏิทินการจองรวมทุกช่องทาง' },
+        { en: 'Channel Manager', th: 'ซิงก์ห้อง ราคา เงื่อนไข กับ OTA' },
+        { en: 'Front Desk PMS', th: 'เช็คอิน–เช็คเอาท์ จัดห้อง มัดจำ' },
+        { en: 'Direct Booking Engine', th: 'หน้าจองของโรงแรมเอง' },
+        { en: 'Rate Manager', th: 'ราคาตามฤดูกาลและอัตราเข้าพัก' },
+        { en: 'Guest Inbox', th: 'LINE, WhatsApp, อีเมล, OTA' },
+        { en: 'Housekeeping', th: 'สถานะห้อง งานทำความสะอาด' },
+        { en: 'Owner Dashboard', th: 'Occupancy, ADR, RevPAR, เงินสด' },
+        { en: 'Finance', th: 'ใบแจ้งหนี้ ใบเสร็จ คืนเงิน กระทบยอด' },
+        { en: 'Multi-property', th: 'ดูแลหลายโรงแรมหรือวิลล่า' },
+        { en: 'Thailand Compliance', th: 'พาสปอร์ต TM30 PDPA ภาษี' }
+      ],
+
+      plans: [
+        { name: 'HOTEL24 Starter', who: 'ไม่เกิน 15 ห้อง', price: '฿990–1,490 / เดือน', color: 'var(--color-text)' },
+        { name: 'HOTEL24 Growth', who: '16–50 ห้อง', price: '฿2,490–3,490 / เดือน', color: 'var(--color-accent-700)' },
+        { name: 'HOTEL24 Pro', who: '51–100 ห้อง', price: '฿4,900–7,900 / เดือน', color: 'var(--color-text)' },
+        { name: 'Multi-property', who: 'กลุ่มโรงแรมและวิลล่า', price: 'ตามจำนวนที่พัก', color: 'var(--color-text)' },
+        { name: 'ติดตั้งและย้ายข้อมูล', who: 'mapping OTA, ตั้งค่าห้อง, อบรมทีม', price: '฿5,000–25,000 ครั้งเดียว', color: 'var(--color-text)' },
+        { name: 'Managed Revenue Service', who: 'ทีม HOTEL24 ดูแลราคาและโปรโมชันให้', price: 'รายเดือน หรือคิดตามผลงาน', color: 'var(--color-text)' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
