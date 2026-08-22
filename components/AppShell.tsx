@@ -18,6 +18,7 @@ import { FRONT_USER, OWNER, PROPERTIES, TODAY, TODAY_TH } from "@/lib/model";
 import { pendingCount } from "@/lib/ai";
 import { pendingRev } from "@/lib/revenueos";
 import { useStore } from "@/lib/store";
+import { ScreenPlaybook } from "@/components/Playbook";
 import { LangToggle } from "@/components/LangToggle";
 import { ModeToggle } from "@/components/ModeToggle";
 import { T, pick } from "@/lib/i18n";
@@ -93,6 +94,7 @@ const NAV = [
     group: { en: "Oversight", th: "เจ้าของกิจการ" },
     items: [
       { href: "/dashboard", en: "Owner Dashboard", th: "ภาพรวมเจ้าของ" },
+      { href: "/playbook", en: "Playbook", th: "เพลย์บุ๊ก" },
       { href: "/compliance", en: "Compliance TM30", th: "TM30 & PDPA" },
       { href: "/finance", en: "Finance", th: "เงินสดและใบเสร็จ" },
       { href: "/switch", en: "Switch from PMS", th: "ย้ายจากระบบเดิม" },
@@ -218,7 +220,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             <button title="Sign out" className="icon-btn" onClick={() => { logout(); router.push("/login"); }}><LogOut size={16} /></button>
           </div>
         </header>
-        <main className="page-main">{children}</main>
+        <main className="page-main">
+          <ScreenPlaybook />
+          {children}
+        </main>
       </div>
 
       <nav className="bottom-nav no-print">

@@ -82,7 +82,7 @@ export default function AutopilotPage() {
             <div className="bar-fill" style={{ width: `${Math.min(100, ((allotment.direct ?? 14) / total) * 100)}%` }} />
           </div>
           <div className="text-muted" style={{ fontSize: 11, marginTop: 6 }}>
-            <T en="Orange fill = share held for Direct." th="แถบส้ม = สัดส่วนที่กันให้จองตรง" />
+            <T en="Yellow fill = share held for Direct." th="แถบเหลือง = สัดส่วนที่กันให้จองตรง" />
           </div>
           <Link href="/rates" className="btn btn-ghost" style={{ paddingLeft: 0, marginTop: 16 }}>
             <T en="7-day rate grid" th="ตารางราคา 7 วัน" /> →

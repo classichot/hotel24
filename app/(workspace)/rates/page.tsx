@@ -107,7 +107,7 @@ export default function RatesPage() {
             </table>
           </div>
           <p className="text-muted" style={{ fontSize: 12, marginTop: 12 }}>
-            <T en="Accent cells are AI-touched: weekend lift, Agoda last-minute, 2-night minimum, stop-sell. Apply queues ARI through the sync worker — the rate grid does not call OTAs itself." th="ช่องสีส้มคือจุดที่ AI แตะ: ขึ้นสุดสัปดาห์, นาทีสุดท้าย Agoda, ขั้นต่ำ 2 คืน, ปิดขาย กดใช้แล้วเข้าคิว ARI ผ่านตัวซิงก์ ตารางราคายิง OTA เองไม่ได้" />
+            <T en="Accent cells are AI-touched: weekend lift, Agoda last-minute, 2-night minimum, stop-sell. Apply queues ARI through the sync worker — the rate grid does not call OTAs itself." th="ช่องสีเหลืองคือจุดที่ AI แตะ: ขึ้นสุดสัปดาห์, นาทีสุดท้าย Agoda, ขั้นต่ำ 2 คืน, ปิดขาย กดใช้แล้วเข้าคิว ARI ผ่านตัวซิงก์ ตารางราคายิง OTA เองไม่ได้" />
           </p>
           <Link href="/inventory" className="btn btn-ghost" style={{ paddingLeft: 0, marginTop: 8 }}><T en="Open inventory & ARI" th="เปิดห้องคงเหลือและ ARI" /> →</Link>
           <div className="callout" style={{ marginTop: 16 }}>
