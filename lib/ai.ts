@@ -593,3 +593,11 @@ export function pendingCount(state: Record<string, RecStatus>, engine?: AiEngine
 export function highPending(state: Record<string, RecStatus>) {
   return AI_ACTIONS.filter((a) => a.sev === "High" && (state[a.id] ?? "pending") === "pending").length;
 }
+
+export function gmQueue(state: Record<string, RecStatus>) {
+  return AI_ACTIONS.filter((a) => a.engine === "gm" && (state[a.id] ?? "pending") === "pending");
+}
+
+export function gmHighQueue(state: Record<string, RecStatus>) {
+  return gmQueue(state).filter((a) => a.sev === "High");
+}

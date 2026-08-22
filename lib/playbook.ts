@@ -362,12 +362,14 @@ export const MENU_PLAYBOOKS: Record<string, MenuPlaybook> = {
     steps: [
       { en: "Read the tool list — search, quote, hold, book, cancel.", th: "อ่านรายการเครื่องมือ — ค้นหา ใบราคา กันห้อง จอง ยกเลิก" },
       { en: "Use the public playground at /agents to book Chiang Mai as an agent.", th: "ใช้สนามเล่นสาธารณะ /agents จองเชียงใหม่แบบเอเจนต์" },
+      { en: "Install HOTEL24 on a phone or tablet from the banner — Share → Add to Home Screen on iOS.", th: "ติดตั้ง HOTEL24 บนโทรศัพท์หรือแท็บเล็ตจากแถบด้านล่าง — iOS ใช้แชร์ แล้วเพิ่มไปยังหน้าจอโฮม" },
+      { en: "Ask the agent — cards show property photo, room photo and a map.", th: "ถามเอเจนต์ — การ์ดโชว์รูปโรงแรม รูปห้อง และแผนที่" },
       { en: "A successful book lands on Reservations as Agent Direct · commission ฿0.", th: "จองสำเร็จไปอยู่ปฏิทินเป็นการจอง Agent Direct · คอม ฿0" },
     ],
     look: "Traveler → agent → Gateway → PMS → Direct. You own the guest.",
     lookTh: "ผู้เดินทาง → เอเจนต์ → เกตเวย์ → PMS → จองตรง คุณเป็นเจ้าของแขก",
-    seed: "Invoke is mapped, not a live ChatGPT plugin review.",
-    seedTh: "การเรียกถูกแมปไว้ ยังไม่ใช่ปลั๊กอิน ChatGPT ที่ผ่านรีวิว",
+    seed: "Invoke is mapped, not a live ChatGPT plugin review. Photos are stock stand-ins; live PMS media uses the same fields.",
+    seedTh: "การเรียกถูกแมปไว้ ยังไม่ใช่ปลั๊กอิน ChatGPT ที่ผ่านรีวิว รูปเป็นภาพสำรอง PMS จริงใช้ฟิลด์ชุดนี้",
   },
   "/registry": {
     code: "PB-REG",
@@ -729,6 +731,7 @@ export const MENU_PLAYBOOKS: Record<string, MenuPlaybook> = {
     whyTh: "ดูโรงแรมแบบ GM เสนอมา คุณกดอนุมัติ — แต่ละครั้งเขียนคลังเดียวกับปฏิทิน แม่บ้าน และซิงก์",
     steps: [
       { en: "Read High items first — oversell, unpaid, TM30, dirty rooms before 14:00.", th: "อ่านรายการสูงก่อน — ขายเกิน ค้างชำระ TM30 ห้องสกปรกก่อน 14:00" },
+      { en: "A popup opens on High items from any console screen. Approve there, or Later to park it.", th: "หน้าต่างจะเด้งเมื่อมีรายการสูง จากทุกหน้าคอนโซล อนุมัติที่นั่น หรือกดไว้ก่อน" },
       { en: "Approve one, or Approve all high.", th: "อนุมัติทีละรายการ หรืออนุมัติรายการสูงทั้งหมด" },
       { en: "Follow the href on a card if you want the operational screen.", th: "ตามลิงก์บนการ์ดถ้าต้องการหน้าปฏิบัติการ" },
     ],

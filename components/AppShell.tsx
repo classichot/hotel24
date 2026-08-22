@@ -18,6 +18,7 @@ import { FRONT_USER, OWNER, PROPERTIES, TODAY, TODAY_TH } from "@/lib/model";
 import { pendingCount } from "@/lib/ai";
 import { pendingRev } from "@/lib/revenueos";
 import { useStore } from "@/lib/store";
+import { GmNotify } from "@/components/GmNotify";
 import { ScreenPlaybook } from "@/components/Playbook";
 import { LangToggle } from "@/components/LangToggle";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -226,6 +227,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
       </div>
 
+      <GmNotify />
       <nav className="bottom-nav no-print">
         {TABS.map((t) => {
           const Icon = t.icon;
@@ -233,6 +235,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link key={t.href} href={t.href} className={isActive(path, t.href) ? "active" : ""}>
               <Icon size={18} />
               {t.label}
+              {t.href === "/gm" && gmOpen > 0 && <span className="nav-badge">{gmOpen}</span>}
             </Link>
           );
         })}

@@ -16,6 +16,13 @@ type HotelHit = {
   parking: boolean;
   cancellation: string;
   directBenefit: string[];
+  photo?: string;
+  roomPhoto?: string;
+  roomName?: string;
+  lat?: number;
+  lng?: number;
+  map?: string;
+  mapUrl?: string;
 };
 
 type Ranked = {
@@ -26,6 +33,10 @@ type Ranked = {
   room: string;
   refundable: boolean;
   inclusions: string[];
+  photo?: string;
+  roomPhoto?: string;
+  map?: string;
+  mapUrl?: string;
 };
 
 async function invoke(tool: string, args: Record<string, unknown>) {
@@ -35,6 +46,52 @@ async function invoke(tool: string, args: Record<string, unknown>) {
     body: JSON.stringify({ tool, arguments: args }),
   });
   return res.json() as Promise<{ ok: boolean; result: Record<string, unknown> }>;
+}
+
+function MediaStage({
+  photo,
+  roomPhoto,
+  map,
+  mapUrl,
+  hotel,
+  room,
+}: {
+  photo?: string;
+  roomPhoto?: string;
+  map?: string;
+  mapUrl?: string;
+  hotel?: string;
+  room?: string;
+}) {
+  if (!photo && !roomPhoto && !map) return null;
+  return (
+    <div className="agent-stage">
+      {photo && (
+        <figure>
+          <img src={photo} alt="" />
+          <figcaption className="agent-stage-cap"><T en="Property" th="โรงแรม" />{hotel ? ` · ${hotel}` : ""}</figcaption>
+        </figure>
+      )}
+      {roomPhoto && (
+        <figure>
+          <img src={roomPhoto} alt="" />
+          <figcaption className="agent-stage-cap"><T en="Room" th="ห้อง" />{room ? ` · ${room}` : ""}</figcaption>
+        </figure>
+      )}
+      {map && (
+        <figure>
+          <iframe title={hotel ? `${hotel} map` : "Map"} src={map} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+          <figcaption className="agent-stage-cap">
+            {mapUrl ? (
+              <a href={mapUrl} target="_blank" rel="noreferrer"><T en="Open map" th="เปิดแผนที่" /></a>
+            ) : (
+              <T en="Map" th="แผนที่" />
+            )}
+          </figcaption>
+        </figure>
+      )}
+    </div>
+  );
 }
 
 export function AgentPlayground({ onBooked }: { onBooked?: (booking: Record<string, unknown>) => void }) {
@@ -101,6 +158,8 @@ export function AgentPlayground({ onBooked }: { onBooked?: (booking: Record<stri
     }
   }
 
+  const pick = ranked.find((r) => r.hotelId === winner) || ranked[0];
+
   return (
     <div>
       <div className="seg" style={{ flexWrap: "wrap", marginBottom: 12 }}>
@@ -124,44 +183,66 @@ export function AgentPlayground({ onBooked }: { onBooked?: (booking: Record<stri
         </button>
       )}
 
-      {step !== "ask" && (
-        <div className="table-wrap" style={{ marginTop: 8 }}>
-          <table className="table">
-            <thead>
-              <tr>
-                <th><T en="Hotel" th="โรงแรม" /></th>
-                <th className="num"><T en="Direct" th="จองตรง" /></th>
-                <th><T en="Avail." th="ว่าง" /></th>
-                <th><T en="Breakfast" th="อาหารเช้า" /></th>
-                <th><T en="Parking" th="ที่จอด" /></th>
-                <th><T en="Cancel" th="ยกเลิก" /></th>
-                <th><T en="Direct benefit" th="สิทธิ์จองตรง" /></th>
-              </tr>
-            </thead>
-            <tbody>
-              {hits.map((h) => (
-                <tr key={h.hotelId} style={{ background: h.hotelId === winner ? "color-mix(in srgb, var(--color-accent) 12%, transparent)" : undefined }}>
-                  <td>
-                    <strong>{h.name}</strong>
-                    <div className="text-muted" style={{ fontSize: 11 }}>{h.area}, {h.city}</div>
-                  </td>
-                  <td className="num" style={{ fontWeight: 800, color: "var(--color-accent-700)" }}>฿{h.directPrice.toLocaleString()}</td>
-                  <td>{h.available ? "Yes" : "No"}</td>
-                  <td>{h.breakfast ? "Included" : "—"}</td>
-                  <td>{h.parking ? "Yes" : "—"}</td>
-                  <td className="text-muted" style={{ fontSize: 12 }}>{h.cancellation}</td>
-                  <td className="text-muted" style={{ fontSize: 12 }}>{h.directBenefit.join(" · ")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {step !== "ask" && hits.length > 0 && (
+        <>
+          <p className="agent-media-note">
+            <T
+              en="Property photo, room photo and OpenStreetMap come back on the same search payload. Demo uses stock stills — live PMS media uses these same fields."
+              th="รูปโรงแรม รูปห้อง และแผนที่ OpenStreetMap กลับมากับผลค้นหาเดียวกัน เดโมใช้ภาพสำรอง — PMS จริงใช้ฟิลด์ชุดนี้"
+            />
+          </p>
+          <div className="agent-hits">
+            {hits.map((h) => {
+              const on = h.hotelId === winner;
+              return (
+                <article key={h.hotelId} className={`agent-hit${on ? " on" : ""}`}>
+                  <button type="button" className="agent-hit-pick" onClick={() => setWinner(h.hotelId)}>
+                    {h.photo && <img className="agent-hit-photo" src={h.photo} alt="" />}
+                    <div className="agent-hit-body">
+                      <div className="page-kicker" style={{ marginBottom: 6 }}>
+                        {on ? <T en="Recommended" th="แนะนำ" /> : h.available ? <T en="Available" th="ว่าง" /> : <T en="Sold out" th="เต็ม" />}
+                      </div>
+                      <strong>{h.name}</strong>
+                      <div className="text-muted" style={{ fontSize: 12, marginTop: 4 }}>{h.area}, {h.city}</div>
+                      <div className="stat-val" style={{ color: "var(--color-accent-700)", fontSize: 22, marginTop: 8 }}>
+                        ฿{h.directPrice.toLocaleString()}
+                      </div>
+                      <div className="agent-hit-room">
+                        {h.roomPhoto && <img src={h.roomPhoto} alt="" />}
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 700 }}>{h.roomName}</div>
+                          <div className="text-muted" style={{ fontSize: 12 }}>
+                            {h.breakfast ? <T en="Breakfast" th="อาหารเช้า" /> : "—"}
+                            {" · "}
+                            {h.parking ? <T en="Parking" th="ที่จอด" /> : <T en="No parking" th="ไม่มีที่จอด" />}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-muted" style={{ fontSize: 12 }}>{h.cancellation}</div>
+                      <div className="text-muted" style={{ fontSize: 12, marginTop: 4 }}>{h.directBenefit.join(" · ")}</div>
+                    </div>
+                  </button>
+                  {on && h.map && (
+                    <>
+                      <iframe className="agent-map" title={`${h.name} map`} src={h.map} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+                      {h.mapUrl && (
+                        <a className="agent-map-link" href={h.mapUrl} target="_blank" rel="noreferrer">
+                          <T en="Open map" th="เปิดแผนที่" />
+                        </a>
+                      )}
+                    </>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        </>
       )}
 
-      {step === "results" && ranked[0] && (
+      {step === "results" && pick && (
         <div className="callout" style={{ marginTop: 16 }}>
           <strong><T en="Hotel A looks best." th="โรงแรมนี้เหมาะสุด" /></strong>{" "}
-          {ranked[0].name} · ฿{ranked[0].rate.toLocaleString()} · {ranked[0].inclusions.join(" · ")}
+          {pick.name} · ฿{pick.rate.toLocaleString()} · {pick.room} · {pick.inclusions.join(" · ")}
           <div style={{ marginTop: 12 }}>
             <button className="btn btn-primary" disabled={busy} onClick={holdWinner}>
               <T en="Book it — create_quote() → hold_room()" th="จอง — create_quote() → hold_room()" />
@@ -172,6 +253,14 @@ export function AgentPlayground({ onBooked }: { onBooked?: (booking: Record<stri
 
       {step === "hold" && hold && (
         <div className="callout" style={{ marginTop: 16 }}>
+          <MediaStage
+            photo={String(hold.photo || "")}
+            roomPhoto={String(hold.roomPhoto || "")}
+            map={String(hold.map || "")}
+            mapUrl={String(hold.mapUrl || "")}
+            hotel={String(hold.hotel || "")}
+            room={String(hold.room || "")}
+          />
           <strong>{String(hold.holdId)}</strong>
           <p style={{ margin: "8px 0 0", fontSize: 13 }}>
             {String(hold.hotel)} · {String(hold.room)} · ฿{Number(hold.rate).toLocaleString()} · expires {String(hold.expires)}
@@ -191,6 +280,14 @@ export function AgentPlayground({ onBooked }: { onBooked?: (booking: Record<stri
 
       {step === "booked" && booking && (
         <div className="callout" style={{ marginTop: 16 }}>
+          <MediaStage
+            photo={String(booking.photo || "")}
+            roomPhoto={String(booking.roomPhoto || "")}
+            map={String(booking.map || "")}
+            mapUrl={String(booking.mapUrl || "")}
+            hotel={String(booking.hotel || "")}
+            room={String(booking.room || "")}
+          />
           <strong>{String(booking.bookingId)}</strong>
           <p style={{ margin: "8px 0 0", fontSize: 13 }}>
             {String(booking.guest)} · {String(booking.hotel)} · {String(booking.room)} · ฿{Number(booking.total).toLocaleString()} · PromptPay

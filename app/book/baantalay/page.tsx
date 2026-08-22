@@ -2,10 +2,13 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { hotelBySlug, mapEmbed, mapOpen } from "@/lib/hap";
 import { BENEFITS, ROOM_TYPES } from "@/lib/model";
 import { thb } from "@/lib/format";
 import { T } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
+
+const property = hotelBySlug("baantalay");
 
 export default function BookingPage() {
   const { lang, setLang, benefits } = useStore();
@@ -17,6 +20,7 @@ export default function BookingPage() {
     () =>
       ROOM_TYPES.filter((r) => r.id === "garden" || r.id === "pool").map((r) => ({
         ...r,
+        photo: property.roomsTypes.find((x) => x.id === r.id)?.photo,
         total: r.base * nights,
       })),
     [nights]
@@ -52,6 +56,15 @@ export default function BookingPage() {
         <p className="lede-sub">
           <T en="Ao Nang, Krabi. Breakfast, 14:00 checkout and free cancellation when you book here — the rate on Booking.com stays the same." th="อ่าวนาง กระบี่ จองที่นี่ได้อาหารเช้า เช็คเอาท์ 14:00 และยกเลิกฟรี — ราคาหน้า Booking.com ไม่เปลี่ยน" />
         </p>
+        <div className="book-media">
+          <img src={property.photos[0]} alt="" />
+          <iframe title="Baan Talay map" src={mapEmbed(property.lat, property.lng)} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+        </div>
+        <p className="text-muted" style={{ fontSize: 12, marginTop: -12 }}>
+          <a href={mapOpen(property.lat, property.lng)} target="_blank" rel="noreferrer">
+            <T en="Ao Nang, Krabi — open map" th="อ่าวนาง กระบี่ — เปิดแผนที่" />
+          </a>
+        </p>
         <div className="book-bar">
           <div className="field">
             <label><T en="Nights" th="จำนวนคืน" /></label>
@@ -66,6 +79,7 @@ export default function BookingPage() {
         <div className="book-rooms">
           {rooms.map((r) => (
             <article key={r.id} className="book-card">
+              {r.photo && <img src={r.photo} alt="" />}
               <h3>{lang === "th" ? r.th : r.en}</h3>
               <div className="stat-val" style={{ color: "var(--color-accent-700)" }}>{thb(r.base)} <span style={{ fontSize: 14, fontWeight: 600 }}>/<T en="night" th="คืน" /></span></div>
               <p className="text-muted"><T en={`Total ${nights} nights ${thb(r.total)}`} th={`รวม ${nights} คืน ${thb(r.total)}`} /></p>

@@ -32,7 +32,21 @@ export type HapRoom = {
   agodaRate: number;
   avail: number;
   refundable: boolean;
+  photo: string;
 };
+
+export function mapEmbed(lat: number, lng: number, span = 0.012) {
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${lng - span},${lat - span},${lng + span},${lat + span}&layer=mapnik&marker=${lat},${lng}`;
+}
+
+export function mapOpen(lat: number, lng: number) {
+  return `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}`;
+}
+
+export function mediaUrl(src: string, origin = "") {
+  if (src.startsWith("http")) return src;
+  return `${origin}${src}`;
+}
 
 export type HapHotel = {
   id: string;
@@ -143,11 +157,11 @@ export const HAP_HOTELS: HapHotel[] = [
     checkOut: "12:00",
     languages: ["th", "en"],
     website: "/book/baantalay",
-    photos: ["/book/baantalay"],
+    photos: ["https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=70"],
     roomsTypes: [
-      { id: "garden", en: "Garden Deluxe", th: "ดีลักซ์สวน", occupancy: 2, rate: 2200, agodaRate: 2200, avail: 3, refundable: true },
-      { id: "pool", en: "Pool Access", th: "พูลแอคเซส", occupancy: 2, rate: 2900, agodaRate: 2900, avail: 1, refundable: true },
-      { id: "suite", en: "Sea View Suite", th: "สวีทวิวทะเล", occupancy: 2, rate: 4300, agodaRate: 4300, avail: 4, refundable: true },
+      { id: "garden", en: "Garden Deluxe", th: "ดีลักซ์สวน", occupancy: 2, rate: 2200, agodaRate: 2200, avail: 3, refundable: true, photo: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=900&q=70" },
+      { id: "pool", en: "Pool Access", th: "พูลแอคเซส", occupancy: 2, rate: 2900, agodaRate: 2900, avail: 1, refundable: true, photo: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=900&q=70" },
+      { id: "suite", en: "Sea View Suite", th: "สวีทวิวทะเล", occupancy: 2, rate: 4300, agodaRate: 4300, avail: 4, refundable: true, photo: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=70" },
     ],
     reviews: { score: 9.2, count: 418 },
     cancel: { en: "Free cancellation until 24 hours before arrival.", th: "ยกเลิกฟรีก่อนเข้าพัก 24 ชั่วโมง", freeHours: 24 },
@@ -178,10 +192,10 @@ export const HAP_HOTELS: HapHotel[] = [
     checkOut: "12:00",
     languages: ["th", "en", "zh"],
     website: "/book/baantalay",
-    photos: ["/book/baantalay"],
+    photos: ["https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=70"],
     roomsTypes: [
-      { id: "courtyard", en: "Courtyard Deluxe", th: "ดีลักซ์ลานบ้าน", occupancy: 2, rate: 2950, agodaRate: 2950, avail: 4, refundable: true },
-      { id: "garden", en: "Garden Suite", th: "สวีทสวน", occupancy: 3, rate: 3400, agodaRate: 3400, avail: 2, refundable: true },
+      { id: "courtyard", en: "Courtyard Deluxe", th: "ดีลักซ์ลานบ้าน", occupancy: 2, rate: 2950, agodaRate: 2950, avail: 4, refundable: true, photo: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=900&q=70" },
+      { id: "garden", en: "Garden Suite", th: "สวีทสวน", occupancy: 3, rate: 3400, agodaRate: 3400, avail: 2, refundable: true, photo: "https://images.unsplash.com/photo-1578683010236-d716f4a3f77b?auto=format&fit=crop&w=900&q=70" },
     ],
     reviews: { score: 9.4, count: 186 },
     cancel: { en: "Free cancellation until 24 hours before arrival.", th: "ยกเลิกฟรีก่อนเข้าพัก 24 ชั่วโมง", freeHours: 24 },
@@ -212,9 +226,9 @@ export const HAP_HOTELS: HapHotel[] = [
     checkOut: "11:00",
     languages: ["th", "en"],
     website: "/book/baantalay",
-    photos: ["/book/baantalay"],
+    photos: ["https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=70"],
     roomsTypes: [
-      { id: "loft", en: "River Loft", th: "ลอฟท์ริมน้ำ", occupancy: 2, rate: 3200, agodaRate: 3200, avail: 3, refundable: false },
+      { id: "loft", en: "River Loft", th: "ลอฟท์ริมน้ำ", occupancy: 2, rate: 3200, agodaRate: 3200, avail: 3, refundable: false, photo: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=900&q=70" },
     ],
     reviews: { score: 8.7, count: 94 },
     cancel: { en: "Non-refundable.", th: "ไม่คืนเงิน", freeHours: 0 },
@@ -245,9 +259,9 @@ export const HAP_HOTELS: HapHotel[] = [
     checkOut: "11:00",
     languages: ["th", "en"],
     website: "/book/baantalay",
-    photos: ["/book/baantalay"],
+    photos: ["https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=70"],
     roomsTypes: [
-      { id: "dorm", en: "4-bed mixed dorm", th: "ดอร์มรวม 4 เตียง", occupancy: 1, rate: 640, agodaRate: 640, avail: 6, refundable: true },
+      { id: "dorm", en: "4-bed mixed dorm", th: "ดอร์มรวม 4 เตียง", occupancy: 1, rate: 640, agodaRate: 640, avail: 6, refundable: true, photo: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=900&q=70" },
     ],
     reviews: { score: 8.1, count: 312 },
     cancel: { en: "Free until 48 hours before.", th: "ฟรีก่อน 48 ชั่วโมง", freeHours: 48 },
@@ -278,9 +292,9 @@ export const HAP_HOTELS: HapHotel[] = [
     checkOut: "12:00",
     languages: ["th", "en"],
     website: "/book/baantalay",
-    photos: ["/book/baantalay"],
+    photos: ["https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=70"],
     roomsTypes: [
-      { id: "villa", en: "Beach Villa 2BR", th: "วิลล่าริมหาด", occupancy: 6, rate: 8900, agodaRate: 8900, avail: 1, refundable: true },
+      { id: "villa", en: "Beach Villa 2BR", th: "วิลล่าริมหาด", occupancy: 6, rate: 8900, agodaRate: 8900, avail: 1, refundable: true, photo: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=70" },
     ],
     reviews: { score: 9.6, count: 41 },
     cancel: { en: "Free until 7 days before.", th: "ฟรีก่อน 7 วัน", freeHours: 168 },
@@ -344,8 +358,9 @@ export function buildHotel24Json(slug = "baantalay", origin = "") {
       occupancy: r.occupancy,
       liveRate: r.rate,
       availability: r.avail,
+      photo: mediaUrl(r.photo, base),
     })),
-    photos: h.photos.map((p) => `${base}${p}`),
+    photos: h.photos.map((p) => mediaUrl(p, base)),
     checkIn: h.checkIn,
     checkOut: h.checkOut,
     policies: { cancellation: h.cancel.en, languages: h.languages },
@@ -380,6 +395,8 @@ export function buildJsonLd(slug = "baantalay", origin = "") {
       addressRegion: h.city,
       addressCountry: "TH",
     },
+    image: h.photos[0],
+    photo: h.photos,
     geo: { "@type": "GeoCoordinates", latitude: h.lat, longitude: h.lng },
     aggregateRating: {
       "@type": "AggregateRating",
@@ -399,6 +416,7 @@ export function buildJsonLd(slug = "baantalay", origin = "") {
       price: r.rate,
       priceCurrency: "THB",
       availability: r.avail > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+      image: r.photo,
     })),
   };
 }
@@ -490,6 +508,23 @@ function cheapest(h: HapHotel) {
   return h.roomsTypes.reduce((m, r) => Math.min(m, r.rate), Infinity);
 }
 
+function cheapestRoom(h: HapHotel) {
+  return [...h.roomsTypes].sort((a, b) => a.rate - b.rate)[0];
+}
+
+function mediaOf(h: HapHotel, room?: HapRoom) {
+  const r = room ?? cheapestRoom(h);
+  return {
+    photo: h.photos[0] || "",
+    roomPhoto: r?.photo || "",
+    roomName: r?.en || "",
+    lat: h.lat,
+    lng: h.lng,
+    map: mapEmbed(h.lat, h.lng),
+    mapUrl: mapOpen(h.lat, h.lng),
+  };
+}
+
 export function invokeHap(name: string, args: Args = {}, origin = "") {
   const resolved = HAP_ALIASES[name] || name;
   switch (resolved as HapToolName) {
@@ -510,7 +545,7 @@ export function invokeHap(name: string, args: Args = {}, origin = "") {
       return {
         count: list.length,
         hotels: list.map((h) => {
-          const room = [...h.roomsTypes].sort((a, b) => a.rate - b.rate)[0];
+          const room = cheapestRoom(h);
           const offer = directOffer(h, room);
           return {
             hotelId: h.id,
@@ -524,6 +559,7 @@ export function invokeHap(name: string, args: Args = {}, origin = "") {
             cancellation: h.cancel.en,
             directBenefit: offer.inclusions,
             verification: h.id,
+            ...mediaOf(h, room),
           };
         }),
       };
@@ -535,7 +571,7 @@ export function invokeHap(name: string, args: Args = {}, origin = "") {
         hotelId: h.id,
         checkIn: str(args, "checkIn") || "open",
         checkOut: str(args, "checkOut") || "open",
-        rooms: h.roomsTypes.map((r) => ({ roomId: r.id, name: r.en, avail: r.avail, rate: r.rate })),
+        rooms: h.roomsTypes.map((r) => ({ roomId: r.id, name: r.en, avail: r.avail, rate: r.rate, photo: r.photo })),
       };
     }
     case "get_room_types": {
@@ -553,7 +589,7 @@ export function invokeHap(name: string, args: Args = {}, origin = "") {
       const h = hotelById(str(args, "hotelId"));
       const r = h?.roomsTypes.find((x) => x.id === str(args, "roomId")) ?? h?.roomsTypes[0];
       if (!h || !r) return { error: "not_found" };
-      return { hotelId: h.id, room: r.en, ...directOffer(h, r) };
+      return { hotelId: h.id, room: r.en, ...directOffer(h, r), ...mediaOf(h, r) };
     }
     case "get_cancellation_policy": {
       const h = hotelById(str(args, "hotelId"));
@@ -575,7 +611,7 @@ export function invokeHap(name: string, args: Args = {}, origin = "") {
             (room.refundable ? 2 : 0) +
             h.reviews.score / 5 -
             room.rate / 5000;
-          return { hotelId: h.id, name: h.name, area: h.area, rate: room.rate, room: room.en, refundable: room.refundable, inclusions: directOffer(h, room).inclusions, score };
+          return { hotelId: h.id, name: h.name, area: h.area, rate: room.rate, room: room.en, refundable: room.refundable, inclusions: directOffer(h, room).inclusions, score, ...mediaOf(h, room) };
         })
         .sort((a, b) => b.score - a.score);
       return { winner: ranked[0]?.hotelId, ranked };
@@ -598,7 +634,7 @@ export function invokeHap(name: string, args: Args = {}, origin = "") {
       };
       holds().set(holdId, rec);
       r.avail -= 1;
-      return { ...rec, rate: r.rate, hotel: h.name, room: r.en, next: "create_booking" };
+      return { ...rec, rate: r.rate, hotel: h.name, room: r.en, next: "create_booking", ...mediaOf(h, r) };
     }
     case "create_booking": {
       let hold = str(args, "holdId") ? holds().get(str(args, "holdId")) : undefined;
@@ -634,6 +670,7 @@ export function invokeHap(name: string, args: Args = {}, origin = "") {
         ...rec,
         hotel: h.name,
         room: r.en,
+        ...mediaOf(h, r),
         merchantOfRecord: h.name,
         otaInvolved: false,
         message: "The hotel owns this guest. Booking.com was not involved.",
@@ -658,7 +695,7 @@ export function invokeHap(name: string, args: Args = {}, origin = "") {
     case "get_directions": {
       const h = hotelById(str(args, "hotelId"));
       if (!h) return { error: "hotel_not_found" };
-      return { hotelId: h.id, lat: h.lat, lng: h.lng, text: `${h.area}, ${h.city}, Thailand` };
+      return { hotelId: h.id, lat: h.lat, lng: h.lng, map: mapEmbed(h.lat, h.lng), mapUrl: mapOpen(h.lat, h.lng), text: `${h.area}, ${h.city}, Thailand` };
     }
     case "get_facilities": {
       const h = hotelById(str(args, "hotelId"));
