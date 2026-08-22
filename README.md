@@ -37,10 +37,28 @@ HOTEL24
 ├── Channel Manager          Booking / Agoda / Trip / Expedia
 ├── HOTEL24 Direct           hotel website booking
 ├── HOTEL24 AI Distribution  ChatGPT · Gemini · MCP · UCP · ACP
-└── HOTEL24 Revenue AI       pricing / inventory / direct offers
+└── HOTEL24 RevenueOS        autonomous AI revenue team
 ```
 
-**HOTEL24 Agent Direct** is the strategic pillar. Cloudbeds-style PMS is necessary infrastructure. Agent Direct is the differentiator: *what a hotel needs when the guest’s first interface is an AI agent rather than Booking.com.*
+**HOTEL24 Agent Direct** and **HOTEL24 RevenueOS** are the two strategic pillars. Cloudbeds-style PMS is necessary infrastructure.
+
+## RevenueOS
+
+Autonomous AI revenue team. Agents think and explain. Forecasting/optimization engines calculate. Guardian policy blocks catastrophe. Execution writes rates, inventory and campaigns. **An LLM never picks ฿4,900 alone.**
+
+Phase 1 (shipped as a seeded department):
+
+1. Demand Forecast + booking curve + pickup  
+2. Competitor + event + compression  
+3. Dynamic pricing + digital twin  
+4. Inventory optimization  
+5. Channel profitability (Net ADR)  
+6. Revenue Guardian  
+7. Revenue Director + morning meeting + opportunity hunter  
+
+Default autonomy is **Level 2 — guardrailed autopilot**. Console: `/revenue-os`. Classic `/autopilot` remains the older single-queue writer.
+
+The long-term proposition: a 30–100 room hotel cannot hire a Revenue Director + RM + distribution manager + analyst. **HOTEL24 does the job.**
 
 ## Hotel Agent Protocol (HAP)
 

@@ -39,7 +39,9 @@ export default function RatesPage() {
         {" "}
         <T en="AI monitors occupancy, booking pace, holidays, seasonality and competitor pricing. It never hides the reason." th="AI ดูอัตราเข้าพัก จังหวะจอง วันหยุด ฤดูกาล และราคาคู่แข่ง และไม่ซ่อนเหตุผล" />
         {" "}
-        <Link href="/autopilot"><T en="Open Revenue Autopilot" th="เปิดออโตไพลอตรายได้" /> →</Link>
+        <Link href="/revenue-os"><T en="Open RevenueOS" th="เปิด RevenueOS" /> →</Link>
+        {" · "}
+        <Link href="/autopilot"><T en="Classic Autopilot" th="ออโตไพลอตเดิม" /> →</Link>
       </div>
 
       <div className="split-main">

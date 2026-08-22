@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { FRONT_USER, OWNER, PROPERTIES, TODAY, TODAY_TH } from "@/lib/model";
 import { pendingCount } from "@/lib/ai";
+import { pendingRev } from "@/lib/revenueos";
 import { useStore } from "@/lib/store";
 import { LangToggle } from "@/components/LangToggle";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -33,6 +34,19 @@ const NAV = [
       { href: "/agent-offers", en: "Direct Offers", th: "ข้อเสนอตรง" },
       { href: "/aeo", en: "AEO", th: "AEO" },
       { href: "/hap", en: "HAP spec", th: "สเปก HAP" },
+    ],
+  },
+  {
+    group: { en: "RevenueOS", th: "RevenueOS" },
+    items: [
+      { href: "/revenue-os", en: "Director", th: "ผู้อำนวยการ" },
+      { href: "/rev-demand", en: "Demand Brain", th: "สมองดีมานด์" },
+      { href: "/rev-pricing", en: "Price Brain", th: "สมองราคา" },
+      { href: "/rev-inventory", en: "Inventory Brain", th: "สมองห้อง" },
+      { href: "/rev-distribution", en: "Distribution Brain", th: "สมองช่องทาง" },
+      { href: "/rev-guardian", en: "Guardian", th: "ผู้พิทักษ์" },
+      { href: "/rev-twin", en: "Digital Twin", th: "ฝาแฝดดิจิทัล" },
+      { href: "/rev-decisions", en: "Decision ledger", th: "สมุดตัดสิน" },
     ],
   },
   {
@@ -101,7 +115,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const {
     logout, toast, navOpen, setNavOpen, lang, role, propertyId, setPropertyId,
-    search, setSearch, aiMode, recState, shieldClosed, switchStatus, otaChannels, aiState, agentReady,
+    search, setSearch, aiMode, recState, shieldClosed, switchStatus, otaChannels, aiState, agentReady, revState,
   } = useStore();
   const user = role === "front" || role === "housekeeping" ? FRONT_USER : OWNER;
   const property = PROPERTIES.find((p) => p.id === propertyId) ?? PROPERTIES[0];
@@ -148,6 +162,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   {item.href === "/rates" && pending < 3 && aiMode === "recommend" && <span className="ink-dot" />}
                   {item.href === "/gm" && gmOpen > 0 && <span className="ink-dot" />}
                   {item.href === "/agent-direct" && !agentReady && <span className="ink-dot" />}
+                  {item.href === "/revenue-os" && pendingRev(revState).length > 0 && <span className="ink-dot" />}
                   {item.href === "/line" && pendingCount(aiState, "brief") > 0 && <span className="ink-dot" />}
                   {item.href === "/channels" && (shieldOpen || otaWarn) && <span className="ink-dot" />}
                   {item.href === "/sync" && otaWarn && <span className="ink-dot" />}
@@ -158,7 +173,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <div className="ink-foot">
-          Connectivity: white-label · 61+ channels<br />Agent Direct · hotel owns the guest
+          Connectivity: white-label · 61+ channels<br />Agent Direct · RevenueOS · hotel owns the guest
         </div>
       </aside>
 

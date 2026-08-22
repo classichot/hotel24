@@ -26,6 +26,13 @@ import {
 import { PMS_SOURCES, SWITCH_STEPS, type PmsSource, type SwitchStatus } from "./migrate";
 import { AI_ACTIONS, ALLOTMENT_SEED, type AiEngine } from "./ai";
 import {
+  REV_DECISIONS,
+  guardDecision,
+  pendingRev,
+  type RevLevel,
+  type RevStatus,
+} from "./revenueos";
+import {
   activeConnector,
   cloneAri,
   cloneChannels,
@@ -138,6 +145,14 @@ type Store = {
   setAgentReady: (v: boolean) => void;
   agentBooks: Record<string, unknown>[];
   receiveAgentBooking: (booking: Record<string, unknown>) => void;
+  revLevel: RevLevel;
+  setRevLevel: (n: RevLevel) => void;
+  revState: Record<string, RevStatus>;
+  applyRev: (id: string) => void;
+  dismissRev: (id: string) => void;
+  applyRevOpen: () => void;
+  revMeetingAt: string | null;
+  runRevMeeting: () => void;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -191,6 +206,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [collected, setCollected] = useState<Record<string, boolean>>({});
   const [agentReady, setAgentReadyState] = useState(true);
   const [agentBooks, setAgentBooks] = useState<Record<string, unknown>[]>([]);
+  const [revLevel, setRevLevelState] = useState<RevLevel>(2);
+  const [revState, setRevState] = useState<Record<string, RevStatus>>(() =>
+    Object.fromEntries(REV_DECISIONS.filter((d) => d.risk === "blocked").map((d) => [d.id, "blocked" as RevStatus]))
+  );
+  const [revMeetingAt, setRevMeetingAt] = useState<string | null>(null);
+  const revStateRef = useRef<Record<string, RevStatus>>({});
+  revStateRef.current = revState;
   const aiStateRef = useRef<Record<string, RecStatus>>({});
   aiStateRef.current = aiState;
 
@@ -202,6 +224,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           authed?: boolean; role?: Role; theme?: string; lang?: Lang; propertyId?: string; aiMode?: AiMode;
           switchSource?: PmsSource; switchStatus?: SwitchStatus; agentReady?: boolean;
           agentBooks?: Record<string, unknown>[];
+          revLevel?: RevLevel; revState?: Record<string, RevStatus>; revMeetingAt?: string | null;
         };
         if (s.authed) setAuthed(true);
         if (s.role) setRole(s.role);
@@ -212,6 +235,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (s.switchSource === "cloudbeds" || s.switchSource === "hotelier") setSwitchSourceState(s.switchSource);
         if (typeof s.agentReady === "boolean") setAgentReadyState(s.agentReady);
         if (Array.isArray(s.agentBooks)) setAgentBooks(s.agentBooks);
+        if (s.revLevel === 0 || s.revLevel === 1 || s.revLevel === 2 || s.revLevel === 3) setRevLevelState(s.revLevel);
+        if (s.revState && typeof s.revState === "object") setRevState(s.revState);
+        if (typeof s.revMeetingAt === "string" || s.revMeetingAt === null) setRevMeetingAt(s.revMeetingAt ?? null);
         if (s.switchStatus === "done") {
           setSwitchStatus("done");
           setSwitchStep(SWITCH_STEPS.length - 1);
@@ -225,8 +251,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!ready) return;
     localStorage.setItem(KEY, JSON.stringify({
       authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus: switchStatus === "running" ? "idle" : switchStatus, agentReady, agentBooks,
+      revLevel, revState, revMeetingAt,
     }));
-  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus, agentReady, agentBooks]);
+  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus, agentReady, agentBooks, revLevel, revState, revMeetingAt]);
 
   const flash = useCallback((m: string) => {
     setToast(m);
@@ -803,6 +830,86 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     flash(v ? "AI Agent Ready · identity is live" : "Unpublished from the Agent Gateway");
   }, [flash, stamp]);
 
+  const setRevLevel = useCallback((n: RevLevel) => {
+    setRevLevelState(n);
+    stamp("RevenueOS", `Autonomy set to L${n} — ${n < 2 ? "human approves writes" : "Guardian-bound auto-execute"}`, "system");
+    flash(n < 2 ? `RevenueOS L${n} · insight / assisted` : `RevenueOS L${n} · Guardian is the brake`);
+  }, [flash, stamp]);
+
+  const applyRev = useCallback((id: string) => {
+    const d = REV_DECISIONS.find((x) => x.id === id);
+    if (!d) return;
+    const cur = revStateRef.current[id] ?? (d.risk === "blocked" ? "blocked" : "pending");
+    if (cur === "applied" || cur === "dismissed" || cur === "blocked") return;
+    const gate = guardDecision(d);
+    if (!gate.ok) {
+      setRevState((s) => ({ ...s, [id]: "blocked" }));
+      stamp("Revenue Guardian", `Blocked ${d.no} · ${gate.reason}`, "ai");
+      flash("Guardian blocked a write. Nothing reached ARI.");
+      return;
+    }
+    if (revLevel === 0) {
+      flash("L0 Insight — Director recorded the recommendation. Nothing written.");
+      stamp("Revenue Director AI", `${d.no} noted at L0 · no ARI write`, "ai");
+      return;
+    }
+    setRevState((s) => ({ ...s, [id]: "applied" }));
+    const w = d.write;
+    if (w.kind === "rate") {
+      setAri((grid) => ({
+        ...grid,
+        [w.room]: (grid[w.room] ?? []).map((r) => (w.dates.includes(r.date) ? { ...r, rate: w.rate } : r)),
+      }));
+      setJobs((list) => [
+        { id: `q-ros-${id}-${Date.now()}`, kind: "ARI", channel: "All connected OTAs", payload: `${d.does}`, payloadTh: d.doesTh, status: "complete", attempts: 1, age: "now" },
+        ...list,
+      ]);
+    } else if (w.kind === "minStay") {
+      setAri((grid) => ({
+        ...grid,
+        [w.room]: (grid[w.room] ?? []).map((r) => (w.dates.includes(r.date) ? { ...r, minStay: w.minStay } : r)),
+      }));
+      setJobs((list) => [
+        { id: `q-ros-${id}-${Date.now()}`, kind: "ARI", channel: "All connected OTAs", payload: d.does, payloadTh: d.doesTh, status: "complete", attempts: 1, age: "now" },
+        ...list,
+      ]);
+    } else if (w.kind === "allot") {
+      setAllotment((s) => ({
+        ...s,
+        [w.from]: Math.max(0, (s[w.from] ?? 0) - w.rooms),
+        [w.to]: (s[w.to] ?? 0) + w.rooms,
+      }));
+      setJobs((list) => [
+        { id: `q-ros-${id}-${Date.now()}`, kind: "ARI", channel: "Expedia + Direct", payload: d.does, payloadTh: d.doesTh, status: "complete", attempts: 1, age: "now" },
+        ...list,
+      ]);
+    } else if (w.kind === "benefit") {
+      setBenefits((s) => ({ ...s, [w.id]: true }));
+    }
+    stamp("Revenue Director AI", `${d.no} executed · expected +฿${d.expected.toLocaleString()} · ${d.engines.join(" → ")}`, "ai");
+    flash(`${d.no} written · Guardian passed · expected +฿${d.expected.toLocaleString()}`);
+  }, [flash, revLevel, stamp]);
+
+  const dismissRev = useCallback((id: string) => {
+    setRevState((s) => ({ ...s, [id]: "dismissed" }));
+    flash("Dismissed · Director will not re-open this write today");
+  }, [flash]);
+
+  const applyRevOpen = useCallback(() => {
+    pendingRev(revStateRef.current).forEach((d) => applyRev(d.id));
+  }, [applyRev]);
+
+  const runRevMeeting = useCallback(() => {
+    setRevMeetingAt("20 Aug 07:12");
+    stamp("Revenue Director AI", "Morning revenue meeting closed. Six writes in scope. Suite ฿500 blocked.", "ai");
+    if (revLevel >= 2) {
+      pendingRev(revStateRef.current).forEach((d) => applyRev(d.id));
+      flash("Morning meeting done. Guardrailed writes went to ARI. ฿500 never left the room.");
+    } else {
+      flash("Morning meeting recorded. L0/L1 — approve each write yourself.");
+    }
+  }, [applyRev, flash, revLevel, stamp]);
+
   const receiveAgentBooking = useCallback((booking: Record<string, unknown>) => {
     setAgentBooks((list) => [booking, ...list]);
     const id = String(booking.bookingId || `H24-AG-${Date.now()}`);
@@ -848,6 +955,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       pushAri, retryJob, receiveWebhook, applyModification, applyCancellation, runReconcile,
       aiState, applyAi, dismissAi, applyEngine, applyHigh, allotment, collected,
       agentReady, setAgentReady, agentBooks, receiveAgentBooking,
+      revLevel, setRevLevel, revState, applyRev, dismissRev, applyRevOpen, revMeetingAt, runRevMeeting,
     }),
     [
       ready, authed, login, logout, role, theme, setTheme, themeVars, lang, setLang,
@@ -860,6 +968,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       connectChannel, syncNow, pauseAgoda, pushAri, retryJob, receiveWebhook, applyModification,
       applyCancellation, runReconcile, aiState, applyAi, dismissAi, applyEngine, applyHigh, allotment, collected,
       agentReady, setAgentReady, agentBooks, receiveAgentBooking,
+      revLevel, setRevLevel, revState, applyRev, dismissRev, applyRevOpen, revMeetingAt, runRevMeeting,
     ]
   );
 

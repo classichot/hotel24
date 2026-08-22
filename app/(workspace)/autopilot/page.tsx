@@ -40,6 +40,11 @@ export default function AutopilotPage() {
       <AiNav />
 
       <div className="callout" style={{ marginTop: 16 }}>
+        <Link href="/revenue-os" style={{ fontWeight: 800 }}><T en="RevenueOS" th="RevenueOS" /></Link>
+        {" · "}
+        <T en="The commercial department above this queue. Director + five brains + Guardian. This page remains the classic Autopilot writer." th="ฝ่ายพาณิชย์ที่อยู่เหนือคิวนี้ ผู้อำนวยการ + ห้าสมอง + Guardian หน้านี้ยังเป็นตัวเขียนออโตไพลอตเดิม" />
+      </div>
+      <div className="callout" style={{ marginTop: 8 }}>
         {aiMode === "auto" ? (
           <T en="Autopilot is on. Rate, restriction and allotment writes go through the sync worker, not from this browser to Channex." th="ออโตไพลอตเปิดอยู่ การเขียนราคา ข้อจำกัด และจัดสรรห้องผ่านตัวซิงก์ ไม่ยิงจากเบราว์เซอร์ไป Channex" />
         ) : (

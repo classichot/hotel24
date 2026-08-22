@@ -16,6 +16,14 @@ const FEATURES = [
     proof: "search_hotels → create_room_hold → book_room. Booking.com never has to be involved.",
   },
   {
+    n: "08",
+    title: "HOTEL24 RevenueOS",
+    th: "ทีมรายได้ AI อัตโนมัติ",
+    copy: "Not one rate bot. A commercial department: Director, Demand, Pricing, Inventory, Distribution, Guardian. Engines calculate. Policy blocks a ฿500 mistake. Execution writes into the same ARI store. Level 2 guardrailed autopilot is the default.",
+    copyTh: "ไม่ใช่บอทราคาตัวเดียว เป็นฝ่ายพาณิชย์: ผู้อำนวยการ ดีมานด์ ราคา ห้อง ช่องทาง ผู้พิทักษ์ เครื่องยนต์คำนวณ นโยบายบล็อก ฿500 ที่ผิด การลงมือเขียนคลัง ARI เดียวกัน ระดับ 2 ที่มีรั้วคือค่าเริ่มต้น",
+    proof: "Garden Mon–Tue ฿1,980 → ฿2,200 because the twin says net peaks there — not because a competitor moved ฿100.",
+  },
+  {
     n: "01",
     title: "AI General Manager",
     th: "GM ที่เฝ้าโรงแรมทั้งหลัง",
@@ -75,6 +83,7 @@ const FEATURES = [
 
 const MODULES = [
   { en: "HOTEL24 Agent Direct", th: "เชื่อมครั้งเดียว — ทุก AI จองตรงได้" },
+  { en: "HOTEL24 RevenueOS", th: "ทีมรายได้ AI — เครื่องยนต์คิด รั้วกันพัง" },
   { en: "Hotel Agent Protocol (HAP)", th: "สเปกเปิดบน Schema.org / MCP / ACP / UCP" },
   { en: "AI Hotel Registry", th: "โรงแรมที่ยืนยันแล้ว ให้เอเจนต์ถามได้" },
   { en: "AI Direct Offers", th: "ราคาเท่า OTA สิทธิ์ดีกว่า อ่านได้โดยเอเจนต์" },
@@ -103,6 +112,7 @@ export default function LandingPage() {
       <nav className="nav landing-nav">
         <span className="nav-brand">HOTEL<span>24</span></span>
         <a href="#agent"><T en="Agent Direct" th="Agent Direct" /></a>
+        <a href="#revenueos"><T en="RevenueOS" th="RevenueOS" /></a>
         <a href="#system"><T en="AI" th="AI" /></a>
         <a href="#connect"><T en="Channels" th="ช่องทาง" /></a>
         <a href="#switch"><T en="Switch" th="ย้ายระบบ" /></a>
@@ -168,7 +178,7 @@ export default function LandingPage() {
               { en: "Channel Manager", th: "Booking / Agoda / Trip / Expedia" },
               { en: "HOTEL24 Direct", th: "หน้าจองของโรงแรมเอง" },
               { en: "AI Distribution", th: "ChatGPT · Gemini · MCP · UCP · ACP" },
-              { en: "Revenue AI", th: "ราคา ห้องคงเหลือ ข้อเสนอตรง" },
+              { en: "RevenueOS", th: "ทีมรายได้ AI · Guardian · ฝาแฝด" },
             ].map((m) => (
               <div key={m.en} className="module-cell">
                 <strong>{m.en}</strong>
@@ -179,6 +189,34 @@ export default function LandingPage() {
           <div className="landing-cta">
             <Link href="/agents" className="btn btn-primary"><T en="Watch an agent book Chiang Mai" th="ดูเอเจนต์จองเชียงใหม่" /></Link>
             <a href="/.well-known/hotel24.json" className="btn btn-secondary">hotel24.json</a>
+          </div>
+        </section>
+
+        <section id="revenueos" className="landing-section">
+          <div className="page-kicker">HOTEL24 RevenueOS</div>
+          <h2><T en="Your revenue team works 24/7." th="ทีมรายได้คุณทำงานตลอด 24 ชม." /></h2>
+          <p className="lede-sub">
+            <T
+              en="A 40-room hotel cannot hire a Revenue Director, RM, distribution manager and analyst. RevenueOS is that department: engines calculate, Guardian blocks a ฿500 error, execution writes into the PMS. Level 2 guardrailed autopilot is the default. An LLM never sets the rate alone."
+              th="โรงแรม 40 ห้องจ้างผู้อำนวยการรายได้ RM ผู้จัดการช่องทาง และนักวิเคราะห์ไม่ได้ RevenueOS คือฝ่ายนั้น: เครื่องยนต์คำนวณ Guardian บล็อก ฿500 ที่ผิด การลงมือเขียนเข้า PMS ระดับ 2 ที่มีรั้วคือค่าเริ่มต้น LLM ห้ามตั้งราคาคนเดียว"
+            />
+          </p>
+          <div className="module-grid" style={{ marginTop: 22 }}>
+            {[
+              { en: "Demand Brain", th: "ใครจะจอง เมื่อไหร่ เท่าไหร่" },
+              { en: "Price Brain", th: "ควรคิดเท่าไหร่ — สุทธิคาด ไม่ใช่คู่แข่ง" },
+              { en: "Inventory Brain", th: "ใครได้ห้องที่ขาด" },
+              { en: "Distribution Brain", th: "ขายที่ไหน — Net ADR" },
+              { en: "Guardian", th: "หยุดการตัดสินใจที่พัง" },
+            ].map((m) => (
+              <div key={m.en} className="module-cell">
+                <strong>{m.en}</strong>
+                <span>{m.th}</span>
+              </div>
+            ))}
+          </div>
+          <div className="landing-cta">
+            <Link href="/login" className="btn btn-primary"><T en="Open the Revenue Director" th="เปิดผู้อำนวยการรายได้" /></Link>
           </div>
         </section>
 

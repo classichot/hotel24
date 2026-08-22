@@ -38,6 +38,6 @@ export function PageHead({
 export function statusCls(status: string) {
   if (status === "Mapped" || status === "Connected" || status === "Live" || status === "Filed" || status === "Ready" || status === "Prepaid" || status === "Complete" || status === "Synced" || status === "Tokenized" || status === "Verified" || status === "live") return "tag tag-neutral";
   if (status === "Pending" || status === "AI drafted" || status === "Medium" || status === "Retry" || status === "Stale" || status === "Paused" || status === "NEW" || status === "MODIFIED" || status === "Mismatch") return "tag tag-accent";
-  if (status === "Unmapped" || status === "High" || status === "Escalated" || status === "Awaiting scan" || status === "Failed" || status === "CANCELLED" || status === "NO SHOW" || status === "Connect") return "tag tag-outline";
+  if (status === "Unmapped" || status === "High" || status === "Escalated" || status === "Awaiting scan" || status === "Failed" || status === "CANCELLED" || status === "NO SHOW" || status === "Connect" || status === "blocked") return "tag tag-outline";
   return "tag tag-neutral";
 }

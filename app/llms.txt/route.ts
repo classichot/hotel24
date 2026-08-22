@@ -6,6 +6,7 @@ export function GET() {
     `# Hotel Agent Protocol ${HAP_VERSION}`,
     ``,
     `HOTEL24 makes independent hotels AI-bookable.`,
+    `RevenueOS is the autonomous commercial department: engines calculate, Guardian blocks bad writes, execution changes rates.`,
     `Traveler → ChatGPT / Gemini / MCP agent → HOTEL24 Agent Gateway → hotel PMS → Direct booking.`,
     `The hotel owns the guest. Booking.com does not have to be involved.`,
     ``,
