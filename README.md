@@ -88,7 +88,7 @@ Do not start with direct OTA integrations. Booking.com Connectivity is paused fo
 
 ## Design
 
-Modernist system in `design-ref/`: Archivo + IBM Plex Sans Thai, 0px radius, 2px rules, **playful yellow `#ffdc2e`**. Ink type on yellow. Grey weights on the calendar are OTAs; yellow is direct booking, AI, and Agent Direct. Green is only a quiet “healthy / synced” status, not the brand.
+Modernist system in `design-ref/`: Archivo + IBM Plex Sans Thai, 0px radius, 2px rules, **Lacquer Red `#cf1b17`**. Paper type on red. Grey weights on the calendar are OTAs; red is direct booking, AI, and anything that needs the owner now. Green is only a quiet “healthy / synced” status, not the brand.
 
 ## Ecosystem
 

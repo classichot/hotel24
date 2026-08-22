@@ -20,8 +20,8 @@ export default function ReservationsPage() {
         kickerTh="ปฏิทินเดียว"
         titleEn="Reservation calendar"
         titleTh="ปฏิทินการจอง"
-        subEn="OTA, direct, walk-in and agent bookings on one grid. Grey is OTA. Yellow is direct."
-        subTh="OTA, จองตรง, วอล์กอิน และเอเจนต์อยู่ในปฏิทินเดียว — เทาคือ OTA เหลืองคือจองตรง"
+        subEn="OTA, direct, walk-in and agent bookings on one grid. Grey is OTA. Red is direct."
+        subTh="OTA, จองตรง, วอล์กอิน และเอเจนต์อยู่ในปฏิทินเดียว — เทาคือ OTA แดงคือจองตรง"
         actions={
           <>
             <div className="seg">
@@ -109,7 +109,7 @@ export default function ReservationsPage() {
               </span>
             ))}
             <span className="text-muted" style={{ marginLeft: "auto" }}>
-              <T en="Yellow = direct. Grey weights = OTA, by commission depth." th="เหลือง = จองตรง เทา = OTA ตามความลึกของค่าคอม" />
+              <T en="Red = direct. Grey weights = OTA, by commission depth." th="แดง = จองตรง เทา = OTA ตามความลึกของค่าคอม" />
             </span>
           </div>
         </div>
