@@ -1,7 +1,7 @@
 /** HOTEL24 RevenueOS — Autonomous AI Revenue Team.
  *  Agents think and explain. Engines calculate. Guardian controls risk.
  *  Execution writes rates, inventory and campaigns — an LLM never picks ฿4,900 alone.
- *  Phase 1: eight engines + Revenue Director. Seeded ensemble, not a live LightGBM.
+ *  Phase 1: eight engines + Director. Phase 2: eight more so the hotel can run autonomously.
  */
 
 export type RevLevel = 0 | 1 | 2 | 3;
@@ -27,6 +27,8 @@ export type RevWrite =
   | { kind: "minStay"; room: string; dates: string[]; minStay: number }
   | { kind: "allot"; from: string; to: string; rooms: number }
   | { kind: "benefit"; id: string }
+  | { kind: "overbook"; date: string; sellLimit: number }
+  | { kind: "offer"; id: string }
   | { kind: "note" }
   | { kind: "block" };
 
@@ -93,28 +95,130 @@ export const REV_BRAINS = [
 ];
 
 export const REV_ENGINES = [
-  { id: "forecast", brain: "demand", phase: 1, en: "Demand Forecast Engine", th: "เครื่องพยากรณ์ดีมานด์" },
-  { id: "curve", brain: "demand", phase: 1, en: "Booking Curve + Pickup Engine", th: "เส้นโค้งจอง + ความเร็ว" },
-  { id: "comp", brain: "demand", phase: 1, en: "Competitor Intelligence Engine", th: "ข่าวกรองคู่แข่ง" },
-  { id: "event", brain: "demand", phase: 1, en: "Event Intelligence Engine", th: "ข่าวกรองอีเวนต์" },
-  { id: "compress", brain: "demand", phase: 1, en: "Market Compression Engine", th: "เครื่องวัดการบีบตลาด" },
-  { id: "price", brain: "price", phase: 1, en: "Dynamic Pricing Engine", th: "เครื่องตั้งราคาไดนามิก" },
-  { id: "elastic", brain: "price", phase: 2, en: "Price Elasticity / WTP Engine", th: "ความยืดหยุ่นราคา / WTP" },
-  { id: "twin", brain: "price", phase: 1, en: "Hotel Digital Twin Engine", th: "ฝาแฝดดิจิทัลโรงแรม" },
-  { id: "inv", brain: "inventory", phase: 1, en: "Inventory Optimization Engine", th: "เครื่องจัดสรรห้อง" },
-  { id: "overbook", brain: "inventory", phase: 2, en: "Overbooking Engine", th: "เครื่องขายเกินคำนวณ" },
-  { id: "cancel", brain: "inventory", phase: 2, en: "Cancellation Prediction Engine", th: "เครื่องทำนายยกเลิก" },
-  { id: "group", brain: "inventory", phase: 2, en: "Group Displacement Engine", th: "เครื่องวัดการเบียดแขกเดิน" },
-  { id: "channel", brain: "distribution", phase: 1, en: "Channel Profitability Engine", th: "เครื่องกำไรต่อช่องทาง" },
-  { id: "alloc", brain: "distribution", phase: 2, en: "Channel Allocation Engine", th: "เครื่องจัดสรรช่องทาง" },
-  { id: "direct", brain: "distribution", phase: 2, en: "Direct Conversion Engine", th: "เครื่องแปลงจองตรง" },
-  { id: "promo", brain: "distribution", phase: 2, en: "Promotion Optimization Engine", th: "เครื่องโปรโมชัน" },
-  { id: "guard", brain: "commercial", phase: 1, en: "Revenue Guardian Engine", th: "เครื่องรั้วรายได้" },
-  { id: "attr", brain: "commercial", phase: 2, en: "Revenue Attribution Engine", th: "เครื่องอธิบายรายได้" },
-  { id: "guest", brain: "commercial", phase: 3, en: "Total Guest Value Engine", th: "เครื่องมูลค่าแขก" },
-  { id: "upgrade", brain: "commercial", phase: 3, en: "Upgrade Engine", th: "เครื่องอัปเกรด" },
-  { id: "experiment", brain: "commercial", phase: 3, en: "Experimentation Engine", th: "เครื่องทดลอง" },
+  {
+    id: "forecast", brain: "demand" as const, phase: 1 as const, n: "01", href: "/rev-demand",
+    en: "Demand Forecast Engine", th: "เครื่องพยากรณ์ดีมานด์",
+    does: "Occupancy, bookings, cancellations, room-type / segment / channel demand per arrival date.",
+    doesTh: "เข้าพัก การจอง ยกเลิก ดีมานด์ต่อประเภทห้อง / เซ็กเมนต์ / ช่องทาง ต่อวันเข้า",
+    output: "21 Aug · demand 44 RN · occ 94% · COMPRESSION · confidence High",
+  },
+  {
+    id: "curve", brain: "demand" as const, phase: 1 as const, n: "02", href: "/rev-demand",
+    en: "Booking Curve + Pickup Engine", th: "เส้นโค้งจอง + ความเร็ว",
+    does: "Where occupancy should be at D-90…D-1, plus bookings in the last 1h / 6h / 24h / 3d / 7d. Demand Acceleration Score 0–100.",
+    doesTh: "เข้าพักควรอยู่ตรงไหนที่ D-90…D-1 และจองใน 1 ชม. / 6 ชม. / 24 ชม. / 3 วัน / 7 วัน คะแนนเร่งดีมานด์ 0–100",
+    output: "22 Aug D-21 = 52% vs normal 38% · acceleration 81 · surge",
+  },
+  {
+    id: "comp", brain: "demand" as const, phase: 1 as const, n: "03", href: "/rev-demand",
+    en: "Competitor Intelligence Engine", th: "ข่าวกรองคู่แข่ง",
+    does: "Comp-set BAR, sold-out, LOS, 12-hour price velocity — signals, not a raw rate shop.",
+    doesTh: "BAR คู่แข่ง เต็ม LOS ความเร็วราคา 12 ชม. — เป็นสัญญาณ ไม่ใช่แค่ตารางราคา",
+    output: "4 of 6 raised >12% in 12h · 2 sold out overnight",
+  },
+  {
+    id: "event", brain: "demand" as const, phase: 1 as const, n: "04", href: "/rev-demand",
+    en: "Event Intelligence Engine", th: "ข่าวกรองอีเวนต์",
+    does: "Concerts, races, holidays, food weeks. Event Demand Impact Score for Pricing AI.",
+    doesTh: "คอนเสิร์ต วิ่ง วันหยุด สัปดาห์อาหาร คะแนนผลกระทบให้นักราคา AI",
+    output: "Krabi Half Marathon · 2.1 km · historical +19% · hotel impact +14%",
+  },
+  {
+    id: "price", brain: "price" as const, phase: 1 as const, n: "05", href: "/rev-pricing",
+    en: "Dynamic Pricing Engine", th: "เครื่องตั้งราคาไดนามิก",
+    does: "Simulates a rate ladder. Picks the price with the highest expected net — not competitor +/− ฿100.",
+    doesTh: "จำลองบันไดราคา เลือกสุทธิคาดสูงสุด — ไม่ใช่คู่แข่ง +/− ฿100",
+    output: "Garden Mon ฿2,200 wins ฿41,800 net · ฿2,550 looks stronger and loses",
+  },
+  {
+    id: "inv", brain: "inventory" as const, phase: 1 as const, n: "06", href: "/rev-inventory",
+    en: "Inventory Optimization Engine", th: "เครื่องจัดสรรห้อง",
+    does: "Open/close, MinLOS, protection, stop-sell, channel allotment. Sometimes beats a price change.",
+    doesTh: "เปิด/ปิด ขั้นต่ำ กันห้อง ปิดขาย จัดสรรช่องทาง บางครั้งคุ้มกว่าการเปลี่ยนราคา",
+    output: "MinLOS 2 on Garden 24–25 Aug · protect weekend length of stay",
+  },
+  {
+    id: "channel", brain: "distribution" as const, phase: 1 as const, n: "07", href: "/rev-distribution",
+    en: "Channel Profitability Engine", th: "เครื่องกำไรต่อช่องทาง",
+    does: "Net ADR after commission, promo, payment, ads. Direct / Agent Direct vs OTA.",
+    doesTh: "Net ADR หลังคอม โปร การชำระ โฆษณา จองตรง / Agent Direct เทียบ OTA",
+    output: "Agent Direct net ฿2,576 · Agoda ฿1,493 · close Expedia first in compression",
+  },
+  {
+    id: "guard", brain: "commercial" as const, phase: 1 as const, n: "08", href: "/rev-guardian",
+    en: "Revenue Guardian Engine", th: "เครื่องรั้วรายได้",
+    does: "Separate agent. Caps, floors, overbook, parity, anomaly. A ฿500 Suite draft never reaches ARI.",
+    doesTh: "เอเจนต์แยก เพดาน พื้น ขายเกิน พาร์ตี้ ความผิดปกติ ร่างสวีท ฿500 ไม่ถึง ARI",
+    output: "BLOCKED RD-839299 · Suite ฿3,784 → ฿500 · below floor ฿3,200",
+  },
+  {
+    id: "cancel", brain: "inventory" as const, phase: 2 as const, n: "09", href: "/rev-cancel",
+    en: "Cancellation Prediction Engine", th: "เครื่องทำนายยกเลิก",
+    does: "Per-reservation cancel probability: channel, lead time, refundable, price deviation, history.",
+    doesTh: "โอกาสยกเลิกต่อการจอง: ช่องทาง lead time คืนเงินได้ ส่วนเบี่ยงเบนราคา ประวัติ",
+    output: "H24-8860 Lim · Agoda · refundable · 67% cancel risk",
+  },
+  {
+    id: "overbook", brain: "inventory" as const, phase: 2 as const, n: "10", href: "/rev-overbook",
+    en: "Overbooking Engine", th: "เครื่องขายเกินคำนวณ",
+    does: "Cancel + no-show vs walk-cost. Optimal sell limit. Guardian caps rooms above physical.",
+    doesTh: "ยกเลิก + no-show เทียบต้นทุนวอล์ก เพดานขายที่เหมาะ Guardian จำกัดห้องเกินของจริง",
+    output: "21 Aug · 44 on the books · 3.2 expected wash · sell 45 / 42 physical",
+  },
+  {
+    id: "elastic", brain: "price" as const, phase: 2 as const, n: "11", href: "/rev-elasticity",
+    en: "Price Elasticity / WTP Engine", th: "ความยืดหยุ่นราคา / WTP",
+    does: "Learned conversion drop per price step, by segment, nationality, channel, lead time.",
+    doesTh: "คอนเวอร์ชันที่ตกต่อขั้นราคา ตามเซ็กเมนต์ สัญชาติ ช่องทาง lead time",
+    output: "฿1,980→฿2,200 = −3% · ฿2,550→฿2,900 = −19% breakpoint",
+  },
+  {
+    id: "group", brain: "inventory" as const, phase: 2 as const, n: "12", href: "/rev-group",
+    en: "Group Displacement Engine", th: "เครื่องวัดการเบียดแขกเดิน",
+    does: "Group revenue + F&B − displaced transient − cost. Reject / accept-above / counter.",
+    doesTh: "รายได้กรุ๊ป + อาหาร − แขกเดินที่เบียด − ต้นทุน ปฏิเสธ / รับเมื่อเกิน / เสนอราคา",
+    output: "ABC 12 rooms · reject ฿2,700 · accept above ฿3,550 · counter ฿3,550",
+  },
+  {
+    id: "alloc", brain: "distribution" as const, phase: 2 as const, n: "13", href: "/rev-alloc",
+    en: "Channel Allocation Engine", th: "เครื่องจัดสรรช่องทาง",
+    does: "How many rooms Booking / Agoda / Direct may hold as demand compresses.",
+    doesTh: "Booking / Agoda / จองตรง กันห้องได้กี่ห้องเมื่อตลาดบีบ",
+    output: "Compression: Booking 12→8 · Direct 14→18 · Expedia already closed",
+  },
+  {
+    id: "promo", brain: "distribution" as const, phase: 2 as const, n: "14", href: "/rev-promo",
+    en: "Promotion Optimization Engine", th: "เครื่องโปรโมชัน",
+    does: "Is the problem PRICE or DEMAND? Simulate 20% off vs ads vs breakfast vs Stay 3 Pay 2.",
+    doesTh: "ปัญหาคือราคาหรือดีมานด์ จำลองลด 20% เทียบโฆษณา เทียบอาหารเช้า เทียบพัก 3 จ่าย 2",
+    output: "Monday = demand/mix, not price · Option C (breakfast, no cut) wins",
+  },
+  {
+    id: "direct", brain: "distribution" as const, phase: 2 as const, n: "15", href: "/rev-convert",
+    en: "Direct Conversion Engine", th: "เครื่องแปลงจองตรง",
+    does: "Abandoned searches and price-sensitive sessions get an inclusion — not a BAR cut. Feeds Agent Direct.",
+    doesTh: "เซสชันที่ทิ้งตะกร้าและอ่อนไหวราคาได้สิทธิ์ — ไม่ตัด BAR ต่อเข้า Agent Direct",
+    output: "Sydney mobile · D-18 · 71% convert if free-cancel attached",
+  },
+  {
+    id: "attr", brain: "commercial" as const, phase: 2 as const, n: "16", href: "/rev-attribution",
+    en: "Revenue Attribution Engine", th: "เครื่องอธิบายรายได้",
+    does: "Why revenue moved: market, price, mix, channel, promo, cancel, group, direct, upsell.",
+    doesTh: "ทำไมรายได้ขยับ: ตลาด ราคา ส่วนผสม ช่องทาง โปร ยกเลิก กรุ๊ป จองตรง อัปเซล",
+    output: "Next month −8.7% vs budget · SG demand −4.1 · OTA visibility −2.3 · corporate −1.5",
+  },
+  { id: "compress", brain: "demand" as const, phase: 2 as const, n: "", href: "/rev-demand", en: "Market Compression Engine", th: "เครื่องวัดการบีบตลาด", does: "Supporting signal on Demand Brain — not one of the official eight.", doesTh: "สัญญาณเสริมบนสมองดีมานด์ — ไม่ใช่หนึ่งในแปดทางการ", output: "Ao Nang 21 Aug = 78/100" },
+  { id: "twin", brain: "price" as const, phase: 3 as const, n: "", href: "/rev-twin", en: "Hotel Digital Twin Engine", th: "ฝาแฝดดิจิทัลโรงแรม", does: "Simulate hold / +11% / +29% before the Director writes.", doesTh: "จำลองคงราคา / +11% / +29% ก่อนผู้อำนวยการเขียน", output: "Scenario B RevPAR ฿1,496 wins" },
+  { id: "guest", brain: "commercial" as const, phase: 3 as const, n: "", href: "/revenue-os", en: "Total Guest Value Engine", th: "เครื่องมูลค่าแขก", does: "Room + F&B + spa + transfer per guest.", doesTh: "ห้อง + อาหาร + สปา + รถต่อแขก", output: "Phase 3" },
+  { id: "upgrade", brain: "commercial" as const, phase: 3 as const, n: "", href: "/revenue-os", en: "Upgrade Engine", th: "เครื่องอัปเกรด", does: "Who gets the +฿1,400 suite offer (WTP ≥ 70%).", doesTh: "ใครได้ข้อเสนอสวีท +฿1,400 (WTP ≥ 70%)", output: "Phase 3" },
+  { id: "experiment", brain: "commercial" as const, phase: 3 as const, n: "", href: "/rev-decisions", en: "Experimentation Engine", th: "เครื่องทดลอง", does: "A/B and bandits: ฿4,400 vs ฿4,600, breakfast vs 10% off.", doesTh: "A/B และแบนดิต: ฿4,400 เทียบ ฿4,600 อาหารเช้าเทียบลด 10%", output: "Phase 3" },
 ];
+
+export const PHASE1_ENGINES = REV_ENGINES.filter((e) => e.phase === 1 && e.n);
+export const PHASE2_ENGINES = REV_ENGINES.filter((e) => e.phase === 2 && e.n);
+
+export const PHYSICAL_ROOMS = 42;
+export const OVERBOOK_CAP = 4;
 
 export const GUARDRAILS = [
   { id: "pct", en: "Never increase a rate more than 30% in one change", th: "ห้ามขึ้นราคาเกิน 30% ในครั้งเดียว", floor: true },
@@ -151,6 +255,15 @@ export function guardDecision(d: RevDecision): { ok: true } | { ok: false; reaso
     }
     if (d.write.dates.length > 14) {
       return { ok: false, reason: "Too many dates in one write.", reasonTh: "วันที่ในคำสั่งเดียวมากเกินไป" };
+    }
+  }
+  if (d.write.kind === "overbook") {
+    if (d.write.sellLimit - PHYSICAL_ROOMS > OVERBOOK_CAP) {
+      return {
+        ok: false,
+        reason: `Sell limit ${d.write.sellLimit} is more than ${OVERBOOK_CAP} rooms above the ${PHYSICAL_ROOMS}-room house.`,
+        reasonTh: `เพดานขาย ${d.write.sellLimit} เกินบ้าน ${PHYSICAL_ROOMS} ห้องมากกว่า ${OVERBOOK_CAP} ห้อง`,
+      };
     }
   }
   return { ok: true };
@@ -272,7 +385,7 @@ export const REV_DECISIONS: RevDecision[] = [
     risk: "low",
     alternatives: [
       { en: "20% discount — Twin: occupancy +4pp, net −฿18,200", th: "ลด 20% — ฝาแฝด: เข้าพัก +4 จุด สุทธิ −฿18,200" },
-      { en: "฿20,000 ad campaign, no discount — Phase 2 Marketing AI", th: "โฆษณา ฿20,000 ไม่ลดราคา — การตลาด AI เฟส 2" },
+      { en: "฿20,000 ad campaign, no discount — engine 14 already lost this", th: "โฆษณา ฿20,000 ไม่ลดราคา — เครื่อง 14 แพ้ตัวนี้แล้ว" },
     ],
     engines: ["promo", "direct", "twin", "guard"],
     write: { kind: "benefit", id: "b1" },
@@ -297,7 +410,7 @@ export const REV_DECISIONS: RevDecision[] = [
     alternatives: [{ en: "Accept ฿2,700 + breakfast — displacement still negative", th: "รับ ฿2,700 + อาหารเช้า — การเบียดยังติดลบ" }],
     engines: ["forecast", "group", "guard"],
     write: { kind: "note" },
-    href: "/revenue-os",
+    href: "/rev-group",
   },
   {
     id: "ros-upgrade",
@@ -343,6 +456,153 @@ export const REV_DECISIONS: RevDecision[] = [
     engines: ["price", "guard"],
     write: { kind: "block" },
     href: "/rev-guardian",
+  },
+  {
+    id: "ros-cancel-lim",
+    no: "RD-839301",
+    agent: "inventory",
+    brain: "inventory",
+    sev: "High",
+    dates: "H24-8860",
+    head: "Watch Lim Wei Jie — 67% cancel risk. Do not re-sell the room at BAR yet.",
+    headTh: "เฝ้า Lim Wei Jie — เสี่ยงยกเลิก 67% อย่าปล่อยห้องนี้ที่ BAR ทันที",
+    why: "Agoda, refundable, 21-day lead, rate 8% above his last three stays. Cancellation engine: treat as soft inventory for overbooking, not as a firm room-night.",
+    whyTh: "Agoda คืนเงินได้ lead 21 วัน ราคาสูงกว่าสามครั้งก่อน 8% เครื่องยกเลิก: นับเป็นห้องนิ่มสำหรับขายเกิน ไม่ใช่คืนที่แน่นอน",
+    does: "Flag the reservation. Overbooking engine may count 0.67 of this room as wash.",
+    doesTh: "ติดธงการจอง เครื่องขายเกินนับ 0.67 ของห้องนี้เป็นที่อาจว่าง",
+    expected: 2900,
+    confidence: 80,
+    risk: "low",
+    alternatives: [{ en: "Re-sell now at BAR — walk risk if he shows", th: "ขายซ้ำที่ BAR ตอนนี้ — เสี่ยงวอล์กถ้าเขาเข้าจริง" }],
+    engines: ["cancel", "overbook", "guard"],
+    write: { kind: "note" },
+    href: "/rev-cancel",
+  },
+  {
+    id: "ros-overbook-fri",
+    no: "RD-839302",
+    agent: "inventory",
+    brain: "inventory",
+    sev: "High",
+    dates: "21 Aug",
+    head: "Set Friday sell limit to 45 on a 42-room house.",
+    headTh: "ตั้งเพดานขายวันศุกร์ที่ 45 จากบ้าน 42 ห้อง",
+    why: "44 already on the books. Expected wash 3.2 (cancel 2.1 + no-show 1.1). Empty-room cost ฿2,200 exceeds walk-cost at 45. Guardian cap is +4.",
+    whyTh: "จองแล้ว 44 คาดว่าง 3.2 (ยกเลิก 2.1 + no-show 1.1) ต้นทุนห้องว่าง ฿2,200 สูงกว่าวอล์กที่ 45 เพดาน Guardian คือ +4",
+    does: "Write sell limit 45 for 21 Aug. Do not touch BAR.",
+    doesTh: "เขียนเพดานขาย 45 สำหรับ 21 ส.ค. ไม่แตะ BAR",
+    expected: 8800,
+    confidence: 83,
+    risk: "medium",
+    alternatives: [{ en: "Stay at 42 — leaves ~฿8,800 of wash unsold", th: "คง 42 — ปล่อยห้องที่คาดว่างไม่ขายราว ฿8,800" }],
+    engines: ["cancel", "overbook", "forecast", "guard"],
+    write: { kind: "overbook", date: "21 Aug", sellLimit: 45 },
+    href: "/rev-overbook",
+  },
+  {
+    id: "ros-overbook-block",
+    no: "RD-839398",
+    agent: "guardian",
+    brain: "inventory",
+    sev: "High",
+    dates: "21 Aug",
+    head: "BLOCKED — sell limit 52 on a 42-room house",
+    headTh: "บล็อก — เพดานขาย 52 จากบ้าน 42 ห้อง",
+    why: "An inventory draft asked for +10 rooms. Owner cap is +4. Walk-cost at 52 exceeds empty-room savings. Guardian refuses.",
+    whyTh: "ร่างห้องขอ +10 เพดานเจ้าของคือ +4 ต้นทุนวอล์กที่ 52 สูงกว่าการกันห้องว่าง Guardian ปฏิเสธ",
+    does: "No write.",
+    doesTh: "ไม่เขียน",
+    expected: 0,
+    confidence: 99,
+    risk: "blocked",
+    alternatives: [],
+    engines: ["overbook", "guard"],
+    write: { kind: "overbook", date: "21 Aug", sellLimit: 52 },
+    href: "/rev-overbook",
+  },
+  {
+    id: "ros-elastic-hold",
+    no: "RD-839303",
+    agent: "pricing",
+    brain: "price",
+    sev: "Medium",
+    dates: "24 Aug",
+    head: "Do not jump Garden Monday to ฿2,550. Breakpoint is −19%.",
+    headTh: "ห้ามกระโดดสวนวันจันทร์ไป ฿2,550 จุดหักคือ −19%",
+    why: "WTP engine: leisure / mobile / Agoda at D-7 dies at ฿2,550 on a soft weekday. The +11% step to ฿2,200 is the learned safe move.",
+    whyTh: "เครื่อง WTP: เที่ยว / มือถือ / Agoda ที่ D-7 ตายที่ ฿2,550 ในวันธรรมดาอ่อน ขั้น +11% ไป ฿2,200 คือขั้นที่ปลอดภัย",
+    does: "Keep the Phase 1 ฿2,200 write. Log the breakpoint so Pricing AI cannot jump.",
+    doesTh: "คงการเขียนเฟส 1 ที่ ฿2,200 บันทึกจุดหักไว้ไม่ให้เอเจนต์ราคากระโดด",
+    expected: 6100,
+    confidence: 88,
+    risk: "low",
+    alternatives: [{ en: "Match weekend BAR ฿2,550 — Twin already lost this", th: "เทียบ BAR สุดสัปดาห์ ฿2,550 — ฝาแฝดแพ้ไปแล้ว" }],
+    engines: ["elastic", "price", "twin", "guard"],
+    write: { kind: "note" },
+    href: "/rev-elasticity",
+  },
+  {
+    id: "ros-alloc-booking",
+    no: "RD-839304",
+    agent: "distribution",
+    brain: "distribution",
+    sev: "High",
+    dates: "21–23 Aug",
+    head: "Cut Booking.com Garden allotment 12 → 8. Hold four more for Direct.",
+    headTh: "ตัดจัดสรรสวนบน Booking.com 12 → 8 กันอีก 4 ห้องให้จองตรง",
+    why: "Compression. Channel allocation: last rooms go to the highest Net ADR. Booking stays open — we do not close every OTA.",
+    whyTh: "ตลาดบีบ เครื่องจัดสรร: ห้องท้ายไปช่อง Net ADR สูงสุด Booking ยังเปิด — ไม่ปิดทุก OTA",
+    does: "Move 4 Garden rooms Booking → Direct",
+    doesTh: "ย้ายสวน 4 ห้องจาก Booking ไปจองตรง",
+    expected: 14200,
+    confidence: 85,
+    risk: "medium",
+    alternatives: [{ en: "Close Booking entirely — Guardian: never close all distribution", th: "ปิด Booking ทั้งก้อน — Guardian: ห้ามปิดทุกช่องทาง" }],
+    engines: ["alloc", "channel", "compress", "guard"],
+    write: { kind: "allot", from: "booking", to: "direct", rooms: 4 },
+    href: "/rev-alloc",
+  },
+  {
+    id: "ros-promo-c",
+    no: "RD-839305",
+    agent: "promotion",
+    brain: "distribution",
+    sev: "High",
+    dates: "24–25 Aug",
+    head: "Monday is a DEMAND problem. Run Option C — breakfast, no discount.",
+    headTh: "วันจันทร์เป็นปัญหาดีมานด์ ใช้ตัวเลือก C — อาหารเช้า ไม่ลดราคา",
+    why: "20% off: occ +4pp, net −฿18,200. ฿20k ads: slow. Stay 3 Pay 2: cannibalises weekend. Breakfast on Direct: +฿6,400 and keeps parity.",
+    whyTh: "ลด 20%: เข้าพัก +4 จุด สุทธิ −฿18,200 โฆษณา ฿20k: ช้า พัก 3 จ่าย 2: กินสุดสัปดาห์ อาหารเช้าบนจองตรง: +฿6,400 และรักษาพาร์ตี้",
+    does: "Lock Option C. Enable Direct breakfast inclusion.",
+    doesTh: "ล็อกตัวเลือก C เปิดสิทธิ์อาหารเช้าจองตรง",
+    expected: 6400,
+    confidence: 79,
+    risk: "low",
+    alternatives: [{ en: "Option A 20% off — occupancy vanity, profit loss", th: "ตัวเลือก A ลด 20% — เข้าพักสวย กำไรหาย" }],
+    engines: ["promo", "direct", "twin", "guard"],
+    write: { kind: "benefit", id: "b1" },
+    href: "/rev-promo",
+  },
+  {
+    id: "ros-convert-sydney",
+    no: "RD-839306",
+    agent: "distribution",
+    brain: "distribution",
+    sev: "Medium",
+    dates: "session S-4419",
+    head: "Recover the Sydney abandoned search with free-cancel — not a cheaper BAR.",
+    headTh: "ดึงเซสชันซิดนีย์ที่ทิ้งด้วยยกเลิกฟรี — ไม่ใช่ BAR ที่ถูกกว่า",
+    why: "Mobile, D-18, Garden 24 Aug, dropped on payment. Conversion engine: 71% if flexible cancel is attached. A ฿200 cut only matches Agoda.",
+    whyTh: "มือถือ D-18 สวน 24 ส.ค. ทิ้งตอนจ่าย เครื่องแปลง: 71% ถ้ายกเลิกยืดหยุ่น ตัด ฿200 แค่ไปเท่า Agoda",
+    does: "Send the Direct recovery offer on session S-4419.",
+    doesTh: "ส่งข้อเสนอจองตรงกู้เซสชัน S-4419",
+    expected: 4180,
+    confidence: 71,
+    risk: "low",
+    alternatives: [{ en: "Undercut Agoda ฿200 — parity violation, Guardian would block a public cut", th: "ตัด Agoda ฿200 — ผิดพาร์ตี้ Guardian จะบล็อกการตัดราคาหน้าเว็บ" }],
+    engines: ["direct", "promo", "guard"],
+    write: { kind: "offer", id: "S-4419" },
+    href: "/rev-convert",
   },
 ];
 
@@ -464,6 +724,73 @@ export const ATTRIBUTION = [
   { k: "Upselling", n: 52000 },
   { k: "Cancellation", n: -40000 },
 ];
+
+export const CANCEL_BOOKINGS = [
+  { id: "H24-8860", guest: "Lim Wei Jie", ch: "Agoda", room: "Pool Access", lead: 21, refund: true, score: 67, why: "OTA · long lead · refundable · +8% vs his last stays" },
+  { id: "H24-8802", guest: "Sofia Müller", ch: "Booking.com", room: "Garden Deluxe", lead: 4, refund: false, score: 11, why: "Non-refund · short lead · prepaid" },
+  { id: "H24-8841", guest: "ชัยวัฒน์ ประเสริฐ", ch: "Direct", room: "Pool Access", lead: 6, refund: true, score: 18, why: "Direct · Thai ID · PromptPay due — rarely walks" },
+  { id: "H24-8850", guest: "Marco Garcia", ch: "Airbnb", room: "Sea View Suite", lead: 28, refund: true, score: 41, why: "Long lead · Airbnb flexible" },
+  { id: "H24-8818", guest: "Rashid Al-Farsi", ch: "Direct", room: "Beach Villa", lead: 12, refund: false, score: 9, why: "Villa deposit · Direct · family" },
+  { id: "H24-8833", guest: "Katharina Weber", ch: "Booking.com", room: "Family Loft", lead: 9, refund: true, score: 29, why: "Refundable Booking · mid lead" },
+];
+
+export const OVERBOOK_DAYS = [
+  { date: "21 Aug", physical: 42, confirmed: 44, pCancel: 2.1, pNoShow: 1.1, wash: 3.2, empty: 2200, walk: 6800, sell: 45, pick: true },
+  { date: "22 Aug", physical: 42, confirmed: 41, pCancel: 1.4, pNoShow: 0.6, wash: 2.0, empty: 2550, walk: 7200, sell: 43, pick: false },
+  { date: "24 Aug", physical: 42, confirmed: 28, pCancel: 1.8, pNoShow: 0.4, wash: 2.2, empty: 1980, walk: 5400, sell: 42, pick: false },
+];
+
+export const WTP_SEGMENTS = [
+  { seg: "Leisure / mobile / Agoda", lead: "D-7", step: "฿2,200 → ฿2,550", conv: -19, note: "Weekday breakpoint" },
+  { seg: "Leisure / desktop / Direct", lead: "D-14", step: "฿1,980 → ฿2,200", conv: -3, note: "Safe step" },
+  { seg: "Corporate / TH", lead: "D-21", step: "฿2,200 → ฿2,400", conv: -6, note: "Negotiated ceiling near ฿2,400" },
+  { seg: "Family / villa", lead: "D-30", step: "฿8,900 → ฿9,800", conv: -8, note: "Weekend only" },
+  { seg: "CN / Booking.com", lead: "D-3", step: "฿2,900 → ฿3,400", conv: -7, note: "Compression Friday" },
+];
+
+export const GROUP_RFPS = [
+  { id: "ABC", name: "ABC Incentive", rooms: 12, nights: 2, dates: "24–25 Aug", offer: 2700, fb: 18000, transient: 52800, displace: 33600, net: -8600, verdict: "REJECT", counter: 3550, accept: 3550 },
+  { id: "TAT", name: "TAT fam trip", rooms: 4, nights: 2, dates: "29–30 Aug", offer: 0, fb: 12000, transient: 17600, displace: 8800, net: 3200, verdict: "ACCEPT", counter: 0, accept: 0 },
+  { id: "OIL", name: "Oman crew", rooms: 8, nights: 5, dates: "Sep 2–6", offer: 3100, fb: 45000, transient: 124000, displace: 62000, net: 107000, verdict: "ACCEPT", counter: 0, accept: 3100 },
+];
+
+export const ALLOC_STATES = [
+  { state: "Weak", booking: 12, agoda: 12, expedia: 4, direct: 14, note: "Open every channel." },
+  { state: "Normal", booking: 12, agoda: 10, expedia: 2, direct: 16, note: "Start pulling low-margin." },
+  { state: "Compression", booking: 8, agoda: 8, expedia: 0, direct: 18, note: "Close wholesaler. Protect Direct.", pick: true },
+  { state: "Surge", booking: 6, agoda: 6, expedia: 0, direct: 22, note: "Last rooms to Direct / Agent Direct." },
+];
+
+export const PROMO_OPTIONS = [
+  { id: "A", en: "20% discount", th: "ลด 20%", occ: 4, net: -18200, pick: false },
+  { id: "B", en: "10% discount", th: "ลด 10%", occ: 2, net: -7400, pick: false },
+  { id: "C", en: "No discount + breakfast", th: "ไม่ลด + อาหารเช้า", occ: 1, net: 6400, pick: true },
+  { id: "D", en: "฿20,000 ad campaign", th: "โฆษณา ฿20,000", occ: 2, net: -4200, pick: false },
+  { id: "E", en: "Stay 3 Pay 2", th: "พัก 3 จ่าย 2", occ: 3, net: -9100, pick: false },
+];
+
+export const CONVERT_SESSIONS = [
+  { id: "S-4419", src: "Google / Sydney / mobile", dates: "24–25 Aug", room: "Garden Deluxe", drop: "payment", p: 71, offer: "Free cancel 24h", offerTh: "ยกเลิกฟรี 24 ชม." },
+  { id: "S-4420", src: "LINE OA / BKK / iOS", dates: "22 Aug", room: "Pool Access", drop: "rate", p: 44, offer: "Late checkout 14:00", offerTh: "เช็คเอาท์ 14:00" },
+  { id: "S-4408", src: "Agent Direct / SG", dates: "21 Aug", room: "Garden Deluxe", drop: "none", p: 88, offer: "Already converting", offerTh: "กำลังแปลงอยู่แล้ว" },
+];
+
+export const WHY_DOWN = [
+  { k: "Singapore demand weaker", n: -4.1 },
+  { k: "OTA visibility down", n: -2.3 },
+  { k: "Lost corporate", n: -1.5 },
+  { k: "Other", n: -0.8 },
+];
+
+export const PHASE2_ACTIONS = ["ros-cancel-lim", "ros-overbook-fri", "ros-elastic-hold", "ros-group", "ros-alloc-booking", "ros-promo-c", "ros-convert-sydney"] as const;
+
+export function isPhase2Decision(id: string) {
+  return (PHASE2_ACTIONS as readonly string[]).includes(id) || id === "ros-overbook-block";
+}
+
+export function phase2Writes() {
+  return REV_DECISIONS.filter((d) => (PHASE2_ACTIONS as readonly string[]).includes(d.id));
+}
 
 export const LOOP = ["Observe", "Predict", "Decide", "Act", "Measure", "Learn", "Update model"] as const;
 

@@ -5,23 +5,23 @@ import { PageHead } from "@/components/PageHead";
 import { RevDecisionList } from "@/components/RevDecisionList";
 import { RevenueNav } from "@/components/RevenueNav";
 import { T } from "@/lib/i18n";
-import { REV_DECISIONS } from "@/lib/revenueos";
+import { isPhase2Decision, REV_DECISIONS } from "@/lib/revenueos";
 import { useStore } from "@/lib/store";
 
 export default function RevInventoryPage() {
   const { ari, allotment } = useStore();
   const garden = ari.garden ?? [];
-  const decisions = REV_DECISIONS.filter((d) => d.brain === "inventory");
+  const decisions = REV_DECISIONS.filter((d) => d.brain === "inventory" && !isPhase2Decision(d.id));
   return (
     <div>
       <PageHead
-        code="ROS-04 · Inventory Brain"
-        kickerEn="Who should get scarce rooms?"
-        kickerTh="ใครควรได้ห้องที่ขาด"
+        code="ROS-04 · Engine 06"
+        kickerEn="06 · Inventory Optimization Engine"
+        kickerTh="06 · เครื่องจัดสรรห้อง"
         titleEn="Inventory Brain"
         titleTh="สมองห้อง"
-        subEn="MinLOS, protection, stop-sell and group displacement often beat a price change. Overbooking and cancellation scores are Phase 2 — the ledger already refuses a cheap group."
-        subTh="ขั้นต่ำ การกันห้อง ปิดขาย และการเบียดกรุ๊ปมักคุ้มกว่าการเปลี่ยนราคา ขายเกินและคะแนนยกเลิกเป็นเฟส 2 — สมุดนี้ปฏิเสธกรุ๊ปถูกอยู่แล้ว"
+        subEn="Engine 06: MinLOS, protection, stop-sell, allotment. Cancel scores, overbooking and groups live on Phase 2."
+        subTh="เครื่อง 06: ขั้นต่ำ กันห้อง ปิดขาย จัดสรร คะแนนยกเลิก ขายเกิน และกรุ๊ปอยู่ที่เฟส 2"
       />
       <RevenueNav />
 
@@ -66,7 +66,10 @@ export default function RevInventoryPage() {
               th="สวนเหลือ 10 ห้องวันศุกร์ที่ตลาดบีบ ไม่ควรให้กรุ๊ป ฿2,700 ดีมานด์ท้าย ฿3,400–฿5,500 อยู่ในพยากรณ์แล้ว"
             />
           </div>
-          <Link href="/inventory" className="btn btn-ghost" style={{ paddingLeft: 0, marginTop: 12 }}>
+          <Link href="/rev-cancel" className="btn btn-ghost" style={{ paddingLeft: 0, marginTop: 12 }}>
+            <T en="09 Cancel · 10 Overbook · 12 Group" th="09 ยกเลิก · 10 ขายเกิน · 12 กรุ๊ป" /> →
+          </Link>
+          <Link href="/inventory" className="btn btn-ghost" style={{ paddingLeft: 0 }}>
             <T en="Full ARI grid" th="ตาราง ARI เต็ม" /> →
           </Link>
         </aside>

@@ -14,8 +14,8 @@ export default function RevDemandPage() {
         kickerTh="ใครจะจอง เมื่อไหร่ และเท่าไหร่"
         titleEn="Demand Brain"
         titleTh="สมองดีมานด์"
-        subEn="Forecast, booking curve, pickup velocity, competitor signals, events and compression. Ensemble of pace + event + competitor + seasonal baseline — not a live LightGBM."
-        subTh="พยากรณ์ เส้นโค้งจอง ความเร็วคู่แข่ง อีเวนต์ และการบีบตลาด ชุดรวมจังหวะ + อีเวนต์ + คู่แข่ง + ฤดูกาล — ไม่ใช่ LightGBM สด"
+        subEn="Phase 1 engines 01–04 live here: Demand Forecast, Booking Curve + Pickup, Competitor Intelligence, Event Intelligence."
+        subTh="เครื่องยนต์เฟส 1 หมายเลข 01–04 อยู่ที่นี่: พยากรณ์ดีมานด์ เส้นโค้งจอง+ความเร็ว ข่าวกรองคู่แข่ง ข่าวกรองอีเวนต์"
       />
       <RevenueNav />
 
@@ -44,7 +44,7 @@ export default function RevDemandPage() {
 
       <div className="split-main">
         <section className="col-pad border-r">
-          <h5 className="sec-h"><T en="Demand forecast · hotel × date" th="พยากรณ์ดีมานด์ · โรงแรม × วันที่" /></h5>
+          <h5 className="sec-h">01 · <T en="Demand Forecast Engine" th="เครื่องพยากรณ์ดีมานด์" /></h5>
           <div className="table-wrap">
             <table className="table">
               <thead>
@@ -69,7 +69,7 @@ export default function RevDemandPage() {
               </tbody>
             </table>
           </div>
-          <h5 className="sec-h" style={{ marginTop: 24 }}><T en="Booking curve · 22 Aug weekend" th="เส้นโค้งจอง · สุดสัปดาห์ 22 ส.ค." /></h5>
+          <h5 className="sec-h" style={{ marginTop: 24 }}>02 · <T en="Booking Curve Engine · 22 Aug" th="เครื่องเส้นโค้งจอง · 22 ส.ค." /></h5>
           <div className="table-wrap">
             <table className="table">
               <thead>
@@ -92,14 +92,14 @@ export default function RevDemandPage() {
           </div>
         </section>
         <aside className="col-aside">
-          <h5 className="sec-h"><T en="Pickup velocity" th="ความเร็วการจอง" /></h5>
+          <h5 className="sec-h">02 · <T en="Pickup Engine" th="เครื่องความเร็วจอง" /></h5>
           {PICKUP.map((p) => (
             <div key={p.window} className="ctx-row">
               <span>{p.window}</span>
               <span><strong>{p.n}</strong> <span className="text-muted" style={{ fontSize: 11 }}>{p.vs}</span></span>
             </div>
           ))}
-          <h5 className="sec-h" style={{ marginTop: 24 }}><T en="Comp set · last 12h" th="คู่แข่ง · 12 ชม.ล่าสุด" /></h5>
+          <h5 className="sec-h" style={{ marginTop: 24 }}>03 · <T en="Competitor Intelligence Engine" th="เครื่องข่าวกรองคู่แข่ง" /></h5>
           {COMP_SET.map((c) => (
             <div key={c.name} className="ctx-row" style={{ alignItems: "flex-start" }}>
               <span>
@@ -109,7 +109,7 @@ export default function RevDemandPage() {
               <strong style={{ color: c.move.startsWith("+") ? "var(--color-accent-700)" : undefined }}>{c.move}</strong>
             </div>
           ))}
-          <h5 className="sec-h" style={{ marginTop: 24 }}><T en="Events" th="อีเวนต์" /></h5>
+          <h5 className="sec-h" style={{ marginTop: 24 }}>04 · <T en="Event Intelligence Engine" th="เครื่องข่าวกรองอีเวนต์" /></h5>
           {EVENTS.map((e) => (
             <div key={e.name} className="ctx-row" style={{ alignItems: "flex-start" }}>
               <span>

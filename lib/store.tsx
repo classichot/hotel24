@@ -153,6 +153,8 @@ type Store = {
   applyRevOpen: () => void;
   revMeetingAt: string | null;
   runRevMeeting: () => void;
+  revSellLimit: Record<string, number>;
+  revOffers: Record<string, boolean>;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -211,6 +213,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     Object.fromEntries(REV_DECISIONS.filter((d) => d.risk === "blocked").map((d) => [d.id, "blocked" as RevStatus]))
   );
   const [revMeetingAt, setRevMeetingAt] = useState<string | null>(null);
+  const [revSellLimit, setRevSellLimit] = useState<Record<string, number>>({});
+  const [revOffers, setRevOffers] = useState<Record<string, boolean>>({});
   const revStateRef = useRef<Record<string, RevStatus>>({});
   revStateRef.current = revState;
   const aiStateRef = useRef<Record<string, RecStatus>>({});
@@ -885,6 +889,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       ]);
     } else if (w.kind === "benefit") {
       setBenefits((s) => ({ ...s, [w.id]: true }));
+    } else if (w.kind === "overbook") {
+      setRevSellLimit((s) => ({ ...s, [w.date]: w.sellLimit }));
+      setJobs((list) => [
+        { id: `q-ros-${id}-${Date.now()}`, kind: "ARI", channel: "All connected OTAs", payload: d.does, payloadTh: d.doesTh, status: "complete", attempts: 1, age: "now" },
+        ...list,
+      ]);
+    } else if (w.kind === "offer") {
+      setRevOffers((s) => ({ ...s, [w.id]: true }));
+      setJobs((list) => [
+        { id: `q-ros-${id}-${Date.now()}`, kind: "RES", channel: "Agent Direct", payload: d.does, payloadTh: d.doesTh, status: "complete", attempts: 1, age: "now" },
+        ...list,
+      ]);
     }
     stamp("Revenue Director AI", `${d.no} executed · expected +฿${d.expected.toLocaleString()} · ${d.engines.join(" → ")}`, "ai");
     flash(`${d.no} written · Guardian passed · expected +฿${d.expected.toLocaleString()}`);
@@ -901,10 +917,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const runRevMeeting = useCallback(() => {
     setRevMeetingAt("20 Aug 07:12");
-    stamp("Revenue Director AI", "Morning revenue meeting closed. Six writes in scope. Suite ฿500 blocked.", "ai");
+    stamp("Revenue Director AI", "Morning revenue meeting closed. Phase 1 + Phase 2 writes in scope. Suite ฿500 and sell limit 52 blocked.", "ai");
     if (revLevel >= 2) {
       pendingRev(revStateRef.current).forEach((d) => applyRev(d.id));
-      flash("Morning meeting done. Guardrailed writes went to ARI. ฿500 never left the room.");
+      flash("Morning meeting done. Guardrailed writes went to ARI. ฿500 and sell 52 never left the room.");
     } else {
       flash("Morning meeting recorded. L0/L1 — approve each write yourself.");
     }
@@ -956,6 +972,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       aiState, applyAi, dismissAi, applyEngine, applyHigh, allotment, collected,
       agentReady, setAgentReady, agentBooks, receiveAgentBooking,
       revLevel, setRevLevel, revState, applyRev, dismissRev, applyRevOpen, revMeetingAt, runRevMeeting,
+      revSellLimit, revOffers,
     }),
     [
       ready, authed, login, logout, role, theme, setTheme, themeVars, lang, setLang,
@@ -969,6 +986,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       applyCancellation, runReconcile, aiState, applyAi, dismissAi, applyEngine, applyHigh, allotment, collected,
       agentReady, setAgentReady, agentBooks, receiveAgentBooking,
       revLevel, setRevLevel, revState, applyRev, dismissRev, applyRevOpen, revMeetingAt, runRevMeeting,
+      revSellLimit, revOffers,
     ]
   );
 

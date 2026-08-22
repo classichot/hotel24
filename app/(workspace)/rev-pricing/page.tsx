@@ -1,23 +1,24 @@
 "use client";
 
+import Link from "next/link";
 import { PageHead } from "@/components/PageHead";
 import { RevDecisionList } from "@/components/RevDecisionList";
 import { RevenueNav } from "@/components/RevenueNav";
 import { T } from "@/lib/i18n";
-import { ELASTICITY, PRICE_LADDER, REV_DECISIONS } from "@/lib/revenueos";
+import { ELASTICITY, isPhase2Decision, PRICE_LADDER, REV_DECISIONS } from "@/lib/revenueos";
 
 export default function RevPricingPage() {
-  const decisions = REV_DECISIONS.filter((d) => d.brain === "price" && d.risk !== "blocked");
+  const decisions = REV_DECISIONS.filter((d) => d.brain === "price" && d.risk !== "blocked" && !isPhase2Decision(d.id));
   return (
     <div>
       <PageHead
-        code="ROS-03 · Price Brain"
-        kickerEn="What should we charge?"
-        kickerTh="ควรคิดเท่าไหร่"
+        code="ROS-03 · Engine 05"
+        kickerEn="05 · Dynamic Pricing Engine"
+        kickerTh="05 · เครื่องตั้งราคาไดนามิก"
         titleEn="Price Brain"
         titleTh="สมองราคา"
-        subEn="The engine simulates a ladder and picks the price with the highest expected net — not competitor +/− ฿100. The LLM only explains the pick."
-        subTh="เครื่องยนต์จำลองบันไดราคาแล้วเลือกสุทธิคาดการณ์สูงสุด — ไม่ใช่คู่แข่ง +/− ฿100 LLM อธิบายการเลือกเท่านั้น"
+        subEn="Engine 05 simulates a ladder and picks the highest expected net — not competitor +/− ฿100. The LLM only explains the pick."
+        subTh="เครื่อง 05 จำลองบันไดราคาแล้วเลือกสุทธิคาดสูงสุด — ไม่ใช่คู่แข่ง +/− ฿100 LLM อธิบายการเลือกเท่านั้น"
       />
       <RevenueNav />
 
@@ -85,6 +86,9 @@ export default function RevPricingPage() {
           <div className="ctx-row"><span>Confidence</span><strong>84%</strong></div>
           <div className="ctx-row"><span>RevPAR vs hold</span><strong>+฿31</strong></div>
           <div className="ctx-row"><span>Guardian</span><strong>+11% &lt; 30% cap</strong></div>
+          <Link href="/rev-elasticity" className="btn btn-ghost" style={{ paddingLeft: 0, marginTop: 12 }}>
+            <T en="11 · WTP / elasticity" th="11 · WTP / ความยืดหยุ่น" /> →
+          </Link>
         </aside>
       </div>
     </div>

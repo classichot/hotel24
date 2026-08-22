@@ -5,20 +5,20 @@ import { PageHead } from "@/components/PageHead";
 import { RevDecisionList } from "@/components/RevDecisionList";
 import { RevenueNav } from "@/components/RevenueNav";
 import { T } from "@/lib/i18n";
-import { CHANNEL_NET, REV_DECISIONS } from "@/lib/revenueos";
+import { CHANNEL_NET, isPhase2Decision, REV_DECISIONS } from "@/lib/revenueos";
 
 export default function RevDistributionPage() {
-  const decisions = REV_DECISIONS.filter((d) => d.brain === "distribution");
+  const decisions = REV_DECISIONS.filter((d) => d.brain === "distribution" && !isPhase2Decision(d.id));
   return (
     <div>
       <PageHead
-        code="ROS-05 · Distribution Brain"
-        kickerEn="Where should we sell?"
-        kickerTh="ควรขายที่ไหน"
+        code="ROS-05 · Engine 07"
+        kickerEn="07 · Channel Profitability Engine"
+        kickerTh="07 · เครื่องกำไรต่อช่องทาง"
         titleEn="Distribution Brain"
         titleTh="สมองช่องทาง"
-        subEn="Maximise net revenue after acquisition cost — not ADR. Direct and Agent Direct win on Net ADR even when the advertised rate is not the highest."
-        subTh="เพิ่มรายได้สุทธิหลังต้นทุนการได้มา — ไม่ใช่ ADR จองตรงและ Agent Direct ชนะ Net ADR แม้ว่าราคาหน้าเว็บจะไม่สูงสุด"
+        subEn="Engine 07 maximises Net ADR after acquisition cost — not advertised ADR."
+        subTh="เครื่อง 07 เน้น Net ADR หลังต้นทุนการได้มา — ไม่ใช่ ADR หน้าเว็บ"
       />
       <RevenueNav />
 
@@ -59,11 +59,14 @@ export default function RevDistributionPage() {
           <h5 className="sec-h"><T en="Promotion test" th="ทดสอบโปรโมชัน" /></h5>
           <p className="text-muted" style={{ fontSize: 13 }}>
             <T
-              en="Monday is not a price problem. Option C (no discount + breakfast) beats a 20% cut in the twin. Marketing demand generation is Phase 2."
-              th="วันจันทร์ไม่ใช่ปัญหาราคา ตัวเลือก C (ไม่ลด + อาหารเช้า) ชนะการตัด 20% ในฝาแฝด การสร้างดีมานด์การตลาดเป็นเฟส 2"
+              en="Monday is not a price problem. Option C (no discount + breakfast) beats a 20% cut. Allocation, promo and Direct conversion are Phase 2 engines 13–15."
+              th="วันจันทร์ไม่ใช่ปัญหาราคา ตัวเลือก C (ไม่ลด + อาหารเช้า) ชนะการตัด 20% จัดสรร โปร และแปลงจองตรงคือเครื่องเฟส 2 หมายเลข 13–15"
             />
           </p>
-          <Link href="/agent-offers" className="btn btn-ghost" style={{ paddingLeft: 0, marginTop: 12 }}>
+          <Link href="/rev-alloc" className="btn btn-ghost" style={{ paddingLeft: 0, marginTop: 12 }}>
+            <T en="13 Alloc · 14 Promo · 15 Direct" th="13 จัดสรร · 14 โปร · 15 จองตรง" /> →
+          </Link>
+          <Link href="/agent-offers" className="btn btn-ghost" style={{ paddingLeft: 0 }}>
             <T en="AI Direct Offers" th="ข้อเสนอตรงสำหรับ AI" /> →
           </Link>
           <Link href="/profit" className="btn btn-ghost" style={{ paddingLeft: 0 }}>

@@ -46,17 +46,11 @@ HOTEL24
 
 Autonomous AI revenue team. Agents think and explain. Forecasting/optimization engines calculate. Guardian policy blocks catastrophe. Execution writes rates, inventory and campaigns. **An LLM never picks ฿4,900 alone.**
 
-Phase 1 (shipped as a seeded department):
+Phase 1 (seeded department): Demand Forecast, Booking Curve + Pickup, Competitor, Event, Dynamic Pricing, Inventory Optimization, Channel Profitability, Revenue Guardian — plus the Director, morning meeting and opportunity hunter.
 
-1. Demand Forecast + booking curve + pickup  
-2. Competitor + event + compression  
-3. Dynamic pricing + digital twin  
-4. Inventory optimization  
-5. Channel profitability (Net ADR)  
-6. Revenue Guardian  
-7. Revenue Director + morning meeting + opportunity hunter  
+Phase 2 (seeded, not live ML): Cancellation Prediction, Overbooking, Price Elasticity / WTP, Group Displacement, Channel Allocation, Promotion Optimization, Direct Conversion, Revenue Attribution. Guardian still refuses Suite ฿500 and a sell limit of 52.
 
-Default autonomy is **Level 2 — guardrailed autopilot**. Console: `/revenue-os`. Classic `/autopilot` remains the older single-queue writer.
+Default autonomy is **Level 2 — guardrailed autopilot**. Console: `/revenue-os` · `/rev-engines` · `/rev-phase2`. Classic `/autopilot` remains the older single-queue writer.
 
 The long-term proposition: a 30–100 room hotel cannot hire a Revenue Director + RM + distribution manager + analyst. **HOTEL24 does the job.**
 

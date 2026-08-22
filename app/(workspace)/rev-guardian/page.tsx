@@ -10,13 +10,13 @@ export default function RevGuardianPage() {
   return (
     <div>
       <PageHead
-        code="ROS-06 · Revenue Guardian"
-        kickerEn="Stop bad revenue decisions"
-        kickerTh="หยุดการตัดสินใจรายได้ที่พัง"
+        code="ROS-06 · Engine 08"
+        kickerEn="08 · Revenue Guardian Engine"
+        kickerTh="08 · เครื่องรั้วรายได้"
         titleEn="Revenue Guardian"
         titleTh="ผู้พิทักษ์รายได้"
-        subEn="Mandatory if HOTEL24 executes. A separate agent whose only job is to refuse writes. Pricing AI may draft ฿500. Guardian never lets it reach ARI."
-        subTh="บังคับถ้า HOTEL24 ลงมือเอง เป็นเอเจนต์แยก งานเดียวคือปฏิเสธการเขียน Pricing AI อาจร่าง ฿500 Guardian ไม่ให้ถึง ARI"
+        subEn="Engine 08 is mandatory if HOTEL24 executes. A separate agent. Pricing AI may draft ฿500. Inventory AI may draft sell 52. Guardian never lets either reach ARI."
+        subTh="เครื่อง 08 บังคับถ้า HOTEL24 ลงมือเอง เป็นเอเจนต์แยก Pricing AI อาจร่าง ฿500 Inventory AI อาจร่างเพดาน 52 Guardian ไม่ให้ทั้งคู่ถึง ARI"
       />
       <RevenueNav />
 

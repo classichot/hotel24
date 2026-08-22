@@ -39,6 +39,8 @@ const NAV = [
   {
     group: { en: "RevenueOS", th: "RevenueOS" },
     items: [
+      { href: "/rev-engines", en: "Phase 1 · 8 engines", th: "เฟส 1 · 8 เครื่องยนต์" },
+      { href: "/rev-phase2", en: "Phase 2 · 8 engines", th: "เฟส 2 · 8 เครื่องยนต์" },
       { href: "/revenue-os", en: "Director", th: "ผู้อำนวยการ" },
       { href: "/rev-demand", en: "Demand Brain", th: "สมองดีมานด์" },
       { href: "/rev-pricing", en: "Price Brain", th: "สมองราคา" },

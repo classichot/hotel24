@@ -8,6 +8,9 @@ import { T } from "@/lib/i18n";
 import {
   MEETING,
   OPPORTUNITIES,
+  PHASE1_ENGINES,
+  PHASE2_ACTIONS,
+  PHASE2_ENGINES,
   REV_AGENTS,
   REV_DECISIONS,
   REV_LEVELS,
@@ -22,6 +25,7 @@ export default function RevenueOsPage() {
   const open = pendingRev(revState);
   const today = REV_DECISIONS.filter((d) => d.risk !== "blocked");
   const blocked = REV_DECISIONS.filter((d) => d.risk === "blocked");
+  const phase2Open = open.filter((d) => (PHASE2_ACTIONS as readonly string[]).includes(d.id));
   const profit = revImpact(revState, "open") || today.reduce((n, d) => n + d.expected, 0);
   const uncaptured = OPPORTUNITIES.reduce((n, o) => n + o.value, 0);
   const level = REV_LEVELS.find((l) => l.id === revLevel) ?? REV_LEVELS[2];
@@ -29,13 +33,13 @@ export default function RevenueOsPage() {
   return (
     <div>
       <PageHead
-        code="ROS-01 · RevenueOS Phase 1"
+        code="ROS-01 · RevenueOS"
         kickerEn="Autonomous AI Revenue Team"
         kickerTh="ทีมรายได้ AI อัตโนมัติ"
         titleEn="Revenue Director"
         titleTh="ผู้อำนวยการรายได้"
-        subEn="Agents think and explain. Engines calculate. Guardian blocks catastrophe. Execution writes rates, inventory and campaigns — an LLM never picks ฿4,900 alone."
-        subTh="เอเจนต์คิดและอธิบาย เครื่องยนต์คำนวณ Guardian กันหายนะ การลงมือเขียนราคา ห้อง และแคมเปญ — LLM ห้ามเลือก ฿4,900 คนเดียว"
+        subEn="Agents think and explain. Engines calculate. Guardian blocks catastrophe — including Suite ฿500 and sell limit 52. Execution writes rates, inventory, allotment and offers. An LLM never picks ฿4,900 alone."
+        subTh="เอเจนต์คิดและอธิบาย เครื่องยนต์คำนวณ Guardian กันหายนะ — รวมสวีท ฿500 และเพดานขาย 52 การลงมือเขียนราคา ห้อง จัดสรร และข้อเสนอ LLM ห้ามเลือก ฿4,900 คนเดียว"
         actions={
           <button className="btn btn-primary" onClick={runRevMeeting}>
             {revMeetingAt
@@ -86,10 +90,40 @@ export default function RevenueOsPage() {
         <T en={level.hint} th={level.hintTh} />
       </p>
 
+      <h5 className="sec-h" style={{ marginTop: 22 }}>
+        <T en="Phase 1 — the eight engines that calculate" th="เฟส 1 — แปดเครื่องยนต์ที่คำนวณ" />
+        {" "}
+        <Link href="/rev-engines" className="btn btn-ghost" style={{ marginLeft: 8 }}><T en="Open catalog" th="เปิดรายการ" /> →</Link>
+      </h5>
+      <div className="module-grid" style={{ marginTop: 0 }}>
+        {PHASE1_ENGINES.map((e) => (
+          <Link key={e.id} href={e.href} className="module-cell" style={{ textDecoration: "none", color: "inherit", minHeight: 0 }}>
+            <span className="text-muted" style={{ fontSize: 11, fontWeight: 800 }}>{e.n}</span>
+            <strong><T en={e.en} th={e.th} /></strong>
+            <span>{e.output}</span>
+          </Link>
+        ))}
+      </div>
+
+      <h5 className="sec-h" style={{ marginTop: 22 }}>
+        <T en="Phase 2 — cancel, overbook, WTP, group, allocation, promo, Direct, why" th="เฟส 2 — ยกเลิก ขายเกิน WTP กรุ๊ป จัดสรร โปร จองตรง ทำไม" />
+        {" "}
+        <Link href="/rev-phase2" className="btn btn-ghost" style={{ marginLeft: 8 }}><T en="Open Phase 2" th="เปิดเฟส 2" /> →</Link>
+      </h5>
+      <div className="module-grid" style={{ marginTop: 0 }}>
+        {PHASE2_ENGINES.map((e) => (
+          <Link key={e.id} href={e.href} className="module-cell" style={{ textDecoration: "none", color: "inherit", minHeight: 0 }}>
+            <span className="text-muted" style={{ fontSize: 11, fontWeight: 800 }}>{e.n}</span>
+            <strong><T en={e.en} th={e.th} /></strong>
+            <span>{e.output}</span>
+          </Link>
+        ))}
+      </div>
+
       <div className="split-main">
         <section className="col-pad border-r">
           <h5 className="sec-h">
-            <T en="Director queue" th="คิวผู้อำนวยการ" />
+            <T en={`Director queue · ${phase2Open.length} Phase 2`} th={`คิวผู้อำนวยการ · เฟส 2 ${phase2Open.length}`} />
             {open.length > 0 && revLevel > 0 && (
               <button className="btn btn-primary" style={{ marginLeft: 12 }} onClick={applyRevOpen}>
                 <T en="Approve all writes" th="อนุมัติการเขียนทั้งหมด" />
@@ -128,7 +162,7 @@ export default function RevenueOsPage() {
             </div>
           ))}
           <h5 className="sec-h" style={{ marginTop: 24 }}><T en="The team" th="ทีม" /></h5>
-          {REV_AGENTS.filter((a) => a.phase === 1).map((a) => (
+          {REV_AGENTS.filter((a) => a.phase !== 3).map((a) => (
             <div key={a.id} className="ctx-row">
               <span>{a.en}</span>
               <span className="text-muted" style={{ fontSize: 11 }}>{a.human}</span>

@@ -19,8 +19,8 @@ const FEATURES = [
     n: "08",
     title: "HOTEL24 RevenueOS",
     th: "ทีมรายได้ AI อัตโนมัติ",
-    copy: "Not one rate bot. A commercial department: Director, Demand, Pricing, Inventory, Distribution, Guardian. Engines calculate. Policy blocks a ฿500 mistake. Execution writes into the same ARI store. Level 2 guardrailed autopilot is the default.",
-    copyTh: "ไม่ใช่บอทราคาตัวเดียว เป็นฝ่ายพาณิชย์: ผู้อำนวยการ ดีมานด์ ราคา ห้อง ช่องทาง ผู้พิทักษ์ เครื่องยนต์คำนวณ นโยบายบล็อก ฿500 ที่ผิด การลงมือเขียนคลัง ARI เดียวกัน ระดับ 2 ที่มีรั้วคือค่าเริ่มต้น",
+    copy: "Not one rate bot. A commercial department: sixteen engines plus a Director. Phase 2 adds cancel risk, overbooking, WTP, groups, allocation, promos, Direct conversion and attribution. Policy blocks a ฿500 Suite and a sell limit of 52. Level 2 guardrailed autopilot is the default.",
+    copyTh: "ไม่ใช่บอทราคาตัวเดียว เป็นฝ่ายพาณิชย์: สิบหกเครื่องยนต์กับผู้อำนวยการ เฟส 2 เพิ่มเสี่ยงยกเลิก ขายเกิน WTP กรุ๊ป จัดสรร โปร แปลงจองตรง และอธิบายรายได้ นโยบายบล็อกสวีท ฿500 และเพดานขาย 52 ระดับ 2 ที่มีรั้วคือค่าเริ่มต้น",
     proof: "Garden Mon–Tue ฿1,980 → ฿2,200 because the twin says net peaks there — not because a competitor moved ฿100.",
   },
   {
@@ -197,8 +197,8 @@ export default function LandingPage() {
           <h2><T en="Your revenue team works 24/7." th="ทีมรายได้คุณทำงานตลอด 24 ชม." /></h2>
           <p className="lede-sub">
             <T
-              en="A 40-room hotel cannot hire a Revenue Director, RM, distribution manager and analyst. RevenueOS is that department: engines calculate, Guardian blocks a ฿500 error, execution writes into the PMS. Level 2 guardrailed autopilot is the default. An LLM never sets the rate alone."
-              th="โรงแรม 40 ห้องจ้างผู้อำนวยการรายได้ RM ผู้จัดการช่องทาง และนักวิเคราะห์ไม่ได้ RevenueOS คือฝ่ายนั้น: เครื่องยนต์คำนวณ Guardian บล็อก ฿500 ที่ผิด การลงมือเขียนเข้า PMS ระดับ 2 ที่มีรั้วคือค่าเริ่มต้น LLM ห้ามตั้งราคาคนเดียว"
+              en="A 40-room hotel cannot hire a Revenue Director, RM, distribution manager and analyst. RevenueOS is that department: sixteen engines calculate, Guardian blocks a ฿500 error and a sell limit of 52, execution writes into the PMS. Level 2 guardrailed autopilot is the default. An LLM never sets the rate alone."
+              th="โรงแรม 40 ห้องจ้างผู้อำนวยการรายได้ RM ผู้จัดการช่องทาง และนักวิเคราะห์ไม่ได้ RevenueOS คือฝ่ายนั้น: สิบหกเครื่องยนต์คำนวณ Guardian บล็อก ฿500 ที่ผิดและเพดานขาย 52 การลงมือเขียนเข้า PMS ระดับ 2 ที่มีรั้วคือค่าเริ่มต้น LLM ห้ามตั้งราคาคนเดียว"
             />
           </p>
           <div className="module-grid" style={{ marginTop: 22 }}>
@@ -208,6 +208,7 @@ export default function LandingPage() {
               { en: "Inventory Brain", th: "ใครได้ห้องที่ขาด" },
               { en: "Distribution Brain", th: "ขายที่ไหน — Net ADR" },
               { en: "Guardian", th: "หยุดการตัดสินใจที่พัง" },
+              { en: "Phase 2 engines", th: "ยกเลิก · ขายเกิน · กรุ๊ป · แปลงจองตรง" },
             ].map((m) => (
               <div key={m.en} className="module-cell">
                 <strong>{m.en}</strong>
