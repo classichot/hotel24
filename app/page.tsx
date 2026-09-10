@@ -8,6 +8,14 @@ import { useStore } from "@/lib/store";
 
 const FEATURES = [
   {
+    n: "09",
+    title: "HOTEL24 AGI Mode",
+    th: "มอบงานให้บอทที่คุณใช้ — และให้บอทแขกจองตรง",
+    copy: "A separate layer from normal AI. Normal AI helps you tap Approve inside HOTEL24. AGI Mode lets Grok, Claude or ChatGPT receive an objective, work across modules, execute within your floor and budget, and report. Traveller bots shop; HOTEL24 validates and confirms. Toggle it off and the layer goes dark.",
+    copyTh: "ชั้นแยกจาก AI ปกติ AI ปกติช่วยคุณกดอนุมัติใน HOTEL24 โหมด AGI ให้ Grok Claude หรือ ChatGPT รับวัตถุประสงค์ ทำงานข้ามโมดูล ลงมือในราคาพื้นและงบ แล้วรายงาน บอทผู้เดินทางช้อป HOTEL24 ตรวจแล้วยืนยัน ปิดสวิตช์แล้วชั้นมืด",
+    proof: "Grok runs a weekday mission. ChatGPT requests a family package. HOTEL24 confirms. Floor ฿2,200.",
+  },
+  {
     n: "00",
     title: "HOTEL24 Agent Direct",
     th: "ให้ทุก AI จองตรงได้",
@@ -82,6 +90,7 @@ const FEATURES = [
 ];
 
 const MODULES = [
+  { en: "HOTEL24 AGI Mode", th: "ชั้นแยก — มอบวัตถุประสงค์ให้ Grok / Claude / ChatGPT" },
   { en: "HOTEL24 Agent Direct", th: "เชื่อมครั้งเดียว — ทุก AI จองตรงได้" },
   { en: "HOTEL24 RevenueOS", th: "ทีมรายได้ AI — เครื่องยนต์คิด รั้วกันพัง" },
   { en: "Hotel Agent Protocol (HAP)", th: "สเปกเปิดบน Schema.org / MCP / ACP / UCP" },
@@ -111,9 +120,10 @@ export default function LandingPage() {
     <div className="landing">
       <nav className="nav landing-nav">
         <span className="nav-brand">HOTEL<span>24</span></span>
+        <a href="#agi"><T en="AGI Mode" th="โหมด AGI" /></a>
         <a href="#agent"><T en="Agent Direct" th="Agent Direct" /></a>
         <a href="#revenueos"><T en="RevenueOS" th="RevenueOS" /></a>
-        <a href="#system"><T en="AI" th="AI" /></a>
+        <a href="#agi"><T en="AI" th="AI" /></a>
         <a href="#connect"><T en="Channels" th="ช่องทาง" /></a>
         <a href="#switch"><T en="Switch" th="ย้ายระบบ" /></a>
         <a href="#profit"><T en="Real profit" th="กำไรจริง" /></a>
@@ -221,7 +231,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section id="system" className="landing-section">
+        <section id="agi" className="landing-section">
           <div className="page-kicker"><T en="The defining idea, then the engines that run the house" th="แนวคิดหลัก แล้วเครื่องยนต์ที่ดูแลโรงแรม" /></div>
           {FEATURES.map((f) => (
             <div key={f.n} className="feature-row">

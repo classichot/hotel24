@@ -33,6 +33,16 @@ import {
   type RevStatus,
 } from "./revenueos";
 import {
+  AGI_MISSIONS,
+  AGI_RECORD_SEED,
+  AGI_RULES,
+  type AgiBot,
+  type AgiConn,
+  type AgiLevel,
+  type AgiMissionStatus,
+  type AgiRecord,
+} from "./agi";
+import {
   activeConnector,
   cloneAri,
   cloneChannels,
@@ -155,6 +165,29 @@ type Store = {
   runRevMeeting: () => void;
   revSellLimit: Record<string, number>;
   revOffers: Record<string, boolean>;
+  agiOn: boolean;
+  setAgiOn: (v: boolean) => void;
+  agiPaused: boolean;
+  setAgiPaused: (v: boolean) => void;
+  agiLevel: AgiLevel;
+  setAgiLevel: (n: AgiLevel) => void;
+  agiConns: Record<AgiBot, AgiConn>;
+  testAgiBot: (id: AgiBot) => void;
+  setAgiConn: (id: AgiBot, s: AgiConn) => void;
+  agiMissions: Record<string, AgiMissionStatus>;
+  runAgiMission: (id: string) => void;
+  approveAgiMission: (id: string) => void;
+  pauseAgiMission: (id: string) => void;
+  agiRecords: AgiRecord[];
+  agiDemo: number;
+  runAgiDemo: () => void;
+  resetAgiDemo: () => void;
+  agiHoldId: string | null;
+  agiBooking: Record<string, unknown> | null;
+  agiGuestOffer: string;
+  setAgiGuestOffer: (id: string) => void;
+  holdAgiOffer: () => void;
+  confirmAgiGuest: (guest: string) => void;
 };
 
 const Ctx = createContext<Store | null>(null);
@@ -215,6 +248,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [revMeetingAt, setRevMeetingAt] = useState<string | null>(null);
   const [revSellLimit, setRevSellLimit] = useState<Record<string, number>>({});
   const [revOffers, setRevOffers] = useState<Record<string, boolean>>({});
+  const [agiOn, setAgiOnState] = useState(false);
+  const [agiPaused, setAgiPausedState] = useState(false);
+  const [agiLevel, setAgiLevelState] = useState<AgiLevel>(1);
+  const [agiConns, setAgiConns] = useState<Record<AgiBot, AgiConn>>({ grok: "off", claude: "off", chatgpt: "off" });
+  const [agiMissions, setAgiMissions] = useState<Record<string, AgiMissionStatus>>({});
+  const [agiRecords, setAgiRecords] = useState<AgiRecord[]>(AGI_RECORD_SEED);
+  const [agiDemo, setAgiDemo] = useState(0);
+  const [agiHoldId, setAgiHoldId] = useState<string | null>(null);
+  const [agiBooking, setAgiBooking] = useState<Record<string, unknown> | null>(null);
+  const [agiGuestOffer, setAgiGuestOffer] = useState("o-loft");
   const revStateRef = useRef<Record<string, RevStatus>>({});
   revStateRef.current = revState;
   const aiStateRef = useRef<Record<string, RecStatus>>({});
@@ -229,6 +272,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           switchSource?: PmsSource; switchStatus?: SwitchStatus; agentReady?: boolean;
           agentBooks?: Record<string, unknown>[];
           revLevel?: RevLevel; revState?: Record<string, RevStatus>; revMeetingAt?: string | null;
+          agiOn?: boolean; agiPaused?: boolean; agiLevel?: AgiLevel; agiConns?: Record<AgiBot, AgiConn>;
         };
         if (s.authed) setAuthed(true);
         if (s.role) setRole(s.role);
@@ -242,6 +286,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (s.revLevel === 0 || s.revLevel === 1 || s.revLevel === 2 || s.revLevel === 3) setRevLevelState(s.revLevel);
         if (s.revState && typeof s.revState === "object") setRevState(s.revState);
         if (typeof s.revMeetingAt === "string" || s.revMeetingAt === null) setRevMeetingAt(s.revMeetingAt ?? null);
+        if (typeof s.agiOn === "boolean") setAgiOnState(s.agiOn);
+        if (typeof s.agiPaused === "boolean") setAgiPausedState(s.agiPaused);
+        if (s.agiLevel === 0 || s.agiLevel === 1 || s.agiLevel === 2) setAgiLevelState(s.agiLevel);
+        if (s.agiConns && typeof s.agiConns === "object") setAgiConns((c) => ({ ...c, ...s.agiConns }));
         if (s.switchStatus === "done") {
           setSwitchStatus("done");
           setSwitchStep(SWITCH_STEPS.length - 1);
@@ -255,9 +303,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!ready) return;
     localStorage.setItem(KEY, JSON.stringify({
       authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus: switchStatus === "running" ? "idle" : switchStatus, agentReady, agentBooks,
-      revLevel, revState, revMeetingAt,
+      revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns,
     }));
-  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus, agentReady, agentBooks, revLevel, revState, revMeetingAt]);
+  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus, agentReady, agentBooks, revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns]);
 
   const flash = useCallback((m: string) => {
     setToast(m);
@@ -926,6 +974,146 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [applyRev, flash, revLevel, stamp]);
 
+  const noteAgi = useCallback((rec: Omit<AgiRecord, "id" | "t">) => {
+    setAgiRecords((list) => [
+      { ...rec, id: `ar-${Date.now().toString(36)}`, t: "19 Aug 09:14" },
+      ...list,
+    ]);
+  }, []);
+
+  const setAgiOn = useCallback((v: boolean) => {
+    setAgiOnState(v);
+    if (!v) {
+      setAgiPausedState(false);
+      setAgiMissions((s) => Object.fromEntries(Object.entries(s).map(([k, st]) => [k, st === "done" ? st : "paused"])));
+      stamp("AGI Mode", "Off. External agents cannot act. Normal AI still proposes inside HOTEL24.", "system");
+      flash("AGI Mode off · normal AI unchanged");
+    } else {
+      stamp("AGI Mode", "On. Authorised agents may receive an objective. HOTEL24 still commits.", "system");
+      flash("AGI Mode on · a separate layer from recommend / auto");
+    }
+  }, [flash, stamp]);
+
+  const setAgiPaused = useCallback((v: boolean) => {
+    setAgiPausedState(v);
+    stamp("AGI Mode", v ? "Paused — revoke in force. No agent may write." : "Resume — limits still apply.", "system");
+    flash(v ? "AGI Mode paused" : "AGI Mode resumed");
+  }, [flash, stamp]);
+
+  const setAgiLevel = useCallback((n: AgiLevel) => {
+    setAgiLevelState(n);
+    stamp("AGI Mode", `Autonomy A${n} — ${n === 0 ? "analyse only" : n === 1 ? "prepare for approval" : "execute within limits"}`, "system");
+    flash(n < 2 ? `AGI A${n} · HOTEL24 will not auto-commit` : "AGI A2 · floor ฿2,200 and promo ฿10,000 still bind");
+  }, [flash, stamp]);
+
+  const setAgiConn = useCallback((id: AgiBot, s: AgiConn) => {
+    setAgiConns((c) => ({ ...c, [id]: s }));
+    stamp("AGI Mode", `${id} set to ${s}`, "system");
+    flash(`${id} · ${s}`);
+  }, [flash, stamp]);
+
+  const testAgiBot = useCallback((id: AgiBot) => {
+    if (!agiOn) {
+      flash("Turn AGI Mode on before testing a bot");
+      return;
+    }
+    setAgiConns((c) => ({ ...c, [id]: "testing" }));
+    window.setTimeout(() => {
+      setAgiConns((c) => ({ ...c, [id]: "live" }));
+      noteAgi({
+        bot: id,
+        kind: "action",
+        en: `${id} connector test passed. MCP handshake mapped — not a certified store listing.`,
+        th: `ทดสอบคอนเนกเตอร์ ${id} ผ่านแล้ว จับมือ MCP ถูกแมป — ยังไม่ใช่ลิสต์ร้านค้าที่รับรอง`,
+        observed: true,
+      });
+      flash(`${id} live · HOTEL24 enforces permissions`);
+    }, 700);
+  }, [agiOn, flash, noteAgi]);
+
+  const runAgiMission = useCallback((id: string) => {
+    if (!agiOn || agiPaused) {
+      flash("AGI Mode must be on and not paused");
+      return;
+    }
+    const m = AGI_MISSIONS.find((x) => x.id === id);
+    if (!m) return;
+    if (agiConns[m.bot] !== "live") {
+      flash(`Connect ${m.bot} first`);
+      return;
+    }
+    const next: AgiMissionStatus = agiLevel >= 2 ? "running" : "awaiting";
+    setAgiMissions((s) => ({ ...s, [id]: next }));
+    noteAgi({
+      bot: m.bot,
+      missionId: id,
+      kind: "plan",
+      en: `${m.en}: ${m.objective}`,
+      th: `${m.th}: ${m.objectiveTh}`,
+      observed: true,
+    });
+    stamp("AGI Mode", `${m.bot} received mission ${id} · ${next}`, "ai");
+    flash(next === "running" ? `${m.bot} is running the mission` : `${m.bot} prepared the mission · approve to write`);
+  }, [agiConns, agiLevel, agiOn, agiPaused, flash, noteAgi, stamp]);
+
+  const approveAgiMission = useCallback((id: string) => {
+    const m = AGI_MISSIONS.find((x) => x.id === id);
+    if (!m) return;
+    setAgiMissions((s) => ({ ...s, [id]: "done" }));
+    noteAgi({
+      bot: "hotel24",
+      missionId: id,
+      kind: "approval",
+      en: `Owner approved ${m.en}. HOTEL24 committed within floor ฿${AGI_RULES.floorThb.toLocaleString()} and promo ฿${AGI_RULES.promoCapThb.toLocaleString()}. Cancellation policy was not changed.`,
+      th: `เจ้าของอนุมัติ ${m.th} HOTEL24 ลงในราคาพื้น ฿${AGI_RULES.floorThb.toLocaleString()} และงบโปร ฿${AGI_RULES.promoCapThb.toLocaleString()} ไม่ได้เปลี่ยนนโยบายยกเลิก`,
+      observed: true,
+    });
+    if (id === "m-rev") {
+      setAri((grid) => ({
+        ...grid,
+        garden: (grid.garden ?? []).map((r) =>
+          r.date === "24 Aug" || r.date === "25 Aug" || r.date === "26 Aug" || r.date === "27 Aug"
+            ? { ...r, rate: Math.max(AGI_RULES.floorThb, r.rate) }
+            : r
+        ),
+      }));
+    }
+    stamp("AGI Mode", `Mission ${id} approved · HOTEL24 wrote`, "manual");
+    flash("Mission committed · HOTEL24 is the writer");
+  }, [flash, noteAgi, stamp]);
+
+  const pauseAgiMission = useCallback((id: string) => {
+    setAgiMissions((s) => ({ ...s, [id]: "paused" }));
+    flash("Mission paused");
+  }, [flash]);
+
+  const runAgiDemo = useCallback(() => {
+    if (!agiOn) {
+      setAgiOnState(true);
+    }
+    setAgiPausedState(false);
+    setAgiConns((c) => ({ ...c, grok: "live", chatgpt: "live" }));
+    setAgiMissions((s) => ({ ...s, "m-rev": agiLevel >= 2 ? "running" : "awaiting" }));
+    noteAgi({
+      bot: "grok",
+      missionId: "m-rev",
+      kind: "plan",
+      en: "Grok: weekday recovery. BAR stays ≥ ฿2,200. Promo ฿8,000 of ฿10,000. Cancellation policy not touched — owner must ask.",
+      th: "Grok: กู้กลางสัปดาห์ BAR ไม่ต่ำกว่า ฿2,200 โปร ฿8,000 จาก ฿10,000 ไม่แตะนโยบายยกเลิก — ต้องถามเจ้าของ",
+      observed: true,
+    });
+    setAgiDemo(3);
+    stamp("AGI Mode", "Sales demo: Grok revenue mission armed. Waiting for traveller ChatGPT.", "ai");
+    flash("Grok is on the revenue mission");
+  }, [agiLevel, agiOn, flash, noteAgi, stamp]);
+
+  const resetAgiDemo = useCallback(() => {
+    setAgiDemo(0);
+    setAgiHoldId(null);
+    setAgiBooking(null);
+    flash("Demo reset");
+  }, [flash]);
+
   const receiveAgentBooking = useCallback((booking: Record<string, unknown>) => {
     setAgentBooks((list) => [booking, ...list]);
     const id = String(booking.bookingId || `H24-AG-${Date.now()}`);
@@ -952,6 +1140,53 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     stamp("HOTEL24 Agent Gateway", `Direct booking ${id} · ${String(booking.guest)} · commission ฿0 · OTA not involved`, "system");
   }, [stamp]);
 
+  const holdAgiOffer = useCallback(() => {
+    if (!agiOn) {
+      flash("Turn AGI Mode on");
+      return;
+    }
+    const holdId = `HOLD-AGI-${Date.now().toString(36).toUpperCase()}`;
+    setAgiHoldId(holdId);
+    noteAgi({
+      bot: "chatgpt",
+      kind: "action",
+      en: `Guest ChatGPT held ${agiGuestOffer} for 10 minutes. Duplicate-booking lock on.`,
+      th: `ChatGPT ของแขกกัน ${agiGuestOffer} 10 นาที ล็อกกันจองซ้ำ`,
+      observed: true,
+    });
+    flash("Hold 10 minutes · no charge");
+  }, [agiGuestOffer, agiOn, flash, noteAgi]);
+
+  const confirmAgiGuest = useCallback((guest: string) => {
+    if (!agiHoldId) {
+      flash("Hold first");
+      return;
+    }
+    const booking = {
+      bookingId: `H24-AGI-${Date.now().toString(36).toUpperCase()}`,
+      holdId: agiHoldId,
+      guest: guest || "ChatGPT traveller",
+      hotel: "Baan Talay Boutique Resort",
+      room: agiGuestOffer === "o-two" ? "Garden Deluxe × 2" : "Family Loft",
+      total: agiGuestOffer === "o-two" ? 11040 : 9120,
+      tax: 0,
+      checkIn: "24 Aug",
+      checkOut: "26 Aug",
+      commission: 0,
+    };
+    setAgiBooking(booking);
+    receiveAgentBooking(booking);
+    noteAgi({
+      bot: "hotel24",
+      kind: "result",
+      en: `Reservation ${booking.bookingId} confirmed. Merchant of record: the hotel. ChatGPT shopped. HOTEL24 validated inventory and price.`,
+      th: `ยืนยันจอง ${booking.bookingId} ผู้ค้าตามกฎหมายคือโรงแรม ChatGPT เลือกของ HOTEL24 ตรวจห้องและราคา`,
+      observed: true,
+    });
+    setAgiDemo(7);
+    flash("Guest booking confirmed · hotel owns the guest");
+  }, [agiGuestOffer, agiHoldId, flash, noteAgi, receiveAgentBooking]);
+
   const themeVars = THEMES[theme].vars as unknown as Record<string, string>;
 
   const value = useMemo<Store>(
@@ -973,6 +1208,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       agentReady, setAgentReady, agentBooks, receiveAgentBooking,
       revLevel, setRevLevel, revState, applyRev, dismissRev, applyRevOpen, revMeetingAt, runRevMeeting,
       revSellLimit, revOffers,
+      agiOn, setAgiOn, agiPaused, setAgiPaused, agiLevel, setAgiLevel, agiConns, testAgiBot, setAgiConn,
+      agiMissions, runAgiMission, approveAgiMission, pauseAgiMission, agiRecords, agiDemo, runAgiDemo, resetAgiDemo,
+      agiHoldId, agiBooking, agiGuestOffer, setAgiGuestOffer, holdAgiOffer, confirmAgiGuest,
     }),
     [
       ready, authed, login, logout, role, theme, setTheme, themeVars, lang, setLang,
@@ -987,6 +1225,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       agentReady, setAgentReady, agentBooks, receiveAgentBooking,
       revLevel, setRevLevel, revState, applyRev, dismissRev, applyRevOpen, revMeetingAt, runRevMeeting,
       revSellLimit, revOffers,
+      agiOn, setAgiOn, agiPaused, setAgiPaused, agiLevel, setAgiLevel, agiConns, testAgiBot, setAgiConn,
+      agiMissions, runAgiMission, approveAgiMission, pauseAgiMission, agiRecords, agiDemo, runAgiDemo, resetAgiDemo,
+      agiHoldId, agiBooking, agiGuestOffer, holdAgiOffer, confirmAgiGuest,
     ]
   );
 

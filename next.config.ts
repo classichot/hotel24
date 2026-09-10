@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/.well-known/hotel24.json", destination: "/api/hap/identity" },
       { source: "/.well-known/mcp.json", destination: "/api/hap/mcp" },
+      { source: "/.well-known/hotel24-agi.json", destination: "/api/agi/identity" },
+      { source: "/.well-known/agi-mcp.json", destination: "/api/agi/mcp" },
     ];
   },
   async headers() {

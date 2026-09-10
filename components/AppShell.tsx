@@ -18,6 +18,7 @@ import { FRONT_USER, OWNER, PROPERTIES, TODAY, TODAY_TH } from "@/lib/model";
 import { pendingCount } from "@/lib/ai";
 import { pendingRev } from "@/lib/revenueos";
 import { useStore } from "@/lib/store";
+import { AgiToggle } from "@/components/AgiToggle";
 import { GmNotify } from "@/components/GmNotify";
 import { ScreenPlaybook } from "@/components/Playbook";
 import { LangToggle } from "@/components/LangToggle";
@@ -26,7 +27,23 @@ import { T, pick } from "@/lib/i18n";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
+const AGI_NAV = {
+  group: { en: "AGI Mode", th: "โหมด AGI" },
+  items: [
+    { href: "/agi", en: "AGI Mode", th: "โหมด AGI" },
+    { href: "/agi-demo", en: "Sales demo", th: "เดโมขาย" },
+    { href: "/agi-connect", en: "Connect your agent", th: "ต่อเอเจนต์ของคุณ" },
+    { href: "/agi-missions", en: "Mission Centre", th: "ศูนย์ภารกิจ" },
+    { href: "/agi-revenue", en: "Revenue mission", th: "ภารกิจรายได้" },
+    { href: "/agi-direct", en: "Guest bot", th: "บอทแขก" },
+    { href: "/agi-gm", en: "Weekend GM", th: "GM สุดสัปดาห์" },
+    { href: "/agi-autonomy", en: "Autonomy", th: "อำนาจ" },
+    { href: "/agi-record", en: "Work record", th: "สมุดงาน" },
+  ],
+};
+
 const NAV = [
+  AGI_NAV,
   {
     group: { en: "Agent Direct", th: "Agent Direct" },
     items: [
@@ -121,6 +138,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const {
     logout, toast, navOpen, setNavOpen, lang, role, propertyId, setPropertyId,
     search, setSearch, aiMode, recState, shieldClosed, switchStatus, otaChannels, aiState, agentReady, revState,
+    agiOn, agiPaused, agiMissions,
   } = useStore();
   const user = role === "front" || role === "housekeeping" ? FRONT_USER : OWNER;
   const property = PROPERTIES.find((p) => p.id === propertyId) ?? PROPERTIES[0];
@@ -132,8 +150,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useEffect(() => { setNavOpen(false); }, [path, setNavOpen]);
 
+  const nav = NAV.map((g) =>
+    g.group.en === "AGI Mode" && !agiOn
+      ? { ...g, items: g.items.filter((i) => i.href === "/agi") }
+      : g
+  );
+  const agiOpen = Object.values(agiMissions).filter((s) => s === "running" || s === "awaiting").length;
+
   return (
-    <div className="shell">
+    <div className={`shell${agiOn ? " agi-on" : ""}`}>
       <div className={`sidebar-backdrop${navOpen ? " open" : ""}`} onClick={() => setNavOpen(false)} />
       <aside className={`sidebar ink-sidebar${navOpen ? " open" : ""}`}>
         <div className="ink-brand">
@@ -154,7 +179,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
         </div>
         <nav style={{ flex: 1, overflow: "auto", padding: "8px 0" }}>
-          {NAV.map((g) => (
+          {nav.map((g) => (
             <div key={g.group.en}>
               <div className="ink-group">{pick(lang, g.group)}</div>
               {g.items.map((item) => (
@@ -172,6 +197,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                   {item.href === "/channels" && (shieldOpen || otaWarn) && <span className="ink-dot" />}
                   {item.href === "/sync" && otaWarn && <span className="ink-dot" />}
                   {item.href === "/switch" && switchStatus !== "done" && <span className="ink-dot" />}
+                  {item.href === "/agi" && agiOn && <span className="ink-dot" />}
+                  {item.href === "/agi-missions" && agiOpen > 0 && <span className="ink-dot" />}
                 </Link>
               ))}
             </div>
@@ -214,6 +241,12 @@ export function AppShell({ children }: { children: ReactNode }) {
                 : <T en="All channels synced · 2 min" th="ซิงก์ทุกช่องทาง · 2 นาที" />}
             </span>
             <span className="tag tag-accent header-hide-sm">AI: {aiMode === "auto" ? "auto-apply" : "recommend"}</span>
+            <AgiToggle compact />
+            {agiOn && (
+              <span className={`tag${agiPaused ? " tag-outline" : " tag-accent"} header-hide-sm`}>
+                {agiPaused ? <T en="AGI paused" th="AGI หยุด" /> : <T en="AGI Mode · on" th="โหมด AGI · เปิด" />}
+              </span>
+            )}
             <input className="input header-hide-sm" type="search" placeholder={lang === "th" ? "ค้นหาการจอง แขก ห้อง…" : "Search reservation, guest, room…"} value={search} onChange={(e) => setSearch(e.target.value)} style={{ width: 220 }} />
             <LangToggle />
             <ModeToggle compact />
@@ -221,6 +254,18 @@ export function AppShell({ children }: { children: ReactNode }) {
             <button title="Sign out" className="icon-btn" onClick={() => { logout(); router.push("/login"); }}><LogOut size={16} /></button>
           </div>
         </header>
+        {agiOn && (
+          <div className="agi-strip no-print">
+            <T
+              en={agiPaused
+                ? "AGI Mode is paused. External agents cannot act. Normal AI (recommend / auto) is unchanged."
+                : "AGI Mode is on — a separate layer. Grok, Claude or ChatGPT may receive an objective. HOTEL24 still validates and commits. Normal AI still only helps you tap inside the console."}
+              th={agiPaused
+                ? "โหมด AGI หยุดชั่วคราว เอเจนต์ภายนอกทำอะไรไม่ได้ AI ปกติ (เสนอ / อัตโนมัติ) ไม่เปลี่ยน"
+                : "โหมด AGI เปิด — เป็นชั้นแยก Grok Claude หรือ ChatGPT รับวัตถุประสงค์ได้ HOTEL24 ยังตรวจและลงเอง AI ปกติยังแค่ช่วยคุณแตะในคอนโซล"}
+            />
+          </div>
+        )}
         <main className="page-main">
           <ScreenPlaybook />
           {children}
@@ -229,7 +274,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <GmNotify />
       <nav className="bottom-nav no-print">
-        {TABS.map((t) => {
+        {(agiOn ? [{ href: "/agi", label: "AGI", icon: Sparkles }, ...TABS.filter((t) => t.href !== "/gm")] : TABS).map((t) => {
           const Icon = t.icon;
           return (
             <Link key={t.href} href={t.href} className={isActive(path, t.href) ? "active" : ""}>
