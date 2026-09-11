@@ -413,9 +413,26 @@ pre { font-size: 12px; line-height: 1.65; }
   width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;
   border: 0; background: transparent; color: inherit; cursor: pointer; flex: none;
 }
-.shell { display: flex; height: 100dvh; overflow: hidden; background: var(--color-bg); color: var(--color-text); overscroll-behavior: none; }
+.shell { --nav-w: 236px; display: flex; height: 100dvh; overflow: hidden; background: var(--color-bg); color: var(--color-text); overscroll-behavior: none; }
+.shell.is-nav-resizing,
+.shell.is-nav-resizing * { cursor: col-resize !important; user-select: none; }
+.nav-resizer {
+  position: absolute; top: 0; right: 0; width: 14px; height: 100%;
+  padding: 0; border: 0; background: transparent; cursor: col-resize; touch-action: none; z-index: 6;
+}
+.nav-resizer::after {
+  content: ""; position: absolute; top: 0; bottom: 0; right: 0; width: 2px;
+  background: rgba(248,244,244,0.18);
+}
+.nav-resizer:hover::after, .nav-resizer.active::after, .nav-resizer:focus-visible::after {
+  background: var(--color-accent);
+  width: 3px;
+}
+.sidebar.nav-compact .ink-th,
+.sidebar.nav-compact .ink-kicker:last-child,
+.sidebar.nav-compact .ink-foot { display: none; }
 .sidebar {
-  width: 248px; flex: none; border-right: 2px solid var(--color-divider);
+  width: var(--nav-w, 236px); flex: none; border-right: 2px solid var(--color-divider);
   display: flex; flex-direction: column; position: sticky; top: 0; height: 100dvh;
   background: var(--color-bg); z-index: 40; overflow: hidden;
   padding-left: env(safe-area-inset-left);
@@ -981,14 +998,14 @@ html[data-theme="bw"] .map-dot.topup {
 @media print {
   aside, header, .no-print, .bottom-nav, .sidebar, .copilot { display: none !important; }
   main, .page-main { padding: 0 !important; }
-  .col-resizer { display: none !important; }
+  .col-resizer, .nav-resizer { display: none !important; }
   .table-resizable { table-layout: auto !important; width: 100% !important; }
   .reports-detail { padding: 16px 16px 20px !important; }
 }
 
 /* ── HOTEL24 console ── */
 .ink-sidebar {
-  width: 236px;
+  width: var(--nav-w, 236px);
   background: #201e1d;
   color: #f8f4f4;
   border-right: 0;
@@ -1062,8 +1079,10 @@ html[data-theme="bw"] .map-dot.topup {
   font-family: var(--font-heading);
   font-weight: 800;
   font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.ink-th { display: block; font-size: 11px; opacity: 0.62; }
+.ink-th { display: block; font-size: 11px; opacity: 0.62; overflow: hidden; text-overflow: ellipsis; }
 .ink-dot { width: 6px; height: 6px; background: var(--color-accent); margin-left: auto; flex: none; }
 .ink-foot {
   margin-top: auto;
@@ -1685,7 +1704,7 @@ button.phone-row {
   .ink-sidebar {
     position: sticky;
     transform: none !important;
-    width: 220px;
+    width: var(--nav-w, 236px);
     box-shadow: none;
   }
   .sidebar-backdrop,

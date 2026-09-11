@@ -17,14 +17,14 @@ import {
 import { FRONT_USER, OWNER, PROPERTIES, TODAY, TODAY_TH } from "@/lib/model";
 import { pendingCount } from "@/lib/ai";
 import { pendingRev } from "@/lib/revenueos";
-import { useStore } from "@/lib/store";
+import { NAV_W_DEFAULT, NAV_W_MAX, NAV_W_MIN, useStore } from "@/lib/store";
 import { AgiToggle } from "@/components/AgiToggle";
 import { GmNotify } from "@/components/GmNotify";
 import { ScreenPlaybook } from "@/components/Playbook";
 import { LangToggle } from "@/components/LangToggle";
 import { ModeToggle } from "@/components/ModeToggle";
 import { T, pick } from "@/lib/i18n";
-import type { ReactNode } from "react";
+import type { PointerEvent, ReactNode } from "react";
 import { useEffect, useState } from "react";
 
 const AGI_NAV = {
@@ -136,7 +136,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const path = usePathname();
   const router = useRouter();
   const {
-    logout, toast, navOpen, setNavOpen, lang, role, propertyId, setPropertyId,
+    logout, toast, navOpen, setNavOpen, navWidth, setNavWidth, lang, role, propertyId, setPropertyId,
     search, setSearch, aiMode, recState, shieldClosed, switchStatus, otaChannels, aiState, agentReady, revState,
     agiOn, agiPaused, agiMissions,
   } = useStore();
@@ -148,7 +148,32 @@ export function AppShell({ children }: { children: ReactNode }) {
   const otaWarn = otaChannels.some((c) => c.pendingUpdates > 0 || (c.status === "connected" && c.health < 100) || c.status === "paused");
   const gmOpen = pendingCount(aiState);
 
+  const [navDrag, setNavDrag] = useState(false);
+
   useEffect(() => { setNavOpen(false); }, [path, setNavOpen]);
+
+  function startNavResize(e: PointerEvent<HTMLButtonElement>) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = navWidth;
+    const handle = e.currentTarget;
+    try { handle.setPointerCapture(e.pointerId); } catch { /* already captured */ }
+    setNavDrag(true);
+    const move = (ev: globalThis.PointerEvent) => {
+      setNavWidth(startW + ev.clientX - startX);
+    };
+    const stop = (ev: globalThis.PointerEvent) => {
+      try { handle.releasePointerCapture(ev.pointerId); } catch { /* already released */ }
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", stop);
+      handle.removeEventListener("pointercancel", stop);
+      setNavDrag(false);
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", stop);
+    handle.addEventListener("pointercancel", stop);
+  }
 
   const nav = NAV.map((g) =>
     g.group.en === "AGI Mode" && !agiOn
@@ -158,9 +183,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   const agiOpen = Object.values(agiMissions).filter((s) => s === "running" || s === "awaiting").length;
 
   return (
-    <div className={`shell${agiOn ? " agi-on" : ""}`}>
+    <div
+      className={`shell${agiOn ? " agi-on" : ""}${navDrag ? " is-nav-resizing" : ""}`}
+      style={{ ["--nav-w" as string]: `${navWidth}px` }}
+    >
       <div className={`sidebar-backdrop${navOpen ? " open" : ""}`} onClick={() => setNavOpen(false)} />
-      <aside className={`sidebar ink-sidebar${navOpen ? " open" : ""}`}>
+      <aside className={`sidebar ink-sidebar${navOpen ? " open" : ""}${navWidth < 200 ? " nav-compact" : ""}`}>
         <div className="ink-brand">
           <div>
             <div className="ink-mark">HOTEL<span>24</span></div>
@@ -207,6 +235,26 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="ink-foot">
           Connectivity: white-label · 61+ channels<br />Agent Direct · RevenueOS · hotel owns the guest
         </div>
+        <button
+          type="button"
+          className={`nav-resizer${navDrag ? " active" : ""}`}
+          aria-label="Resize menu"
+          aria-orientation="vertical"
+          aria-valuemin={NAV_W_MIN}
+          aria-valuemax={NAV_W_MAX}
+          aria-valuenow={navWidth}
+          title="Drag to resize · double-click to reset"
+          onPointerDown={startNavResize}
+          onDoubleClick={() => setNavWidth(NAV_W_DEFAULT)}
+          onKeyDown={(e) => {
+            const step = e.shiftKey ? 32 : 8;
+            if (e.key === "ArrowLeft") { e.preventDefault(); setNavWidth(navWidth - step); }
+            if (e.key === "ArrowRight") { e.preventDefault(); setNavWidth(navWidth + step); }
+            if (e.key === "Home") { e.preventDefault(); setNavWidth(NAV_W_MIN); }
+            if (e.key === "End") { e.preventDefault(); setNavWidth(NAV_W_MAX); }
+            if (e.key === "Enter") { e.preventDefault(); setNavWidth(NAV_W_DEFAULT); }
+          }}
+        />
       </aside>
 
       <div className="shell-main">

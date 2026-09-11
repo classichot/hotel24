@@ -58,6 +58,14 @@ import {
   type SyncJob,
 } from "./ota";
 
+export const NAV_W_MIN = 176;
+export const NAV_W_MAX = 420;
+export const NAV_W_DEFAULT = 236;
+
+export function clampNavWidth(n: number) {
+  return Math.min(NAV_W_MAX, Math.max(NAV_W_MIN, Math.round(n)));
+}
+
 export type AuditEvent = { t: string; who: string; what: string; kind: string };
 export type Mapping = (typeof MAPPINGS_SEED)[number];
 export type Room = (typeof ROOMS_SEED)[number];
@@ -79,6 +87,8 @@ type Store = {
   flash: (m: string) => void;
   navOpen: boolean;
   setNavOpen: (v: boolean) => void;
+  navWidth: number;
+  setNavWidth: (n: number) => void;
   search: string;
   setSearch: (v: string) => void;
   aiMode: AiMode;
@@ -202,6 +212,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [propertyId, setPropertyId] = useState("baantalay");
   const [toast, setToast] = useState<string | null>(null);
   const [navOpen, setNavOpen] = useState(false);
+  const [navWidth, setNavWidthState] = useState(NAV_W_DEFAULT);
   const [search, setSearch] = useState("");
   const [aiMode, setAiModeState] = useState<AiMode>("recommend");
   const [recState, setRecState] = useState<Record<string, RecStatus>>({});
@@ -273,6 +284,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           agentBooks?: Record<string, unknown>[];
           revLevel?: RevLevel; revState?: Record<string, RevStatus>; revMeetingAt?: string | null;
           agiOn?: boolean; agiPaused?: boolean; agiLevel?: AgiLevel; agiConns?: Record<AgiBot, AgiConn>;
+          navWidth?: number;
         };
         if (s.authed) setAuthed(true);
         if (s.role) setRole(s.role);
@@ -290,6 +302,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (typeof s.agiPaused === "boolean") setAgiPausedState(s.agiPaused);
         if (s.agiLevel === 0 || s.agiLevel === 1 || s.agiLevel === 2) setAgiLevelState(s.agiLevel);
         if (s.agiConns && typeof s.agiConns === "object") setAgiConns((c) => ({ ...c, ...s.agiConns }));
+        if (typeof s.navWidth === "number" && Number.isFinite(s.navWidth)) setNavWidthState(clampNavWidth(s.navWidth));
         if (s.switchStatus === "done") {
           setSwitchStatus("done");
           setSwitchStep(SWITCH_STEPS.length - 1);
@@ -303,9 +316,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!ready) return;
     localStorage.setItem(KEY, JSON.stringify({
       authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus: switchStatus === "running" ? "idle" : switchStatus, agentReady, agentBooks,
-      revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns,
+      revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns, navWidth,
     }));
-  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus, agentReady, agentBooks, revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns]);
+  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus, agentReady, agentBooks, revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns, navWidth]);
 
   const flash = useCallback((m: string) => {
     setToast(m);
@@ -327,6 +340,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const setTheme = useCallback((k: ThemeKey) => setThemeState(k), []);
   const setLang = useCallback((l: Lang) => setLangState(l), []);
+  const setNavWidth = useCallback((n: number) => setNavWidthState(clampNavWidth(n)), []);
 
   const setAiMode = useCallback((m: AiMode) => {
     setAiModeState(m);
@@ -1193,7 +1207,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     () => ({
       ready, authed, login, logout, role,
       theme, setTheme, themeVars, lang, setLang,
-      propertyId, setPropertyId, toast, flash, navOpen, setNavOpen,
+      propertyId, setPropertyId, toast, flash, navOpen, setNavOpen, navWidth, setNavWidth,
       search, setSearch, aiMode, setAiMode, recState, applyRec, dismissRec,
       rooms, advanceRoom, checked, checkIn, collectDue, tm30Filed, fileTm30,
       scanned, scanPassport, thread, setThread, sent, sendDraft,
@@ -1214,7 +1228,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }),
     [
       ready, authed, login, logout, role, theme, setTheme, themeVars, lang, setLang,
-      propertyId, toast, flash, navOpen, search, aiMode, setAiMode, recState, applyRec, dismissRec,
+      propertyId, toast, flash, navOpen, navWidth, setNavWidth, search, aiMode, setAiMode, recState, applyRec, dismissRec,
       rooms, advanceRoom, checked, checkIn, collectDue, tm30Filed, fileTm30, scanned, scanPassport,
       thread, sent, sendDraft, mappings, fixLoftMapping, agodaRetry, forceAgoda, shieldClosed, closeShield,
       audit, walkInOpen, newResOpen, addWalkIn, benefits, toggleBenefit, assigned, autoAssign, calRange,
