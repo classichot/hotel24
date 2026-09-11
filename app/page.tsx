@@ -446,7 +446,7 @@ export default function LandingPage() {
         </div>
         <div>
           <strong><T en="Console" th="ระบบ" /></strong>
-          <div style={{ marginTop: 8 }}><Link href="/login"><T en="Sign in" th="เข้าสู่ระบบ" /></Link><br /><Link href="/agents"><T en="Agent playground" th="หน้าทดลองเอเจนต์" /></Link><br /><Link href="/book/baantalay"><T en="Direct booking page" th="หน้าจองตรง" /></Link></div>
+          <div style={{ marginTop: 8 }}><Link href="/login"><T en="Sign in" th="เข้าสู่ระบบ" /></Link><br /><Link href="/host"><T en="Host desk" th="โต๊ะโฮสต์" /></Link><br /><Link href="/agents"><T en="Agent playground" th="หน้าทดลองเอเจนต์" /></Link><br /><Link href="/book/baantalay"><T en="Direct booking page" th="หน้าจองตรง" /></Link></div>
         </div>
         <div className="text-muted" style={{ fontSize: 13 }}>
           <T en="Name and pricing here are for the product demo. Check trademarks and domains before using HOTEL24 commercially." th="ชื่อและราคาในหน้านี้เป็นตัวอย่างสำหรับการนำเสนอ · ตรวจสอบเครื่องหมายการค้าและโดเมนก่อนใช้ชื่อ HOTEL24 จริง" />

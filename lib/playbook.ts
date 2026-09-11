@@ -845,6 +845,22 @@ export const MENU_PLAYBOOKS: Record<string, MenuPlaybook> = {
     seed: "Baan Talay August graph is seeded.",
     seedTh: "กราฟสิงหาคมบ้านทะเลเป็นข้อมูลจำลอง",
   },
+  "/host": {
+    code: "PB-HOST",
+    title: "Host desk",
+    titleTh: "โต๊ะโฮสต์",
+    why: "7L mints a signed review URL. Maximum 45 days. Guests open /review/{token} — they never see the host key.",
+    whyTh: "7L สร้าง URL ตรวจที่เซ็นแล้ว สูงสุด 45 วัน ผู้รับเปิด /review/{token} — ไม่เห็นคีย์โฮสต์",
+    steps: [
+      { en: "Unlock with the host key on this browser. It is not on public login.", th: "ปลดล็อกด้วยคีย์โฮสต์บนเบราว์เซอร์นี้ ไม่ได้อยู่หน้าเข้าสู่ระบบสาธารณะ" },
+      { en: "Set 1–45 days (default 3). Generate. Send only that URL.", th: "ตั้ง 1–45 วัน (ค่าเริ่มต้น 3) กดสร้าง ส่งเฉพาะ URL นั้น" },
+      { en: "The guest lands in the full console until the signed expiry. No demo1234.", th: "ผู้รับเข้าคอนโซลทั้งระบบจนกว่าวันหมดอายุที่เซ็นไว้ ไม่ใช้ demo1234" },
+    ],
+    look: "Bump INVITE_EPOCH and redeploy to cut every live link at once.",
+    lookTh: "เพิ่ม INVITE_EPOCH แล้ว redeploy เพื่อตัดลิงก์ที่ยังใช้ได้ทั้งหมดในครั้งเดียว",
+    seed: "Tokens are signed in the browser. Not a live 7L identity provider.",
+    seedTh: "โทเคนเซ็นในเบราว์เซอร์ ไม่ใช่ระบบยืนยันตัวตน 7L สด",
+  },
   "/front-desk": {
     code: "PB-FD",
     title: "Front Desk",
@@ -1158,6 +1174,6 @@ export const PLAYBOOK_GROUPS: { en: string; th: string; hrefs: string[] }[] = [
   { en: "Operate", th: "หน้างาน", hrefs: ["/reservations", "/front-desk", "/housekeeping", "/inbox"] },
   { en: "Revenue", th: "รายได้", hrefs: ["/rates", "/profit", "/direct"] },
   { en: "Distribution", th: "กระจายห้อง", hrefs: ["/channels", "/mapping", "/inventory", "/sync"] },
-  { en: "Oversight", th: "เจ้าของกิจการ", hrefs: ["/dashboard", "/compliance", "/finance", "/switch", "/playbook"] },
+  { en: "Oversight", th: "เจ้าของกิจการ", hrefs: ["/dashboard", "/compliance", "/finance", "/switch", "/playbook", "/host"] },
 ];
 

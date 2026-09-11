@@ -115,7 +115,7 @@ export default function LoginPage() {
         </div>
         <footer className="login-pane-foot login-meta">
           <span>SSO · MFA · PDPA</span>
-          <span>demo / demo1234</span>
+          <span>demo / demo1234 · <a href="/host">Host desk</a></span>
         </footer>
       </section>
     </div>

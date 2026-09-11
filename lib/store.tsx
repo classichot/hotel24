@@ -42,6 +42,7 @@ import {
   type AgiMissionStatus,
   type AgiRecord,
 } from "./agi";
+import { clearInviteSession, readInviteSession, type InviteSession } from "./invite";
 import {
   activeConnector,
   cloneAri,
@@ -73,8 +74,9 @@ export type Room = (typeof ROOMS_SEED)[number];
 type Store = {
   ready: boolean;
   authed: boolean;
-  login: (role: Role) => void;
+  login: (role: Role, opts?: { invite?: boolean }) => void;
   logout: () => void;
+  invite: InviteSession | null;
   role: Role;
   theme: ThemeKey;
   setTheme: (k: ThemeKey) => void;
@@ -206,6 +208,7 @@ const KEY = "hotel24.session";
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [authed, setAuthed] = useState(false);
+  const [invite, setInvite] = useState<InviteSession | null>(null);
   const [role, setRole] = useState<Role>("owner");
   const [theme, setThemeState] = useState<ThemeKey>("light");
   const [lang, setLangState] = useState<Lang>("en");
@@ -276,6 +279,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
+      const sess = readInviteSession();
+      if (sess) {
+        setInvite(sess);
+        setAuthed(true);
+        setRole("owner");
+      }
       const raw = localStorage.getItem(KEY);
       if (raw) {
         const s = JSON.parse(raw) as {
@@ -285,9 +294,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           revLevel?: RevLevel; revState?: Record<string, RevStatus>; revMeetingAt?: string | null;
           agiOn?: boolean; agiPaused?: boolean; agiLevel?: AgiLevel; agiConns?: Record<AgiBot, AgiConn>;
           navWidth?: number;
+          viaInvite?: boolean;
         };
-        if (s.authed) setAuthed(true);
-        if (s.role) setRole(s.role);
+        if (!sess) {
+          if (s.viaInvite) setAuthed(false);
+          else if (s.authed) setAuthed(true);
+          if (s.role) setRole(s.role);
+        }
         if (s.theme) setThemeState(normalizeTheme(s.theme));
         if (s.lang === "th" || s.lang === "en") setLangState(s.lang);
         if (s.propertyId) setPropertyId(s.propertyId);
@@ -316,9 +329,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!ready) return;
     localStorage.setItem(KEY, JSON.stringify({
       authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus: switchStatus === "running" ? "idle" : switchStatus, agentReady, agentBooks,
-      revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns, navWidth,
+      revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns, navWidth, viaInvite: !!invite,
     }));
-  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus, agentReady, agentBooks, revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns, navWidth]);
+  }, [ready, authed, role, theme, lang, propertyId, aiMode, switchSource, switchStatus, agentReady, agentBooks, revLevel, revState, revMeetingAt, agiOn, agiPaused, agiLevel, agiConns, navWidth, invite]);
 
   const flash = useCallback((m: string) => {
     setToast(m);
@@ -329,13 +342,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setAudit((a) => [{ t: "19 Aug 09:14", who, what, kind }, ...a]);
   }, []);
 
-  const login = useCallback((r: Role) => {
+  const login = useCallback((r: Role, opts?: { invite?: boolean }) => {
+    if (!opts?.invite) {
+      clearInviteSession();
+      setInvite(null);
+    } else {
+      setInvite(readInviteSession());
+    }
     setRole(r);
     setAuthed(true);
   }, []);
 
   const logout = useCallback(() => {
     setAuthed(false);
+    clearInviteSession();
+    setInvite(null);
   }, []);
 
   const setTheme = useCallback((k: ThemeKey) => setThemeState(k), []);
@@ -1205,7 +1226,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<Store>(
     () => ({
-      ready, authed, login, logout, role,
+      ready, authed, login, logout, invite, role,
       theme, setTheme, themeVars, lang, setLang,
       propertyId, setPropertyId, toast, flash, navOpen, setNavOpen, navWidth, setNavWidth,
       search, setSearch, aiMode, setAiMode, recState, applyRec, dismissRec,
@@ -1227,7 +1248,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       agiHoldId, agiBooking, agiGuestOffer, setAgiGuestOffer, holdAgiOffer, confirmAgiGuest,
     }),
     [
-      ready, authed, login, logout, role, theme, setTheme, themeVars, lang, setLang,
+      ready, authed, login, logout, invite, role, theme, setTheme, themeVars, lang, setLang,
       propertyId, toast, flash, navOpen, navWidth, setNavWidth, search, aiMode, setAiMode, recState, applyRec, dismissRec,
       rooms, advanceRoom, checked, checkIn, collectDue, tm30Filed, fileTm30, scanned, scanPassport,
       thread, sent, sendDraft, mappings, fixLoftMapping, agodaRetry, forceAgoda, shieldClosed, closeShield,

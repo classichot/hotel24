@@ -24,6 +24,7 @@ import { ScreenPlaybook } from "@/components/Playbook";
 import { LangToggle } from "@/components/LangToggle";
 import { ModeToggle } from "@/components/ModeToggle";
 import { T, pick } from "@/lib/i18n";
+import { formatExpiry, hoursLeft } from "@/lib/invite";
 import type { PointerEvent, ReactNode } from "react";
 import { useEffect, useState } from "react";
 
@@ -116,6 +117,7 @@ const NAV = [
       { href: "/compliance", en: "Compliance TM30", th: "TM30 & PDPA" },
       { href: "/finance", en: "Finance", th: "เงินสดและใบเสร็จ" },
       { href: "/switch", en: "Switch from PMS", th: "ย้ายจากระบบเดิม" },
+      { href: "/host", en: "Host desk", th: "โต๊ะโฮสต์" },
     ],
   },
 ];
@@ -138,7 +140,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const {
     logout, toast, navOpen, setNavOpen, navWidth, setNavWidth, lang, role, propertyId, setPropertyId,
     search, setSearch, aiMode, recState, shieldClosed, switchStatus, otaChannels, aiState, agentReady, revState,
-    agiOn, agiPaused, agiMissions,
+    agiOn, agiPaused, agiMissions, invite,
   } = useStore();
   const user = role === "front" || role === "housekeeping" ? FRONT_USER : OWNER;
   const property = PROPERTIES.find((p) => p.id === propertyId) ?? PROPERTIES[0];
@@ -175,11 +177,12 @@ export function AppShell({ children }: { children: ReactNode }) {
     handle.addEventListener("pointercancel", stop);
   }
 
-  const nav = NAV.map((g) =>
-    g.group.en === "AGI Mode" && !agiOn
-      ? { ...g, items: g.items.filter((i) => i.href === "/agi") }
-      : g
-  );
+  const nav = NAV.map((g) => {
+    let items = g.items;
+    if (g.group.en === "AGI Mode" && !agiOn) items = items.filter((i) => i.href === "/agi");
+    if (g.group.en === "Oversight" && (invite || role !== "owner")) items = items.filter((i) => i.href !== "/host");
+    return items === g.items ? g : { ...g, items };
+  });
   const agiOpen = Object.values(agiMissions).filter((s) => s === "running" || s === "awaiting").length;
 
   return (
@@ -289,6 +292,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                 : <T en="All channels synced · 2 min" th="ซิงก์ทุกช่องทาง · 2 นาที" />}
             </span>
             <span className="tag tag-accent header-hide-sm">AI: {aiMode === "auto" ? "auto-apply" : "recommend"}</span>
+            {!invite && role === "owner" && (
+              <Link href="/host" className="btn btn-ghost header-hide-sm" style={{ fontSize: 12, padding: "6px 10px" }}>
+                <T en="Host desk" th="โต๊ะโฮสต์" />
+              </Link>
+            )}
             <AgiToggle compact />
             {agiOn && (
               <span className={`tag${agiPaused ? " tag-outline" : " tag-accent"} header-hide-sm`}>
@@ -302,6 +310,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             <button title="Sign out" className="icon-btn" onClick={() => { logout(); router.push("/login"); }}><LogOut size={16} /></button>
           </div>
         </header>
+        {invite && (
+          <div className="invite-strip no-print">
+            <T
+              en={`Host desk demo · full OS until ${formatExpiry(invite.exp)} · ~${Math.max(1, Math.ceil(hoursLeft(invite.exp) / 24))}d left · no demo1234`}
+              th={`สาธิตโต๊ะโฮสต์ · ทั้งระบบถึง ${formatExpiry(invite.exp)} · เหลือ ~${Math.max(1, Math.ceil(hoursLeft(invite.exp) / 24))} วัน · ไม่ใช้ demo1234`}
+            />
+          </div>
+        )}
         {agiOn && (
           <div className="agi-strip no-print">
             <T
